@@ -1,7 +1,7 @@
 import Foundation
 
-public class UsersServices {
-    
+public class UsersServices
+{
     public class CreateUpdateUser: ParametersBase<CreateUpdateUser.Fields, CreateUpdateUser>
     {
         public enum Fields

@@ -21,9 +21,48 @@ open class ParametersBase<T,S>
         toDictionary[toString(key: key)] = value
     }
     
+    func add(key: T, value: Bool?)
+    {
+        toDictionary[toString(key: key)] = toNumber(value: value)
+    }
+    
+    func toNumber(value: Bool?) -> NSNumber?
+    {
+        if let value = value
+        {
+            return NSNumber(value: value)
+        }
+        else
+        {
+            return nil
+        }
+    }
+
     func addRequired(key: T, value: String?)
     {
         if let value = value, value != emptyString {
+            toDictionary[toString(key: key)] = value
+        }
+        else
+        {
+            toDictionary[errorMessageTitle] = returnError(parameterString: toString(key: key))
+        }
+    }
+    
+    func addRequired(key: T, value: Bool?)
+    {
+        if let value = value {
+            add(key: key, value: value)
+        }
+        else
+        {
+            toDictionary[errorMessageTitle] = returnError(parameterString: toString(key: key))
+        }
+    }
+    
+    func addRequired(key: T, value: [String]?)
+    {
+        if let value = value, value.count > 0 {
             toDictionary[toString(key: key)] = value
         }
         else
@@ -42,6 +81,12 @@ open class ParametersBase<T,S>
         return (dictionary[toString(key: key)] as? NSNumber)?.intValue
     }
     
+    
+    func value(forKey key: T) -> Bool?
+    {
+        return (dictionary[toString(key: key)] as? NSNumber)?.boolValue
+    }
+    
     func value(forKey key: T) -> Int
     {
         return (dictionary[toString(key: key)] as? NSNumber)?.intValue ?? 0
@@ -50,6 +95,11 @@ open class ParametersBase<T,S>
     func value(forKey key: T) -> String?
     {
         return (dictionary[toString(key: key)] as? String)
+    }
+    
+    func value(forKey key: T) -> [String]?
+    {
+        return (dictionary[toString(key: key)] as? [String])
     }
     
     func value(forKey key: T) -> URL?
