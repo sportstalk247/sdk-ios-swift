@@ -6,12 +6,15 @@ public typealias CompletionHandler = (_ success:[AnyHashable: Any]) -> Void
 enum RequestType: String {
     case GET
     case POST
+    case PUT
+    case DELETE
 }
 
 open class ServicesBase
 {
     public var authToken: String?
     public var url: URL?
+    public var services: Services?
 
     func makeRequest(_ serviceName: String?, withData data: [AnyHashable: Any]?, requestType: RequestType, appendData:Bool = true, completionHandler: @escaping CompletionHandler)
     {
@@ -42,7 +45,7 @@ open class ServicesBase
                 {
                     if let data = data
                     {
-                        if let jsonData = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                        if let jsonData = try JSONSerialization.jsonObject(with: data, options: [.allowFragments]) as? [String: Any]
                         {
                             completionHandler(jsonData)
                         }
@@ -93,7 +96,7 @@ open class ServicesBase
         var request = URLRequest(url: url, timeoutInterval: Double.infinity)
         request.httpMethod = requestType.rawValue
 
-        if requestType == .POST
+        if (requestType == .POST && appendData) || requestType == .PUT
         {
             request.httpBody = postData
         }
@@ -114,8 +117,8 @@ open class ServicesBase
             }
         }
 
-        request.addValue(acceptHeaderValue, forHTTPHeaderField: acceptHeaderTitle)
-        request.addValue(contentTypeValue, forHTTPHeaderField: acceptHeaderValue)
+//        request.addValue(acceptHeaderValue, forHTTPHeaderField: acceptHeaderTitle)
+//        request.addValue(contentTypeValue, forHTTPHeaderField: acceptHeaderValue)
         request.addValue(self.authToken ?? emptyString, forHTTPHeaderField: tokenTitle)
 
         return request
