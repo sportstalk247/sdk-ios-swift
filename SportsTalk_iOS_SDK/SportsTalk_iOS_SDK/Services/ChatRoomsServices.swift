@@ -146,6 +146,8 @@ public class ChatRoomsServices
     
     public class ListRooms
     {
+        public init() { }
+        
         public func from(dictionary: [AnyHashable: Any]) -> ListRooms
         {
             let ret = ListRooms()
@@ -209,10 +211,10 @@ public class ChatRoomsServices
         
         public var roomid: String?
         public var userid: String?
-        public var handle: Int?
-        public var displayname: Int?
-        public var pictureurl: Int?
-        public var profileurl: Int?
+        public var handle: String?
+        public var displayname: String?
+        public var pictureurl: URL?
+        public var profileurl: URL?
 
         override public func from(dictionary: [AnyHashable: Any]) -> JoinRoomAuthenticatedUser
         {
@@ -237,8 +239,8 @@ public class ChatRoomsServices
             add(key: .userid, value: userid)
             add(key: .handle, value: handle)
             add(key: .displayname, value: displayname)
-            add(key: .pictureurl, value: pictureurl)
-            add(key: .profileurl, value: profileurl)
+            add(key: .pictureurl, value: pictureurl?.absoluteString)
+            add(key: .profileurl, value: profileurl?.absoluteString)
 
             return toDictionary
         }
@@ -249,11 +251,6 @@ public class ChatRoomsServices
         public enum Fields
         {
             case roomid
-            case userid
-            case handle
-            case displayname
-            case pictureurl
-            case profileurl
         }
         
         public var roomid: String?
@@ -377,7 +374,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
 
-//            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomId, value: roomId)
             add(key: .command, value: command)
             add(key: .userid, value: userid)
             add(key: .customtype, value: customtype)
@@ -426,7 +423,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            //            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomId, value: roomId)
             add(key: .command, value: command)
             add(key: .userid, value: userid)
             add(key: .customtype, value: customtype)
@@ -469,7 +466,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            //            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomId, value: roomId)
             add(key: .command, value: command)
             add(key: .userid, value: userid)
             add(key: .replyto, value: replyto)
@@ -493,7 +490,7 @@ public class ChatRoomsServices
         public var roomNewestEventId: String?
         public var userid: String?
         public var reaction: String?
-        public var reacted: String?
+        public var reacted: Bool?
         
         override public func from(dictionary: [AnyHashable: Any]) -> ReactToAMessageLike
         {
@@ -513,8 +510,8 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            //            addRequired(key: .roomId, value: roomId)
-            //            addRequired(key: .roomNewestEventId, value: roomNewestEventId)
+            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomNewestEventId, value: roomNewestEventId)
             add(key: .userid, value: userid)
             add(key: .reaction, value: reaction)
             add(key: .reacted, value: reacted)
@@ -561,7 +558,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            //            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomId, value: roomId)
             add(key: .command, value: command)
             add(key: .userid, value: userid)
             add(key: .customtype, value: customtype)
@@ -598,7 +595,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            //            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomId, value: roomId)
             add(key: .userid, value: userid)
 
             return toDictionary
