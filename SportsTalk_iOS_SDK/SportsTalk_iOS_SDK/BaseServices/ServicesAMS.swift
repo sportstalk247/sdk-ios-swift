@@ -52,6 +52,12 @@ public protocol ServicesAMSProtocol
     func chatRoomsServices(_ request: ChatRoomsServices.ExecuteAdminCommand , completionHandler: @escaping CompletionHandler)
     func chatRoomsServices(_ request: ChatRoomsServices.ExitRoom , completionHandler: @escaping CompletionHandler)
     func chatRoomsServices(_ request: ChatRoomsServices.GetRoomDetails , completionHandler: @escaping CompletionHandler)
+    
+    func getUpdates(completionHandler: @escaping CompletionHandler)
+    func listRooms(completionHandler: @escaping CompletionHandler)
+    func listParticipants(cursor:String, maxresults:Int, completionHandler: @escaping CompletionHandler)
+    func getCurrentRoom() -> [AnyHashable: Any]?
+    func sendCommand(command:Any, userId:String, completionHandler: @escaping CompletionHandler)
 }
 
 open class ServicesAMS: ServicesBase, ServicesAMSProtocol
@@ -229,10 +235,23 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
             completionHandler(response)
         }
     }
-
+    
     public func chatRoomsServices(_ request: ChatRoomsServices.JoinRoomAuthenticatedUser , completionHandler: @escaping CompletionHandler)
     {
         makeRequest("room/\(request.roomid ?? emptyString)/join", withData: request.toDictionary(), requestType: .POST) { (response) in
+            if let responseData = response["data"] as? [AnyHashable: Any] {
+                if let data = responseData["data"] as? [AnyHashable: Any] {
+                    self.services?._currentRoom = data
+                }
+            }
+            
+            var _roomApiString = (self.services?._endpoint?.absoluteString ?? "") + "/room/"
+            _roomApiString = _roomApiString + ((self.services?._currentRoom?["id"] as? String) ?? "")
+            self.services?._roomApi = _roomApiString
+            
+            self.services?._commandApi = (self.services?._roomApi ?? "") + "/command";
+            self.services?._updatesApi = (self.services?._roomApi ?? "") + "/updates";
+            
             completionHandler(response)
         }
     }
@@ -240,6 +259,19 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     public func chatRoomsServices(_ request: ChatRoomsServices.JoinRoomAnonymousUser , completionHandler: @escaping CompletionHandler)
     {
         makeRequest("room/\(request.roomid ?? emptyString)/join", withData: request.toDictionary(), requestType: .POST) { (response) in
+            if let responseData = response["data"] as? [AnyHashable: Any] {
+                if let data = responseData["data"] as? [AnyHashable: Any] {
+                    self.services?._currentRoom = data
+                }
+            }
+            
+            var _roomApiString = (self.services?._endpoint?.absoluteString ?? "") + "/room/"
+            _roomApiString = _roomApiString + ((self.services?._currentRoom?["id"] as? String) ?? "")
+            self.services?._roomApi = _roomApiString
+            
+            self.services?._commandApi = (self.services?._roomApi ?? "") + "/command";
+            self.services?._updatesApi = (self.services?._roomApi ?? "") + "/updates";
+
             completionHandler(response)
         }
     }
@@ -303,6 +335,49 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     public func chatRoomsServices(_ request: ChatRoomsServices.GetRoomDetails , completionHandler: @escaping CompletionHandler)
     {
         makeRequest("room/\(request.roomIdOrSlug ?? emptyString)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
+            completionHandler(response)
+        }
+    }
+    
+    public func listRooms(completionHandler: @escaping CompletionHandler)
+    {
+        makeRequest("\(self.services?._endpoint?.absoluteString ?? "")/room", withData: [AnyHashable: Any](), requestType: .GET, appendData: false) { (response) in
+            if let responseData = response["data"] as? [AnyHashable: Any] {
+                if let knownRooms = responseData["data"] {
+                    self.services?.knownRooms = knownRooms
+                }
+            }
+            
+            completionHandler(response)
+        }
+    }
+    
+    public func listParticipants(cursor:String, maxresults:Int = 200, completionHandler: @escaping CompletionHandler)
+    {
+        var urlString = (services?._endpoint?.absoluteString ?? "") + "/room/"
+        urlString = urlString + ((self.services?._currentRoom?["id"] as? String) ?? "") + "/participants?cursor="
+        urlString = urlString + cursor + "&maxresults=" + String(200)
+        
+        makeRequest(urlString, withData: [AnyHashable: Any](), requestType: .GET) { (response) in
+            completionHandler(response)
+        }
+    }
+    
+    public func getCurrentRoom() -> [AnyHashable : Any]? {
+        return services?._currentRoom
+    }
+    
+    public func sendCommand(command: Any, userId: String, completionHandler: @escaping CompletionHandler) {
+        let dataDictionary = ["command": command, "userid": userId]
+        
+        makeRequest(self.services?._commandApi ?? "", withData: dataDictionary, requestType: .POST) { (response) in
+            completionHandler(response)
+        }
+    }
+    
+    public func getUpdates(completionHandler: @escaping CompletionHandler)
+    {
+        makeRequest(services?._updatesApi, withData: [AnyHashable: Any](), requestType: .GET, appendData: false) { (response) in
             completionHandler(response)
         }
     }

@@ -27,7 +27,7 @@ public class ModerationServices
         {
             toDictionary = [AnyHashable: Any]()
 
-//            addRequired(key: .userid, value: userid)
+            addRequired(key: .userid, value: userid)
             addRequired(key: .banned, value: banned)
 
             return toDictionary
@@ -43,7 +43,7 @@ public class ModerationServices
         }
 
         public var userid: String?
-        private var banned: Bool? = false
+        public var banned: Bool? = false
 
         override public func from(dictionary: [AnyHashable: Any]) -> RestoreUser
         {
@@ -60,7 +60,7 @@ public class ModerationServices
         {
             toDictionary = [AnyHashable: Any]()
 
-//            addRequired(key: .userid, value: userid)
+            addRequired(key: .userid, value: userid)
             addRequired(key: .banned, value: banned)
 
             return toDictionary
@@ -96,7 +96,7 @@ public class ModerationServices
         {
             toDictionary = [AnyHashable: Any]()
             
-//            addRequired(key: .chatroomid, value: chatroomid)
+            addRequired(key: .chatroomid, value: chatroomid)
             add(key: .userid, value: userid)
             add(key: .command, value: command)
             
@@ -133,7 +133,7 @@ public class ModerationServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            //               addRequired(key: .chatroomid, value: chatroomid)
+            addRequired(key: .chatroomid, value: chatroomid)
             add(key: .userid, value: userid)
             add(key: .command, value: command)
             
