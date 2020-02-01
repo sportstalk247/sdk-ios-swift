@@ -73,23 +73,22 @@ open class ServicesBase
     
     func makeURLRequest(_ serviceName: String?, useDefaultUrl:Bool, withData data: [AnyHashable: Any]?, requestType: RequestType, appendData: Bool) -> URLRequest?
     {
-        var jsonData: Data? = nil
-
-        do
-        {
-            jsonData = try JSONSerialization.data(withJSONObject: data as Any, options: [])
-        }
-        catch
-        {}
-
-        var json: String? = nil
-        if let jsonData = jsonData
-        {
-            json = String(data: jsonData, encoding: .utf8)
-        }
-        print(json)
-        let postData =  json?.data(using: .utf8)
+        var parameterStr = ""
         
+        for (key, value) in (data ?? [AnyHashable: Any]())
+        {
+            if parameterStr.isEmpty
+            {
+                parameterStr = parameterStr + "\(key)=\(value)"
+            }
+            else
+            {
+                parameterStr = parameterStr + "&\(key)=\(value)"
+            }
+        }
+        
+        let postData =  parameterStr.data(using: .utf8)
+
         // Generate url.
         let url:URL?
         

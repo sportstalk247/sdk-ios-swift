@@ -18,12 +18,12 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     let TEST_PROFILE_URL = URL(string: "www.sampleUrl2.com")
     let TEST_WEBHOOK_ID = "046282d5e2d249739e0080a4d2a04904"
     let TEST_PURGE_COMMAND = "*purge"
-    let TEST_ROOM_NEWEST_EVENT_ID = ""
+    let TEST_ROOM_NEWEST_EVENT_ID = "5e0ef05238a2831098526cc2"
     var TEST_CHAT_ROOM_ID = "5e0ef05238a2831098526cc2"
     let TEST_ROOM_ID_OR_SLUG = "5e0ec9b138a2831098526cac"
     let TEST_CUSTOM_EVENT = ""
     let TEST_REPLY_TO = ""
-    let TEST_REACTION = ""
+    let TEST_REACTION = "like"
     let TEST_REACTED = false
     let TEST_CUSTOM_ID = "5e0ec9b138a2831098526cac"
     let TEST_CUSTOM_PAYLOAD = ""
