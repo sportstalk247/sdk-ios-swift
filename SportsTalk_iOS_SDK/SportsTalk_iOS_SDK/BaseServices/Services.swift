@@ -2,7 +2,7 @@ import Foundation
 
 open class Services
 {
-    let baseUrl = URL(string: "http://api-origin.sportstalk247.com/api/v3") // http://api-origin.sportstalk247.com/api/v3
+    let baseUrl = URL(string: "http://api.sportstalk247.com/api/v3") // http://api-origin.sportstalk247.com/api/v3
     
     private var _authToken: String?
     private lazy var _url: URL? = baseUrl
