@@ -2,6 +2,7 @@ import XCTest
 import SportsTalk_iOS_SDK
 
 let RESPONSE_PARAMETER_DATA = "data"
+let RESPONSE_PARAMETER_MESSAGE = "message"
 let RESPONSE_PARAMETER_USERS = "users"
 
 class SportsTalk_iOS_SDKTests: XCTestCase {
@@ -18,8 +19,8 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     let TEST_PROFILE_URL = URL(string: "www.sampleUrl2.com")
     let TEST_WEBHOOK_ID = "046282d5e2d249739e0080a4d2a04904"
     let TEST_PURGE_COMMAND = "*purge"
-    let TEST_ROOM_NEWEST_EVENT_ID = "5e0ef05238a2831098526cc2"
-    var TEST_CHAT_ROOM_ID = "5e0ef05238a2831098526cc2"
+    let TEST_ROOM_NEWEST_EVENT_ID = ""
+    var TEST_CHAT_ROOM_ID = "5dd9d5a038a28326ccfe5743" //"5e0ef05238a2831098526cc2"
     let TEST_ROOM_ID_OR_SLUG = "5e0ec9b138a2831098526cac"
     let TEST_CUSTOM_EVENT = ""
     let TEST_REPLY_TO = ""
@@ -29,7 +30,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     let TEST_CUSTOM_PAYLOAD = ""
     let TEST_ROOM_ID_OR_LABEL = "5e0ec9b138a2831098526cac"
     let TEST_EVENT_ID = ""
-    let TEST_CHAT_MESSAGE_ID = ""
+    let TEST_CHAT_MESSAGE_ID = "5e3a9f4838a2830ffc831425"
     let TEST_CURSOR = ""
     let TEST_SLUG = URL(string: "www.sampleUrl2.com")
     let TEST_ENABLEACTIONS = true
@@ -44,7 +45,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
 
     
     override func setUp() {
-//      services.url = URL(string: "http://shaped-entropy-259212.appspot.com/demo/api/v3")
+//        services.url = URL(string: "http://shaped-entropy-259212.appspot.com/demo/api/v3")
         services.url = URL(string: "http://api-origin.sportstalk247.com/api/v3")
         services.authToken = "vfZSpHsWrkun7Yd_fUJcWAHrNjx6VRpEqMCEP3LJV9Tg"
     }
@@ -178,7 +179,6 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         services.ams.usersServices(searchUsersByName) { (response) in
             let responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             users = responseData?[RESPONSE_PARAMETER_USERS] as? [[AnyHashable:Any]]
-
             expectation.fulfill()
         }
 
@@ -213,17 +213,16 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         banUser.userid = TEST_USERID
 
         let expectation = self.expectation(description: Expectation_Description)
-        var responseData:[AnyHashable:Any]?
+        var responseMessage:String?
 
         services.ams.moderationServies(banUser){ (response) in
-            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
+            responseMessage = response[RESPONSE_PARAMETER_MESSAGE] as? String
             expectation.fulfill()
         }
 
         waitForExpectations(timeout: 5, handler: nil)
 
-        XCTAssertTrue(responseData != nil)
+        XCTAssertTrue(responseMessage?.contains("not banned") ?? false)
     }
 
     func test10_ModerationServices_RestoreUser()
@@ -232,66 +231,46 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         restoreUser.userid = TEST_USERID
 
         let expectation = self.expectation(description: Expectation_Description)
-        var responseData:[AnyHashable:Any]?
+        var responseMessage:String?
 
         services.ams.moderationServies(restoreUser){ (response) in
-            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
+            responseMessage = response[RESPONSE_PARAMETER_MESSAGE] as? String
             expectation.fulfill()
         }
 
         waitForExpectations(timeout: 5, handler: nil)
 
-        XCTAssertTrue(responseData != nil)
-    }
-
-    func test11_ModerationServices_PurgeUserMessages()
-    {
-        let purgeUserMessages = ModerationServices.PurgeUserMessages()
-        purgeUserMessages.userid = TEST_USERID
-        purgeUserMessages.command = TEST_PURGE_COMMAND
-        purgeUserMessages.chatroomid = TEST_CHAT_ROOM_ID
-
-        let expectation = self.expectation(description: Expectation_Description)
-        var responseData:[AnyHashable:Any]?
-
-        services.ams.moderationServies(purgeUserMessages){ (response) in
-            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: 5, handler: nil)
-
-        XCTAssertTrue(responseData != nil)
+        XCTAssertTrue(responseMessage?.contains("not banned") ?? false)
     }
 
     func test12_ModerationServices_DeleteAllEventsInRoom()
     {
+        test16_ChatRoomsServices_CreateRoom()
+        test21_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        
         let deleteAllEventsInRoom = ModerationServices.DeleteAllEventsInRoom()
         deleteAllEventsInRoom.userid = TEST_USERID
-        deleteAllEventsInRoom.command = "*deleteallevents"
+        deleteAllEventsInRoom.command = "*deleteallevents zola"
         deleteAllEventsInRoom.chatroomid = TEST_CHAT_ROOM_ID
         
         let expectation = self.expectation(description: Expectation_Description)
-        var responseData:[AnyHashable:Any]?
+        var responseMessage:String?
         
         services.ams.moderationServies(deleteAllEventsInRoom){ (response) in
-            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
+            responseMessage = response[RESPONSE_PARAMETER_MESSAGE] as? String
             expectation.fulfill()
         }
         
         waitForExpectations(timeout: 5, handler: nil)
         
-        XCTAssertTrue(responseData != nil)
+        XCTAssertTrue(responseMessage == "Deleted 0 events.")
     }
 
     func test13_ModerationServices_RemoveMessage()
     {
         let removeMessage = ModerationServices.RemoveMessage()
-        removeMessage.chatMessageId = TEST_CHAT_MESSAGE_ID
-        removeMessage.chatRoomId = TEST_CHAT_ROOM_ID
+        removeMessage.chatMessageId = "5e3a9f4838a2830ffc831425"
+        removeMessage.chatRoomId = "001864a867604101b29672e904da688a"
 
         let expectation = self.expectation(description: Expectation_Description)
         var responseData:[AnyHashable:Any]?
@@ -310,8 +289,9 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     func test14_ModerationServices_ReportMessage()
     {
         let reportMessage = ModerationServices.ReportMessage()
-        reportMessage.chatMessageId = TEST_CHAT_MESSAGE_ID
-        reportMessage.chatRoomId = TEST_CHAT_ROOM_ID
+        reportMessage.chat_room_newest_speech_id = "5e3bf97d38a2831fcc3f045b"
+        reportMessage.chatRoomId = "5e3baf6938a2831fcc3f043f"
+        reportMessage.userid = "093486fcd90c495fa6719321d8e1913a"
 
         let expectation = self.expectation(description: Expectation_Description)
         var responseData:[AnyHashable:Any]?
@@ -351,7 +331,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let createRoom = ChatRoomsServices.CreateRoom()
         createRoom.name = TEST_DISPLAY_NAME
         createRoom.slug = TEST_SLUG
-        createRoom.description = TEST_CHAT_ROOM_ID
+        createRoom.description = ""
         createRoom.enableactions = TEST_ENABLEACTIONS
         createRoom.enableenterandexit = TEST_ENABLEENTERANDEXIT
         createRoom.roomisopen = TEST_ROOMISOPEN
@@ -362,6 +342,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
 
         services.ams.chatRoomsServices(createRoom){ (response) in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            self.TEST_CHAT_ROOM_ID = (responseData?["id"] as? String) ?? ""
             expectation.fulfill()
         }
 
@@ -435,12 +416,12 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
 
         XCTAssertTrue(responseData != nil)
     }
-//
+
     func test20_ChatRoomsServices_ListRoomParticipants()
     {
         let listRoomParticipants = ChatRoomsServices.ListRoomParticipants()
         listRoomParticipants.cursor = TEST_CURSOR
-        listRoomParticipants.roomid = TEST_CHAT_ROOM_ID
+        listRoomParticipants.roomid = "5dd9d5a038a28326ccfe5743"
 
         let expectation = self.expectation(description: Expectation_Description)
         var responseData:[AnyHashable:Any]?
@@ -460,10 +441,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     {
         let joinRoomAuthenticatedUser = ChatRoomsServices.JoinRoomAuthenticatedUser()
         joinRoomAuthenticatedUser.userid = TEST_USERID
-        joinRoomAuthenticatedUser.handle = TEST_HANDLE
         joinRoomAuthenticatedUser.displayname = TEST_DISPLAY_NAME
-        joinRoomAuthenticatedUser.pictureurl = TEST_PICTURE_URL
-        joinRoomAuthenticatedUser.profileurl = TEST_PROFILE_URL
         joinRoomAuthenticatedUser.roomid = TEST_CHAT_ROOM_ID
 
         let expectation = self.expectation(description: Expectation_Description)
@@ -471,7 +449,6 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
 
         services.ams.chatRoomsServices(joinRoomAuthenticatedUser){ (response) in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
             expectation.fulfill()
         }
 
@@ -529,7 +506,6 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
 
         services.ams.chatRoomsServices(getUpdatesMore){ (response) in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
             expectation.fulfill()
         }
 
@@ -538,22 +514,21 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         XCTAssertTrue(responseData != nil)
     }
 
-    func test_ChatRoomsServices_ExecuteChatCommand()
+    func test25_ChatRoomsServices_ExecuteChatCommand()
     {
+        test16_ChatRoomsServices_CreateRoom()
+        test21_ChatRoomsServices_JoinRoomAuthenticatedUser()
+
         let executeChatCommand = ChatRoomsServices.ExecuteChatCommand()
         executeChatCommand.roomId = TEST_CHAT_ROOM_ID
-        executeChatCommand.command = ""
+        executeChatCommand.command = "Hello test command"
         executeChatCommand.userid = TEST_USERID
-        executeChatCommand.customtype = TEST_CUSTOM_EVENT
-        executeChatCommand.customid = TEST_CUSTOM_ID
-        executeChatCommand.custompayload = TEST_CUSTOM_PAYLOAD
 
         let expectation = self.expectation(description: Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(executeChatCommand){ (response) in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
             expectation.fulfill()
         }
 
@@ -562,8 +537,11 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         XCTAssertTrue(responseData != nil)
     }
 
-    func test_ChatRoomsServices_ExecuteDanceAction()
+    func test26_ChatRoomsServices_ExecuteDanceAction()
     {
+        test16_ChatRoomsServices_CreateRoom()
+        test21_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        
         let executeDanceAction = ChatRoomsServices.ExecuteDanceAction()
         executeDanceAction.roomId = TEST_CHAT_ROOM_ID
         executeDanceAction.command = "/high5 georgew"
@@ -573,20 +551,19 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         executeDanceAction.custompayload = TEST_CUSTOM_PAYLOAD
 
         let expectation = self.expectation(description: Expectation_Description)
-        var responseData:[AnyHashable:Any]?
+        var responseMessage:String = ""
 
         services.ams.chatRoomsServices(executeDanceAction){ (response) in
-            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
+            responseMessage = (response[RESPONSE_PARAMETER_MESSAGE] as? String) ?? ""
             expectation.fulfill()
         }
 
         waitForExpectations(timeout: 5, handler: nil)
 
-        XCTAssertTrue(responseData != nil)
+        XCTAssertTrue(!responseMessage.isEmpty)
     }
 
-    func test_ChatRoomsServices_ReplyToAMessage()
+    func test27_ChatRoomsServices_ReplyToAMessage()
     {
         let replyToAMessage = ChatRoomsServices.ReplyToAMessage()
         replyToAMessage.roomId = TEST_CHAT_ROOM_ID
@@ -599,7 +576,6 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
 
         services.ams.chatRoomsServices(replyToAMessage){ (response) in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
             expectation.fulfill()
         }
 
@@ -608,31 +584,11 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         XCTAssertTrue(responseData != nil)
     }
 
-    func test_ChatRoomsServices_ReactToAMessageLike()
+    func test28_ChatRoomsServices_ExecuteAdminCommand()
     {
-        let reactToAMessageLike = ChatRoomsServices.ReactToAMessageLike()
-        reactToAMessageLike.roomId = TEST_CHAT_ROOM_ID
-        reactToAMessageLike.roomNewestEventId = TEST_ROOM_NEWEST_EVENT_ID
-        reactToAMessageLike.userid = TEST_USERID
-        reactToAMessageLike.reaction = TEST_REACTION
-        reactToAMessageLike.reacted = TEST_REACTED
+        test16_ChatRoomsServices_CreateRoom()
+        test21_ChatRoomsServices_JoinRoomAuthenticatedUser()
 
-        let expectation = self.expectation(description: Expectation_Description)
-        var responseData:[AnyHashable:Any]?
-
-        services.ams.chatRoomsServices(reactToAMessageLike){ (response) in
-            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: 5, handler: nil)
-
-        XCTAssertTrue(responseData != nil)
-    }
-
-    func test_ChatRoomsServices_ExecuteAdminCommand()
-    {
         let executeAdminCommand = ChatRoomsServices.ExecuteAdminCommand()
         executeAdminCommand.roomId = TEST_CHAT_ROOM_ID
         executeAdminCommand.command = "*help"
@@ -642,21 +598,23 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         executeAdminCommand.custompayload = TEST_CUSTOM_PAYLOAD
 
         let expectation = self.expectation(description: Expectation_Description)
-        var responseData:[AnyHashable:Any]?
+        var responseMessage:String?
 
         services.ams.chatRoomsServices(executeAdminCommand){ (response) in
-            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
+            responseMessage = response[RESPONSE_PARAMETER_MESSAGE] as? String
             expectation.fulfill()
         }
 
         waitForExpectations(timeout: 5, handler: nil)
 
-        XCTAssertTrue(responseData != nil)
+        XCTAssertTrue(responseMessage != nil)
     }
 
-    func test_ChatRoomsServices_ExitRoom()
+    func test29_ChatRoomsServices_ExitRoom()
     {
+        test16_ChatRoomsServices_CreateRoom()
+        test21_ChatRoomsServices_JoinRoomAuthenticatedUser()
+
         let exitRoom = ChatRoomsServices.ExitRoom()
         exitRoom.roomId = TEST_CHAT_ROOM_ID
         exitRoom.userid = TEST_USERID
@@ -666,7 +624,6 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
 
         services.ams.chatRoomsServices(exitRoom){ (response) in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
             expectation.fulfill()
         }
 
@@ -675,7 +632,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         XCTAssertTrue(responseData != nil)
     }
 
-    func test_ChatRoomsServices_GetRoomDetails()
+    func test30_ChatRoomsServices_GetRoomDetails()
     {
         let getRoomDetails = ChatRoomsServices.GetRoomDetails()
         getRoomDetails.roomIdOrSlug = TEST_ROOM_ID_OR_SLUG
@@ -685,7 +642,6 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
 
         services.ams.chatRoomsServices(getRoomDetails){ (response) in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
-            print(response)
             expectation.fulfill()
         }
 

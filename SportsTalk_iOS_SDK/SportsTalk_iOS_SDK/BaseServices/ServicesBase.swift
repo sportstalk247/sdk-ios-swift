@@ -15,7 +15,8 @@ open class ServicesBase
     public var authToken: String?
     public var url: URL?
     public var services: Services?
-
+    public var user: User?
+    
     func makeRequest(_ serviceName: String?, useDefaultUrl:Bool = true, withData data: [AnyHashable: Any]?, requestType: RequestType, appendData:Bool = true, completionHandler: @escaping CompletionHandler)
     {
         if let requiredParameterIsNilError = checkRequiredParameters(data)
