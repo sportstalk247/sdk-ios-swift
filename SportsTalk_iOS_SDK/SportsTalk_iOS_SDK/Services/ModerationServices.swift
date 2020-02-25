@@ -10,7 +10,7 @@ public class ModerationServices
         }
 
         public var userid: String?
-        public var banned: Bool? = true
+        public var banned = "true"
 
         override public func from(dictionary: [AnyHashable: Any]) -> BanUser
         {
@@ -18,7 +18,7 @@ public class ModerationServices
             let ret = BanUser()
 
             ret.userid = value(forKey: .userid)
-            ret.banned = value(forKey: .banned)
+            ret.banned = value(forKey: .banned) ?? "true"
 
             return ret
         }
@@ -180,10 +180,16 @@ public class ModerationServices
         {
             case chatRoomId
             case chatMessageId
+            case chat_room_newest_speech_id
+            case userid
+            case reporttype
         }
         
         public var chatRoomId: String?
         public var chatMessageId: String?
+        public var chat_room_newest_speech_id: String?
+        public var userid: String?
+        public var reporttype = "abuse"
         
         override public func from(dictionary: [AnyHashable: Any]) -> ReportMessage
         {
@@ -192,6 +198,9 @@ public class ModerationServices
             
             ret.chatRoomId = value(forKey: .chatRoomId)
             ret.chatMessageId = value(forKey: .chatMessageId)
+            ret.chat_room_newest_speech_id = value(forKey: .chat_room_newest_speech_id)
+            ret.userid = value(forKey: .userid)
+            ret.reporttype = value(forKey: .reporttype) ?? "abuse"
             
             return ret
         }
@@ -200,8 +209,8 @@ public class ModerationServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .chatRoomId, value: chatRoomId)
-            addRequired(key: .chatMessageId, value: chatMessageId)
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .reporttype, value: reporttype)
             
             return toDictionary
         }
