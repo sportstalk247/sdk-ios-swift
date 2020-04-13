@@ -1,18 +1,21 @@
 import Foundation
 
-public struct User
-{
-    var userId = ""
-    var handle = ""
-}
-
 open class Services
 {
-    let baseUrl = URL(string: "https://api.sportstalk247.com/api/v3") // http://api-origin.sportstalk247.com/api/v3
+    let baseUrl = URL(string: "https://api.sportstalk247.com/api/v3")
+    
+    public struct User
+    {
+        var userId = ""
+        var handle = ""
+    }
+    
+    
     
     private var _authToken: String?
     private lazy var _url: URL? = baseUrl
     private var _ams = ServicesAMS()
+    private var _appId: String? = ""
     
     internal var knownRooms: [[AnyHashable: Any]]?
     internal var _updatesApi: String?
@@ -74,6 +77,18 @@ open class Services
         {
             _authToken = newValue
             self.ams.authToken = newValue
+        }
+    }
+    
+    open var appId: String?
+    {
+        get
+        {
+            return _appId
+        }
+        set{
+            _appId = newValue
+            self.ams.appId = newValue
         }
     }
 

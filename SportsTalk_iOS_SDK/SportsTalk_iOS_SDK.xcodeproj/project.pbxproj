@@ -19,6 +19,7 @@
 		80A1B72423BDA167009F6004 /* ModerationServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A1B72323BDA167009F6004 /* ModerationServices.swift */; };
 		80A1B72623BDBD48009F6004 /* ChatRoomsServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A1B72523BDBD48009F6004 /* ChatRoomsServices.swift */; };
 		80D415D323B607C600055739 /* SportsTalk_iOS_SDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 80D415D123B607C600055739 /* SportsTalk_iOS_SDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8448316D2444479000C29381 /* CommentsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448316C2444479000C29381 /* CommentsService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		80D415CE23B607C600055739 /* SportsTalk_iOS_SDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SportsTalk_iOS_SDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		80D415D123B607C600055739 /* SportsTalk_iOS_SDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SportsTalk_iOS_SDK.h; sourceTree = "<group>"; };
 		80D415D223B607C600055739 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8448316C2444479000C29381 /* CommentsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 				806D710E23BB284E00FBDA8E /* WebhooksServices.swift */,
 				80A1B72323BDA167009F6004 /* ModerationServices.swift */,
 				80A1B72523BDBD48009F6004 /* ChatRoomsServices.swift */,
+				8448316C2444479000C29381 /* CommentsService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -256,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				80428D0E23B6363800A6CFBF /* ParametersBase.swift in Sources */,
+				8448316D2444479000C29381 /* CommentsService.swift in Sources */,
 				80A1B72423BDA167009F6004 /* ModerationServices.swift in Sources */,
 				8023405623BA247000A43C20 /* AppConstants.swift in Sources */,
 				80A1B72623BDBD48009F6004 /* ChatRoomsServices.swift in Sources */,
