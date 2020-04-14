@@ -1,11 +1,3 @@
-//
-//  CommentsService.swift
-//  SportsTalk_iOS_SDK
-//
-//  Created by Admin on 13/04/20.
-//  Copyright © 2020 krishna41. All rights reserved.
-//
-
 import Foundation
 public class CommentsService
 {
@@ -244,12 +236,14 @@ public class CommentsService
             case userid
             case body
             case replyto
+            case tags
         }
         
         public var comment_conversation_id: String?
         public var userid: String?
         public var body: String?
         public var replyto: String?
+        public var tags: [String]?
         
         override func from(dictionary: [AnyHashable : Any]) -> CommentsService.CreateAndPublishComment
         {
@@ -259,6 +253,7 @@ public class CommentsService
             ret.userid = value(forKey: .userid)
             ret.body = value(forKey: .body)
             ret.replyto = value(forKey: .replyto)
+            ret.tags = value(forKey: .tags)
             return ret
         }
         
@@ -269,7 +264,7 @@ public class CommentsService
             add(key: .userid, value: userid)
             add(key: .body, value: body)
             add(key: .replyto, value: replyto)
-            
+            add(key: .tags, value: tags)
             addRequired(key: .comment_conversation_id, value: comment_conversation_id)
             addRequired(key: .userid, value: userid)
             addRequired(key: .body, value: body)
@@ -290,6 +285,7 @@ public class CommentsService
             case displayname
             case pictureurl
             case profileurl
+            case tags
         }
         
         public var comment_conversation_id: String?
@@ -300,6 +296,7 @@ public class CommentsService
         public var displayname: String?
         public var pictureurl: String?
         public var profileurl: String?
+        public var tags: [String]?
         
         override func from(dictionary: [AnyHashable : Any]) -> CommentsService.CreateAndPublishCommentNewUser
         {
@@ -313,6 +310,7 @@ public class CommentsService
             ret.displayname = value(forKey: .displayname)
             ret.pictureurl = value(forKey: .pictureurl)
             ret.profileurl = value(forKey: .profileurl)
+            ret.tags = value(forKey: .tags)
             return ret
         }
         
@@ -328,6 +326,7 @@ public class CommentsService
             add(key: .displayname, value: displayname)
             add(key: .pictureurl, value: pictureurl)
             add(key: .profileurl, value: profileurl)
+            add(key: .tags, value: tags)
             
             addRequired(key: .comment_conversation_id, value: comment_conversation_id)
             addRequired(key: .userid, value: userid)
@@ -432,8 +431,8 @@ public class CommentsService
         public var limit: Int?
         public var direction: String?
         public var sort: String?
-        public var includechildren: String?
-        public var includeinactive: String?
+        public var includechildren: Bool? = false
+        public var includeinactive: Bool? = false
         
         override func from(dictionary: [AnyHashable : Any]) -> CommentsService.ListComments
         {
@@ -483,11 +482,11 @@ public class CommentsService
         public var comment_conversation_id: String?
         public var comment_comment_id: String?
         public var cursor: String?
-        public var limit: String?
+        public var limit: Int? = 200
         public var direction: String?
         public var sort: String?
-        public var includechildren: String?
-        public var includeinactive: String?
+        public var includechildren: Bool? = false
+        public var includeinactive: Bool? = false
         
         override func from(dictionary: [AnyHashable : Any]) -> CommentsService.ListReplies
         {
@@ -522,7 +521,7 @@ public class CommentsService
         }
     }
     
-    public class DeleteCommentLogical: ParametersBase<DeleteCommentLogical.Fields,DeleteCommentLogical>
+    public class FlagCommentAsDeleted: ParametersBase<FlagCommentAsDeleted.Fields,FlagCommentAsDeleted>
     {
         
         public enum Fields
@@ -530,22 +529,22 @@ public class CommentsService
             case comment_conversation_id
             case comment_comment_id
             case userid
-            case logicaldelete
+            case deleted
         }
         
         public var comment_conversation_id: String?
         public var comment_comment_id: String?
         public var userid: String?
-        
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.DeleteCommentLogical
+        public var deleted: Bool? = true
+        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.FlagCommentAsDeleted
         {
             set(dictionary: dictionary)
             
-            let ret = DeleteCommentLogical()
+            let ret = FlagCommentAsDeleted()
             ret.comment_conversation_id = value(forKey: .comment_conversation_id)
             ret.comment_comment_id = value(forKey: .comment_comment_id)
             ret.userid = value(forKey: .userid)
-            
+            ret.deleted = value(forKey: .deleted)
             return ret
         }
         
@@ -556,7 +555,7 @@ public class CommentsService
             add(key: .comment_conversation_id, value: comment_conversation_id)
             add(key: .comment_comment_id, value: comment_comment_id)
             add(key: .userid, value: userid)
-            add(key: .logicaldelete, value: true)
+            add(key: .deleted, value: deleted)
             
             addRequired(key: .comment_conversation_id, value: comment_conversation_id)
             addRequired(key: .comment_comment_id, value: comment_comment_id)
@@ -573,7 +572,6 @@ public class CommentsService
             case comment_conversation_id
             case comment_comment_id
             case userid
-            case logicaldelete
         }
         
         public var comment_conversation_id: String?
@@ -599,8 +597,7 @@ public class CommentsService
             add(key: .comment_conversation_id, value: comment_conversation_id)
             add(key: .comment_comment_id, value: comment_comment_id)
             add(key: .userid, value: userid)
-            add(key: .logicaldelete, value: false)
-            
+           
             addRequired(key: .comment_conversation_id, value: comment_conversation_id)
             addRequired(key: .comment_comment_id, value: comment_comment_id)
             
@@ -617,7 +614,6 @@ public class CommentsService
             case comment_comment_id
             case userid
             case body
-            case comment
         }
         
         public var comment_conversation_id: String?
@@ -635,8 +631,6 @@ public class CommentsService
             ret.comment_comment_id = value(forKey: .comment_comment_id)
             ret.userid = value(forKey: .userid)
             ret.body = value(forKey: .body)
-            ret.comment = value(forKey: .comment)
-            
             return ret
         }
         
@@ -648,7 +642,6 @@ public class CommentsService
             add(key: .comment_comment_id, value: comment_comment_id)
             add(key: .userid, value: userid)
             add(key: .body, value: body)
-            add(key: .comment, value: comment)
             
             addRequired(key: .comment_conversation_id, value: comment_conversation_id)
             addRequired(key: .comment_comment_id, value: comment_comment_id)
@@ -662,6 +655,8 @@ public class CommentsService
         
         public enum Fields
         {
+            case comment_conversation_id
+            case comment_comment_id
             case userid
             case reaction
             case reacted
@@ -669,13 +664,17 @@ public class CommentsService
         
         public var userid: String?
         public var reaction: String?
-        public var reacted: Bool?
+        public var reacted: Bool? = true
+        public var comment_conversation_id: String?
+        public var comment_comment_id: String?
         
         override func from(dictionary: [AnyHashable : Any]) -> CommentsService.ReactToCommentLike
         {
             set(dictionary: dictionary)
             
             let ret = ReactToCommentLike()
+            ret.comment_conversation_id = value(forKey: .comment_conversation_id)
+            ret.comment_comment_id = value(forKey: .comment_comment_id)
             ret.userid = value(forKey: .userid)
             ret.reaction = value(forKey: .reaction)
             ret.reacted = value(forKey: .reacted)
@@ -687,6 +686,8 @@ public class CommentsService
         {
             toDictionary = [AnyHashable: Any]()
             
+            add(key: .comment_conversation_id, value: comment_conversation_id)
+            add(key: .comment_comment_id, value: comment_comment_id)
             add(key: .userid, value: userid)
             add(key: .reaction, value: reaction)
             add(key: .reacted, value: reacted)

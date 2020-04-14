@@ -75,7 +75,7 @@ public protocol ServicesAMSProtocol
     func commentsServies(_ request: CommentsService.GetCommentById , completionHandler: @escaping CompletionHandler)
     func commentsServies(_ request: CommentsService.ListComments , completionHandler: @escaping CompletionHandler)
     func commentsServies(_ request: CommentsService.ListReplies , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.DeleteCommentLogical , completionHandler: @escaping CompletionHandler)
+    func commentsServies(_ request: CommentsService.FlagCommentAsDeleted , completionHandler: @escaping CompletionHandler)
     func commentsServies(_ request: CommentsService.DeleteCommentPermanent , completionHandler: @escaping CompletionHandler)
     func commentsServies(_ request: CommentsService.UpdateComment , completionHandler: @escaping CompletionHandler)
     func commentsServies(_ request: CommentsService.ReactToCommentLike , completionHandler: @escaping CompletionHandler)
@@ -202,14 +202,14 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     
     public func chatRoomsServices(_ request: ChatRoomsServices.UpdateRoom , completionHandler: @escaping CompletionHandler)
     {
-        makeRequest("room", withData: request.toDictionary(), requestType: .POST) { (response) in
+        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? "")", withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
     public func chatRoomsServices(_ request: ChatRoomsServices.UpdateRoomCloseARoom , completionHandler: @escaping CompletionHandler)
     {
-        makeRequest("room/\(request.roomid ?? emptyString)", withData: request.toDictionary(), requestType: .POST) { (response) in
+        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)", withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
@@ -246,9 +246,8 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     }
     
     private func setRoomAPI(){
-        var _roomApiString = (self.services?._endpoint?.absoluteString ?? "") + "/room/"
+        var _roomApiString = (self.services?._endpoint?.absoluteString ?? "") + "/\(ServiceKeys.chat)"
         _roomApiString = _roomApiString + ((self.services?._currentRoom?["id"] as? String) ?? "")
-        print("Room API: \(_roomApiString)")
         self.services?._roomApi = _roomApiString
         
         self.services?._commandApi = (self.services?._roomApi ?? "") + "/command";
@@ -411,111 +410,123 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     }
     
     // MARK: - Comment Services
+    // MARK: - Comment Services
     public func commentsServies(_ request: CommentsService.CreateUpdateConversation, completionHandler: @escaping CompletionHandler) {
         
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .POST, appendData: false) { (response) in
+        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.GetConversationById, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
+        let conversationId = request.comment_conversation_id ?? emptyString
+        makeRequest("\(ServiceKeys.comments)\(conversationId)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.FindConversationByIdCustomId, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
+        makeRequest("comment/find/conversation/bycustomid?customid=\(request.customid ?? emptyString)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.ListConversations, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
+        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.ListConversationsWithFilters, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
+        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.DeleteConversation, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .DELETE, appendData: false) { (response) in
+        makeRequest("\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)", withData: request.toDictionary(), requestType: .DELETE, appendData: false) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.CreateAndPublishComment, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .POST, appendData: false) { (response) in
+        makeRequest("\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments", withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.CreateAndPublishCommentNewUser, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .POST, appendData: false) { (response) in
+        makeRequest("\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments", withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.ReplyToAComment, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .POST, appendData: false) { (response) in
-            completionHandler(response)
-        }
+        let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)"
+        makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
+                   completionHandler(response)
+               }
     }
     
     public func commentsServies(_ request: CommentsService.GetCommentById, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
+        let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)"
+        makeRequest(url, withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.ListComments, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
+        let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/"
+        makeRequest(url, withData: request.toDictionary(), requestType: .GET ) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.ListReplies, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
+        let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)/replies"
+        makeRequest(url, withData: request.toDictionary(), requestType: .GET) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.DeleteCommentLogical, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .PUT, appendData: false) { (response) in
+    public func commentsServies(_ request: CommentsService.FlagCommentAsDeleted, completionHandler: @escaping CompletionHandler) {
+        let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)/setdeleted?userid=\(request.userid ?? emptyString)&deleted=\(request.deleted ?? true)"
+        makeRequest(url, withData: request.toDictionary(), requestType: .PUT) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.DeleteCommentPermanent, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .DELETE, appendData: false) { (response) in
+        let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)"
+        makeRequest(url, withData: request.toDictionary(), requestType: .DELETE) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.UpdateComment, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .PUT, appendData: false) { (response) in
+        let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)"
+        makeRequest(url, withData: request.toDictionary(), requestType: .PUT) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.ReactToCommentLike, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .POST, appendData: false) { (response) in
+        let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)/react"
+        makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.VoteUpOrDownOnComment, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .POST, appendData: false) { (response) in
+        let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)/vote"
+        makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
     public func commentsServies(_ request: CommentsService.ReportComment, completionHandler: @escaping CompletionHandler) {
-        makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .POST, appendData: false) { (response) in
+        let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)/report"
+        makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
@@ -523,7 +534,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     // MARK: - Misc
     public func listRooms(completionHandler: @escaping CompletionHandler)
     {
-        makeRequest("\(self.services?._endpoint?.absoluteString ?? "")/room", withData: [AnyHashable: Any](), requestType: .GET, appendData: false) { (response) in
+        makeRequest("\(self.services?._endpoint?.absoluteString ?? "")/\(ServiceKeys.chat)", withData: [AnyHashable: Any](), requestType: .GET, appendData: false) { (response) in
             if let responseData = response["data"] as? [[AnyHashable: Any]] {
                 self.services?.knownRooms = responseData
             }
@@ -546,7 +557,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     
     public func listParticipants(cursor:String, maxresults:Int = 200, completionHandler: @escaping CompletionHandler)
     {
-        var urlString = (services?._endpoint?.absoluteString ?? "") + "/room/"
+        var urlString = (services?._endpoint?.absoluteString ?? "") + "/\(ServiceKeys.chat)"
         urlString = urlString + ((self.services?._currentRoom?["id"] as? String) ?? "") + "/participants?cursor="
         urlString = urlString + cursor + "&maxresults=" + String(200)
         
