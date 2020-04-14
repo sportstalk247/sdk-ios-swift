@@ -21,7 +21,7 @@ open class Services
     internal var _updatesApi: String?
     internal var _roomApi: String?
     internal var _commandApi: String?
-    internal lazy var _endpoint = _url
+    internal lazy var _endpoint = URL(string: (_url?.absoluteString ?? "") + ((_appId ?? "").isEmpty ? "" : "/\(_appId ?? "")"))
     internal var _currentRoom: [AnyHashable: Any]?
     private var _user = User(userId: "", handle: "")
     public var pollingUpdates: [AnyHashable: Any]?

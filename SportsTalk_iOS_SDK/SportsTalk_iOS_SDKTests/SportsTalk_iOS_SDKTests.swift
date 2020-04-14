@@ -42,12 +42,25 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     let RESPONSE_PARAMETER_HANDLE = "handle"
     let RESPONSE_PARAMETER_PROFILE_URL = "profileurl"
     let RESPONSE_PARAMETER_PICTURE_URL = "pictureurl"
+    
+    
+    struct Constants {
+        static let url = URL(string: "https://api.sportstalk247.com/api/v3")
+        static let appId = "5e92a5ce38a28d0b6453687a"
+        static let authToken = "QZF6YKDKSUCeL03tdA2l2gx4ckSvC7LkGsgmix-pBZLA"
+        static let commentConversationId = "Demo_Conversation"
+        static let commentCommentId = "5e92b15d38a28d0b64536887"
+        static let commentOwnerId = "brenn"
+        static let customId = "/articles/2020-03-01/article1/something-very-important-happened"
+        static let propertyId = "sportstalk247.com/apidemo"
+        
+    }
 
     
     override func setUp() {
-//        services.url = URL(string: "http://shaped-entropy-259212.appspot.com/demo/api/v3")
-        services.url = URL(string: "http://api-origin.sportstalk247.com/api/v3")
-        services.authToken = "vfZSpHsWrkun7Yd_fUJcWAHrNjx6VRpEqMCEP3LJV9Tg"
+        services.url =  Constants.url
+        services.appId = Constants.appId
+        services.authToken = Constants.authToken
     }
     
     func test1_UserServices_UpdateUser()
@@ -131,7 +144,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         XCTAssertEqual(5, usersData.count)
     }
 
-    func test5_UserServies_ListMessagesByUsers()
+    /*func test5_UserServies_ListMessagesByUsers()
     {
         let listMessagesByUser = UsersServices.ListMessagesByUser()
         listMessagesByUser.limit = "4"
@@ -146,7 +159,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         }
         waitForExpectations(timeout: 5, handler: nil)
         XCTAssert((responseData?.count ?? 0) > 0)
-    }
+    } */
 
     func test6_UserServies_SearchUsersByHandle()
     {
@@ -649,4 +662,383 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
 
         XCTAssertTrue(responseData != nil)
     }
+    // MARK: - Comment APIs
+    func test_Comments_CreateAndUpdateConversation(){
+        let request = CommentsService.CreateUpdateConversation()
+        
+        request.conversationid = "my_conversation_id_test"
+        request.owneruserid = "userid_georgew"
+        request.property = "sportstalk247.com/apidemo/test"
+        request.moderation = "post"
+        request.maxreports = 0
+        request.title = "Sample Conversation Test"
+        request.maxcommentlen = 512
+        request.open = true
+        request.tags = ["taga", "tagb"]
+        request.customid = "/articles/2020-03-01/article1/something-very-important-happened-test"
+        request.udf1 = "/sample/userdefined1/emojis/😂🤣❤😍😒"
+        request.udf2 = "/sample/userdefined2/intl/characters/äöüÄÖÜß"
+        
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_GetConversationById(){
+        let request = CommentsService.GetConversationById()
+        request.comment_conversation_id = Constants.commentConversationId
+        
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_FindConversationByCustomId(){
+        let request = CommentsService.FindConversationByIdCustomId()
+        request.customid = Constants.customId
+        
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_ListConversation(){
+        let request = CommentsService.ListConversationsWithFilters()
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_ListConversationWithFilters(){
+        
+        let request = CommentsService.ListConversationsWithFilters()
+        request.propertyid = Constants.propertyId
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_DeleteConversation(){
+        let request = CommentsService.DeleteConversation()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.comment_comment_id = Constants.commentCommentId
+        
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_CreateAndPublishData(){
+        let request = CommentsService.CreateAndPublishComment()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.userid = "userid_georgew"
+        request.body = "A new Comment"
+        request.tags = ["tag1","tag2"]
+        
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_ReplyToAComment(){
+        
+        let request = CommentsService.ReplyToAComment()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.comment_comment_id = Constants.commentCommentId
+        request.userid = "userid_georgew"
+        request.body = "A new reply"
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_GetCommentByid(){
+        
+        let request = CommentsService.GetCommentById()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.comment_comment_id = Constants.commentCommentId
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_ListComments(){
+        let request = CommentsService.ListComments()
+        request.comment_conversation_id = Constants.commentConversationId
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_ListCommentsIncludeChildren(){
+        let request = CommentsService.ListComments()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.includechildren = true
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_ListReplies(){
+        
+        let request = CommentsService.ListReplies()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.comment_comment_id = Constants.commentCommentId
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_FlagCommentAsDeleted(){
+        
+        let request = CommentsService.FlagCommentAsDeleted()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.comment_comment_id = Constants.commentCommentId
+        request.userid = Constants.commentOwnerId
+        request.deleted = false
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_DeleteCommentPermanent(){
+        
+        let request = CommentsService.DeleteCommentPermanent()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.comment_comment_id = Constants.commentCommentId
+        request.userid =  Constants.commentOwnerId
+        
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_UpdateComment(){
+        
+        let request = CommentsService.UpdateComment()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.comment_comment_id = Constants.commentCommentId
+        request.userid =  Constants.commentOwnerId//"userid_georgew"
+        request.body = "comment has been modified from body param"
+        
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_ReactToACommentLike(){
+        
+        let request = CommentsService.ReactToCommentLike()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.comment_comment_id = Constants.commentCommentId
+        request.userid = "userid_georgew"
+        request.reacted = true
+        request.reaction = "like"
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_VoteCommentUp(){
+        
+        let request = CommentsService.VoteUpOrDownOnComment()
+        request.comment_conversation_id = "my_conversation_id"
+        request.comment_comment_id = "5e93513738a2b10794e2719c"
+        request.userid = "userid_georgew"
+        request.vote = "up"
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_VoteCommentDown(){
+        
+        let request = CommentsService.VoteUpOrDownOnComment()
+        request.comment_conversation_id = "my_conversation_id"
+        request.comment_comment_id = "5e93513738a2b10794e2719c"
+        request.userid = "userid_georgew"
+        request.vote = "down"
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_VoteCommentNone(){
+        
+        let request = CommentsService.VoteUpOrDownOnComment()
+        request.comment_conversation_id = "my_conversation_id"
+        request.comment_comment_id = "5e93513738a2b10794e2719c"
+        request.userid = "userid_georgew"
+        request.vote = "none"
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    func test_Comments_ReportComment(){
+        
+        let request = CommentsService.ReportComment()
+        request.comment_conversation_id = Constants.commentConversationId
+        request.comment_comment_id = Constants.commentCommentId
+        request.userid = "userid_georgew"
+        request.reporttype = "abuse"
+
+        let expectation = self.expectation(description: Expectation_Description)
+        var responseData:[AnyHashable:Any]?
+        
+        services.ams.commentsServies(request) {response in
+            responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        XCTAssertTrue(responseData != nil)
+    }
+    
+    
 }
