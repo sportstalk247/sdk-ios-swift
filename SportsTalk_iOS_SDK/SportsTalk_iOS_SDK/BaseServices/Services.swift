@@ -14,8 +14,9 @@ open class Services
     
     private var _authToken: String?
     private lazy var _url: URL? = baseUrl
-    private var _ams = ServicesAMS()
+    private lazy var _ams = ServicesAMS(services: self)
     private var _appId: String? = ""
+    private var _debug: Bool = false
     
     internal var knownRooms: [[AnyHashable: Any]]?
     internal var _updatesApi: String?
@@ -89,6 +90,16 @@ open class Services
         set{
             _appId = newValue
             self.ams.appId = newValue
+        }
+    }
+    
+    open var debug: Bool{
+        get{
+            return _debug
+        }
+        set{
+            _debug = newValue
+            self.ams.debug = newValue
         }
     }
 
