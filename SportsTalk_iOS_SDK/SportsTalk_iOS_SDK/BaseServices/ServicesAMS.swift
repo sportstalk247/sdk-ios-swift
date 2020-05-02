@@ -109,7 +109,7 @@ public protocol ServicesAMSProtocol
 open class ServicesAMS: ServicesBase, ServicesAMSProtocol
 {
     
-    internal var lastTimeStamp: Int = 0
+    internal var lastTimeStamp: Int64 = 0
     
     // MARK: - User Services
     public func usersServices(_ request: UsersServices.CreateUpdateUser, completionHandler: @escaping CompletionHandler)
@@ -557,7 +557,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     // MARK: - Misc
     public func listRooms(completionHandler: @escaping CompletionHandler)
     {
-        makeRequest("\(self.services._endpoint?.absoluteString ?? "")/\(ServiceKeys.chat)", withData: [AnyHashable: Any](), requestType: .GET, appendData: false) { (response) in
+        makeRequest("\(ServiceKeys.chat)", withData: [AnyHashable: Any](), requestType: .GET, appendData: false) { (response) in
             if let responseData = response["data"] as? [[AnyHashable: Any]] {
                 self.services.knownRooms = responseData
             }
@@ -580,7 +580,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     
     public func listParticipants(cursor:String, maxresults:Int = 200, completionHandler: @escaping CompletionHandler)
     {
-        var urlString = (services._endpoint?.absoluteString ?? "") + "/\(ServiceKeys.chat)"
+        var urlString = ServiceKeys.chat
         urlString = urlString + ((self.services._currentRoom?["id"] as? String) ?? "") + "/participants?cursor="
         urlString = urlString + cursor + "&maxresults=" + String(200)
         
@@ -614,7 +614,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
             var newEvents = [[String:Any]]()
             if let events = data?["events"] as? [[String:Any]]{
                 for event in events{
-                    let timestamp = event["added"] as? Int ?? 0
+                    let timestamp = event["ts"] as? Int64 ?? 0
                     if timestamp > self.lastTimeStamp{
                         self.lastTimeStamp = timestamp
                         newEvents.append(event)
