@@ -60,11 +60,11 @@ public protocol ServicesAMSProtocol
     func chatRoomsServices(_ request: ChatRoomsServices.DeleteAllEventsInRoom , completionHandler: @escaping CompletionHandler)
     
     // Moderation
-    func moderationServies(_ request: ModerationServices.ApproveMessage , completionHandler: @escaping CompletionHandler)
-    func moderationServies(_ request: ModerationServices.ListMessagesNeedingModeration , completionHandler: @escaping CompletionHandler)
-    func moderationServies(_ request: ModerationServices.ApproveCommentInQueue , completionHandler: @escaping CompletionHandler)
-    func moderationServies(_ request: ModerationServices.RejectCommentInQueue , completionHandler: @escaping CompletionHandler)
-    func moderationServies(_ request: ModerationServices.ListCommentsInModerationQueue , completionHandler: @escaping CompletionHandler)
+    func moderationServices(_ request: ModerationServices.ApproveMessage , completionHandler: @escaping CompletionHandler)
+    func moderationServices(_ request: ModerationServices.ListMessagesNeedingModeration , completionHandler: @escaping CompletionHandler)
+    func moderationServices(_ request: ModerationServices.ApproveCommentInQueue , completionHandler: @escaping CompletionHandler)
+    func moderationServices(_ request: ModerationServices.RejectCommentInQueue , completionHandler: @escaping CompletionHandler)
+    func moderationServices(_ request: ModerationServices.ListCommentsInModerationQueue , completionHandler: @escaping CompletionHandler)
     
 //    WebHook
     func webhooksServices(_ request: WebhooksServices.CreateReplaceWebhook, completionHandler: @escaping CompletionHandler)
@@ -74,24 +74,24 @@ public protocol ServicesAMSProtocol
     
     
 //     Comment
-    func commentsServies(_ request: CommentsService.CreateUpdateConversation , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.GetConversationById , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.FindConversationByIdCustomId , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.ListConversations , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.ListConversationsWithFilters , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.DeleteConversation , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.CreateAndPublishComment , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.CreateAndPublishCommentNewUser , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.ReplyToAComment , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.GetCommentById , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.ListComments , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.ListReplies , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.FlagCommentAsDeleted , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.DeleteCommentPermanent , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.UpdateComment , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.ReactToCommentLike , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.VoteUpOrDownOnComment , completionHandler: @escaping CompletionHandler)
-    func commentsServies(_ request: CommentsService.ReportComment , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.CreateUpdateConversation , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.GetConversationById , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.FindConversationByIdCustomId , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.ListConversations , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.ListConversationsWithFilters , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.DeleteConversation , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.CreateAndPublishComment , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.CreateAndPublishCommentNewUser , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.ReplyToAComment , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.GetCommentById , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.ListComments , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.ListReplies , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.FlagCommentAsDeleted , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.DeleteCommentPermanent , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.UpdateComment , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.ReactToCommentLike , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.VoteUpOrDownOnComment , completionHandler: @escaping CompletionHandler)
+    func commentsServices(_ request: CommentsService.ReportComment , completionHandler: @escaping CompletionHandler)
     
     
     
@@ -108,6 +108,9 @@ public protocol ServicesAMSProtocol
 
 open class ServicesAMS: ServicesBase, ServicesAMSProtocol
 {
+    
+    internal var lastTimeStamp: Int = 0
+    
     // MARK: - User Services
     public func usersServices(_ request: UsersServices.CreateUpdateUser, completionHandler: @escaping CompletionHandler)
     {
@@ -389,7 +392,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     
     // MARK: - Moderation Services
     
-    public func moderationServies(_ request: ModerationServices.ApproveMessage , completionHandler: @escaping CompletionHandler)
+    public func moderationServices(_ request: ModerationServices.ApproveMessage , completionHandler: @escaping CompletionHandler)
     {
         let url = "\(ServiceKeys.chatModeration)\(request.chatMessageId ?? emptyString)/applydecision"
         makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
@@ -397,7 +400,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
         }
     }
     
-    public func moderationServies(_ request: ModerationServices.ListMessagesNeedingModeration , completionHandler: @escaping CompletionHandler)
+    public func moderationServices(_ request: ModerationServices.ListMessagesNeedingModeration , completionHandler: @escaping CompletionHandler)
     {
         let url = "chat/moderation/queues/events"
         makeRequest(url, withData: request.toDictionary(), requestType: .GET) { (response) in
@@ -405,7 +408,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
         }
     }
     
-    public func moderationServies(_ request: ModerationServices.ApproveCommentInQueue , completionHandler: @escaping CompletionHandler)
+    public func moderationServices(_ request: ModerationServices.ApproveCommentInQueue , completionHandler: @escaping CompletionHandler)
     {
         let url = "comment/moderation/queues/comments/\(request.commentid ?? emptyString)/applydecision"
         makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
@@ -413,7 +416,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
         }
     }
     
-    public func moderationServies(_ request: ModerationServices.RejectCommentInQueue , completionHandler: @escaping CompletionHandler)
+    public func moderationServices(_ request: ModerationServices.RejectCommentInQueue , completionHandler: @escaping CompletionHandler)
     {
         let url = "comment/moderation/queues/comments/\(request.commentid ?? emptyString)/applydecision"
         makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
@@ -421,7 +424,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
         }
     }
     
-    public func moderationServies(_ request: ModerationServices.ListCommentsInModerationQueue , completionHandler: @escaping CompletionHandler)
+    public func moderationServices(_ request: ModerationServices.ListCommentsInModerationQueue , completionHandler: @escaping CompletionHandler)
     {
         let url = "comment/moderation/queues/comments"
         makeRequest(url, withData: request.toDictionary(), requestType: .GET) { (response) in
@@ -431,120 +434,120 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     
         
     // MARK: - Comment Services
-    public func commentsServies(_ request: CommentsService.CreateUpdateConversation, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.CreateUpdateConversation, completionHandler: @escaping CompletionHandler) {
         
         makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.GetConversationById, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.GetConversationById, completionHandler: @escaping CompletionHandler) {
         let conversationId = request.comment_conversation_id ?? emptyString
         makeRequest("\(ServiceKeys.comments)\(conversationId)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.FindConversationByIdCustomId, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.FindConversationByIdCustomId, completionHandler: @escaping CompletionHandler) {
         makeRequest("comment/find/conversation/bycustomid?customid=\(request.customid ?? emptyString)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.ListConversations, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.ListConversations, completionHandler: @escaping CompletionHandler) {
         makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.ListConversationsWithFilters, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.ListConversationsWithFilters, completionHandler: @escaping CompletionHandler) {
         makeRequest("\(ServiceKeys.comments)", withData: request.toDictionary(), requestType: .GET) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.DeleteConversation, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.DeleteConversation, completionHandler: @escaping CompletionHandler) {
         makeRequest("\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)", withData: request.toDictionary(), requestType: .DELETE, appendData: false) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.CreateAndPublishComment, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.CreateAndPublishComment, completionHandler: @escaping CompletionHandler) {
         makeRequest("\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments", withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.CreateAndPublishCommentNewUser, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.CreateAndPublishCommentNewUser, completionHandler: @escaping CompletionHandler) {
         makeRequest("\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments", withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.ReplyToAComment, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.ReplyToAComment, completionHandler: @escaping CompletionHandler) {
         let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)"
         makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
                    completionHandler(response)
                }
     }
     
-    public func commentsServies(_ request: CommentsService.GetCommentById, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.GetCommentById, completionHandler: @escaping CompletionHandler) {
         let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)"
         makeRequest(url, withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.ListComments, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.ListComments, completionHandler: @escaping CompletionHandler) {
         let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/"
         makeRequest(url, withData: request.toDictionary(), requestType: .GET ) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.ListReplies, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.ListReplies, completionHandler: @escaping CompletionHandler) {
         let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)/replies"
         makeRequest(url, withData: request.toDictionary(), requestType: .GET) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.FlagCommentAsDeleted, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.FlagCommentAsDeleted, completionHandler: @escaping CompletionHandler) {
         let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)/setdeleted?userid=\(request.userid ?? emptyString)&deleted=\(request.deleted ?? true)"
         makeRequest(url, withData: request.toDictionary(), requestType: .PUT) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.DeleteCommentPermanent, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.DeleteCommentPermanent, completionHandler: @escaping CompletionHandler) {
         let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)"
         makeRequest(url, withData: request.toDictionary(), requestType: .DELETE) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.UpdateComment, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.UpdateComment, completionHandler: @escaping CompletionHandler) {
         let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)"
         makeRequest(url, withData: request.toDictionary(), requestType: .PUT) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.ReactToCommentLike, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.ReactToCommentLike, completionHandler: @escaping CompletionHandler) {
         let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)/react"
         makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.VoteUpOrDownOnComment, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.VoteUpOrDownOnComment, completionHandler: @escaping CompletionHandler) {
         let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)/vote"
         makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
         }
     }
     
-    public func commentsServies(_ request: CommentsService.ReportComment, completionHandler: @escaping CompletionHandler) {
+    public func commentsServices(_ request: CommentsService.ReportComment, completionHandler: @escaping CompletionHandler) {
         let url = "\(ServiceKeys.comments)\(request.comment_conversation_id ?? emptyString)/comments/\(request.comment_comment_id ?? emptyString)/report"
         makeRequest(url, withData: request.toDictionary(), requestType: .POST) { (response) in
             completionHandler(response)
@@ -598,10 +601,31 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
         }
     }
     
+    internal func clearTimeStamp(){
+        self.lastTimeStamp = 0
+        print("clearTimeStamp called")
+    }
+    
     public func getUpdates(completionHandler: @escaping CompletionHandler)
     {
         makeRequest("\(services._updatesApi ?? "")", withData: [AnyHashable: Any](), requestType: .GET, appendData: false) { (response) in
-            completionHandler(response)
+            var sendResponse = response
+            var data = response["data"] as? [String:Any]
+            var newEvents = [[String:Any]]()
+            if let events = data?["events"] as? [[String:Any]]{
+                for event in events{
+                    let timestamp = event["added"] as? Int ?? 0
+                    if timestamp > self.lastTimeStamp{
+                        self.lastTimeStamp = timestamp
+                        newEvents.append(event)
+                    }
+                }
+            }
+            if !newEvents.isEmpty{
+                data?["events"] = newEvents
+                sendResponse["data"] = data
+                completionHandler(sendResponse)
+            }
         }
     }
     

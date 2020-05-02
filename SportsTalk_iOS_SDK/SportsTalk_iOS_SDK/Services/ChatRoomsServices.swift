@@ -42,7 +42,7 @@ public class ChatRoomsServices
         public var description: String?
         public var enableactions: Bool?
         public var enableenterandexit: Bool?
-        public var  enableprofanityfilter: Bool?
+        public var enableprofanityfilter: Bool?
         public var roomisopen: Bool?
         public var maxreports: Int? = 3
         
@@ -116,6 +116,7 @@ public class ChatRoomsServices
             case enableactions
             case enableenterandexit
             case roomisopen
+            case maxreports
         }
         
         public var slug: String?
@@ -125,7 +126,7 @@ public class ChatRoomsServices
         public var enableactions: Bool?
         public var enableenterandexit: Bool?
         public var roomisopen: Bool?
-        
+        public var maxreports: Int? = 3
         override public func from(dictionary: [AnyHashable: Any]) -> CreateRoomPremoderated
         {
             set(dictionary: dictionary)
@@ -138,7 +139,7 @@ public class ChatRoomsServices
             ret.enableactions = value(forKey: .enableactions)
             ret.enableenterandexit = value(forKey: .enableenterandexit)
             ret.roomisopen = value(forKey: .roomisopen)
-            
+            ret.maxreports = value(forKey: .maxreports)
             return ret
         }
         
@@ -156,7 +157,7 @@ public class ChatRoomsServices
             add(key: .enableactions, value: enableactions)
             add(key: .enableenterandexit, value: enableenterandexit)
             add(key: .roomisopen, value: roomisopen)
-            
+            add(key: .maxreports, value: maxreports)
             return toDictionary
         }
     }

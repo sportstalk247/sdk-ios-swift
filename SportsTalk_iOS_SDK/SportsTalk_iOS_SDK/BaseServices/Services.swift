@@ -1,5 +1,7 @@
 import Foundation
-
+public protocol RoomUpdates {
+    func roomData(string: String)
+}
 open class Services
 {
     let baseUrl = URL(string: "https://api.sportstalk247.com/api/v3")
@@ -25,7 +27,8 @@ open class Services
     internal lazy var _endpoint = URL(string: (_url?.absoluteString ?? "") + ((_appId ?? "").isEmpty ? "" : "/\(_appId ?? "")"))
     internal var _currentRoom: [AnyHashable: Any]?
     private var _user = User(userId: "", handle: "")
-    public var pollingUpdates: [AnyHashable: Any]?
+    public var pollingUpdates: (([AnyHashable:Any]?) -> Void)?
+    public var roomDelegate: RoomUpdates?
     
     private var _polling = false
     {
@@ -149,12 +152,13 @@ open class Services
     func stopPolling()
     {
         interval?.invalidate()
+        ams.clearTimeStamp()
     }
     
     @objc func startPollingTimer()
     {
         ams.getUpdates { (response) in
-            self.pollingUpdates = response
+            self.pollingUpdates?(response)
         }
     }
 }
