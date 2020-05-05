@@ -1,5 +1,12 @@
 # Sportstalk 247 iOS SDK
 
+## Status: BETA
+This SDK is under active development and improvement. We are also very open to feedback if you experience pain points while using the SDK.
+
+**TODO**
+- Create response models so we no longer need to delegate the task to the client
+- Improve JSON parsing by using [Codables](https://learnappmaking.com/codable-json-swift-how-to/)
+
 ## Usage
 The Sportstalk SDK is a helpful wrapper around the [Sportstalk API](https://apiref.sportstalk247.com/?version=latest)
 
