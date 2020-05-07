@@ -20,6 +20,13 @@
 		80A1B72623BDBD48009F6004 /* ChatRoomsServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A1B72523BDBD48009F6004 /* ChatRoomsServices.swift */; };
 		80D415D323B607C600055739 /* SportsTalk_iOS_SDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 80D415D123B607C600055739 /* SportsTalk_iOS_SDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8448316D2444479000C29381 /* CommentsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448316C2444479000C29381 /* CommentsService.swift */; };
+		A8C61F9B2464D1B800D3FD94 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F932464D1B800D3FD94 /* User.swift */; };
+		A8C61F9C2464D1B800D3FD94 /* CommentConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F942464D1B800D3FD94 /* CommentConversation.swift */; };
+		A8C61F9D2464D1B800D3FD94 /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F952464D1B800D3FD94 /* Room.swift */; };
+		A8C61F9E2464D1B800D3FD94 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F962464D1B800D3FD94 /* Reaction.swift */; };
+		A8C61F9F2464D1B800D3FD94 /* Report.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F972464D1B800D3FD94 /* Report.swift */; };
+		A8C61FA02464D1B800D3FD94 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F982464D1B800D3FD94 /* Comment.swift */; };
+		A8C61FA12464D1B800D3FD94 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F992464D1B800D3FD94 /* Message.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +56,13 @@
 		80D415D123B607C600055739 /* SportsTalk_iOS_SDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SportsTalk_iOS_SDK.h; sourceTree = "<group>"; };
 		80D415D223B607C600055739 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8448316C2444479000C29381 /* CommentsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsService.swift; sourceTree = "<group>"; };
+		A8C61F932464D1B800D3FD94 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		A8C61F942464D1B800D3FD94 /* CommentConversation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentConversation.swift; sourceTree = "<group>"; };
+		A8C61F952464D1B800D3FD94 /* Room.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
+		A8C61F962464D1B800D3FD94 /* Reaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
+		A8C61F972464D1B800D3FD94 /* Report.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Report.swift; sourceTree = "<group>"; };
+		A8C61F982464D1B800D3FD94 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
+		A8C61F992464D1B800D3FD94 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,8 +150,23 @@
 				8023405423BA245700A43C20 /* Constants */,
 				80428D0623B635DC00A6CFBF /* BaseServices */,
 				80428D0323B635B900A6CFBF /* Services */,
+				A8C61F922464D18900D3FD94 /* Models */,
 			);
 			path = SportsTalk_iOS_SDK;
+			sourceTree = "<group>";
+		};
+		A8C61F922464D18900D3FD94 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A8C61F982464D1B800D3FD94 /* Comment.swift */,
+				A8C61F942464D1B800D3FD94 /* CommentConversation.swift */,
+				A8C61F992464D1B800D3FD94 /* Message.swift */,
+				A8C61F962464D1B800D3FD94 /* Reaction.swift */,
+				A8C61F972464D1B800D3FD94 /* Report.swift */,
+				A8C61F952464D1B800D3FD94 /* Room.swift */,
+				A8C61F932464D1B800D3FD94 /* User.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -260,14 +289,21 @@
 			files = (
 				80428D0E23B6363800A6CFBF /* ParametersBase.swift in Sources */,
 				8448316D2444479000C29381 /* CommentsService.swift in Sources */,
+				A8C61F9E2464D1B800D3FD94 /* Reaction.swift in Sources */,
+				A8C61FA12464D1B800D3FD94 /* Message.swift in Sources */,
 				80A1B72423BDA167009F6004 /* ModerationServices.swift in Sources */,
 				8023405623BA247000A43C20 /* AppConstants.swift in Sources */,
 				80A1B72623BDBD48009F6004 /* ChatRoomsServices.swift in Sources */,
 				806D710F23BB284E00FBDA8E /* WebhooksServices.swift in Sources */,
+				A8C61F9D2464D1B800D3FD94 /* Room.swift in Sources */,
+				A8C61F9C2464D1B800D3FD94 /* CommentConversation.swift in Sources */,
 				80428D0C23B6361D00A6CFBF /* ServicesBase.swift in Sources */,
 				80428D0A23B6360200A6CFBF /* ServicesAMS.swift in Sources */,
+				A8C61FA02464D1B800D3FD94 /* Comment.swift in Sources */,
+				A8C61F9F2464D1B800D3FD94 /* Report.swift in Sources */,
 				80428D0523B635CC00A6CFBF /* UsersServices.swift in Sources */,
 				80428D0823B635EE00A6CFBF /* Services.swift in Sources */,
+				A8C61F9B2464D1B800D3FD94 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
