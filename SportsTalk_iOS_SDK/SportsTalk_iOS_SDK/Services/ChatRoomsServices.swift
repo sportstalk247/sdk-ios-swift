@@ -6,7 +6,7 @@ public class ChatRoomsServices
     ///
     /// name: (required) The name of the room
     ///
-    /// slug: (optional) The URL friendly name of the room
+    /// customid: (optional) A customid for the room. Can be unused, or a unique key.
     ///
     /// description: (optional) The description of the room
     ///
@@ -23,10 +23,9 @@ public class ChatRoomsServices
     /// - Warning: This method requires authentication.
     public class CreateRoomPostmoderated: ParametersBase<CreateRoomPostmoderated.Fields, CreateRoomPostmoderated>
     {
-        public enum Fields{
-            case slug
-            case userid
+        public enum Fields {
             case name
+            case customid
             case description
             case moderation
             case enableactions
@@ -36,9 +35,8 @@ public class ChatRoomsServices
             case maxreports
         }
         
-        public var slug: String?
-        public var userid: String?
         public var name: String?
+        public var customid: String?
         public var description: String?
         public var enableactions: Bool?
         public var enableenterandexit: Bool?
@@ -50,10 +48,9 @@ public class ChatRoomsServices
         {
             set(dictionary: dictionary)
             let ret = CreateRoomPostmoderated()
-            
-            ret.slug = value(forKey: .slug)
-            ret.userid = value(forKey: .userid)
+        
             ret.name = value(forKey: .name)
+            ret.customid = value(forKey: .customid)
             ret.description = value(forKey: .description)
             ret.enableactions = value(forKey: .enableactions)
             ret.enableenterandexit = value(forKey: .enableenterandexit)
@@ -70,9 +67,8 @@ public class ChatRoomsServices
             
             addRequired(key: .name, value: name)
             
-            add(key: .slug, value: slug)
-            add(key: .userid, value: userid)
             add(key: .name, value: name)
+            add(key: .customid, value: customid)
             add(key: .description, value: description)
             add(key: .moderation, value: "post")
             add(key: .enableactions, value: enableactions)
@@ -89,7 +85,7 @@ public class ChatRoomsServices
     ///
     /// name: (required) The name of the room
     ///
-    /// slug: (optional) The URL friendly name of the room
+    /// customid: (optional) A customid for the room. Can be unused, or a unique key.
     ///
     /// description: (optional) The description of the room
     ///
@@ -108,9 +104,8 @@ public class ChatRoomsServices
     {
         public enum Fields
         {
-            case userid
             case name
-            case slug
+            case customid
             case description
             case moderation
             case enableactions
@@ -119,22 +114,20 @@ public class ChatRoomsServices
             case maxreports
         }
         
-        public var slug: String?
-        public var userid: String?
         public var name: String?
+        public var customid: String?
         public var description: String?
         public var enableactions: Bool?
         public var enableenterandexit: Bool?
         public var roomisopen: Bool?
         public var maxreports: Int? = 3
-        override public func from(dictionary: [AnyHashable: Any]) -> CreateRoomPremoderated
-        {
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> CreateRoomPremoderated {
             set(dictionary: dictionary)
             let ret = CreateRoomPremoderated()
             
-            ret.slug = value(forKey: .slug)
-            ret.userid = value(forKey: .userid)
             ret.name = value(forKey: .name)
+            ret.customid = value(forKey: .customid)
             ret.description = value(forKey: .description)
             ret.enableactions = value(forKey: .enableactions)
             ret.enableenterandexit = value(forKey: .enableenterandexit)
@@ -149,9 +142,8 @@ public class ChatRoomsServices
             
             addRequired(key: .name, value: name)
             
-            add(key: .slug, value: slug)
-            add(key: .userid, value: userid)
             add(key: .name, value: name)
+            add(key: .customid, value: customid)
             add(key: .description, value: description)
             add(key: .moderation, value: "pre")
             add(key: .enableactions, value: enableactions)
@@ -174,14 +166,14 @@ public class ChatRoomsServices
             case roomIdOrSlug
         }
         
-        public var roomIdOrSlug: String?
+        public var roomid: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> GetRoomDetails
         {
             set(dictionary: dictionary)
             let ret = GetRoomDetails()
             
-            ret.roomIdOrSlug = value(forKey: .roomIdOrSlug)
+            ret.roomid = value(forKey: .roomIdOrSlug)
             
             return ret
         }
@@ -190,7 +182,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomIdOrSlug, value: roomIdOrSlug)
+            addRequired(key: .roomIdOrSlug, value: roomid)
             
             return toDictionary
         }
@@ -207,7 +199,6 @@ public class ChatRoomsServices
         public enum Fields
         {
             case roomid
-            case userid
         }
         
         public var roomid: String?
@@ -217,7 +208,6 @@ public class ChatRoomsServices
         {
             set(dictionary: dictionary)
             let ret = DeleteRoom()
-            ret.userid = value(forKey: .userid)
             ret.roomid = value(forKey: .roomid)
             
             return ret
@@ -228,7 +218,6 @@ public class ChatRoomsServices
             toDictionary = [AnyHashable: Any]()
             
             add(key: .roomid, value: roomid)
-            add(key: .userid, value: userid)
             addRequired(key: .roomid, value: roomid)
             
             return toDictionary

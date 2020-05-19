@@ -198,7 +198,7 @@ open class ServicesAMS: ServicesBase, ServicesAMSProtocol
     public func chatRoomsServices(_ request: ChatRoomsServices.GetRoomDetails , completionHandler: @escaping CompletionHandler)
        {
            
-           makeRequest("\(ServiceKeys.chat)\(request.roomIdOrSlug ?? emptyString)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
+           makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)", withData: request.toDictionary(), requestType: .GET, appendData: false) { (response) in
                completionHandler(response)
            }
        }

@@ -381,7 +381,6 @@ public class UsersServices
             case name
             case handle
             case userid
-
         }
 
         public var cursor:String?
