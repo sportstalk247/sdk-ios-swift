@@ -3,12 +3,12 @@ import CommonCrypto
 
 public typealias CompletionHandler = (_ success:[AnyHashable: Any]) -> Void
 
-enum RequestType: String {
-    case GET
-    case POST
-    case PUT
-    case DELETE
-}
+//enum RequestType: String {
+//    case GET
+//    case POST
+//    case PUT
+//    case DELETE
+//}
 
 open class ServicesBase
 {

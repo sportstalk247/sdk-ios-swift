@@ -20,13 +20,31 @@
 		80A1B72623BDBD48009F6004 /* ChatRoomsServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A1B72523BDBD48009F6004 /* ChatRoomsServices.swift */; };
 		80D415D323B607C600055739 /* SportsTalk_iOS_SDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 80D415D123B607C600055739 /* SportsTalk_iOS_SDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8448316D2444479000C29381 /* CommentsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448316C2444479000C29381 /* CommentsService.swift */; };
-		A8C61F9B2464D1B800D3FD94 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F932464D1B800D3FD94 /* User.swift */; };
-		A8C61F9C2464D1B800D3FD94 /* CommentConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F942464D1B800D3FD94 /* CommentConversation.swift */; };
-		A8C61F9D2464D1B800D3FD94 /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F952464D1B800D3FD94 /* Room.swift */; };
-		A8C61F9E2464D1B800D3FD94 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F962464D1B800D3FD94 /* Reaction.swift */; };
-		A8C61F9F2464D1B800D3FD94 /* Report.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F972464D1B800D3FD94 /* Report.swift */; };
-		A8C61FA02464D1B800D3FD94 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F982464D1B800D3FD94 /* Comment.swift */; };
-		A8C61FA12464D1B800D3FD94 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C61F992464D1B800D3FD94 /* Message.swift */; };
+		A855D79024714D4000206560 /* ListChatRoomParticipantsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D76E24714D4000206560 /* ListChatRoomParticipantsResponse.swift */; };
+		A855D79224714D4000206560 /* GetUpdatesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77024714D4000206560 /* GetUpdatesResponse.swift */; };
+		A855D79324714D4000206560 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77124714D4000206560 /* Event.swift */; };
+		A855D79424714D4000206560 /* ListMessagesByUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77224714D4000206560 /* ListMessagesByUser.swift */; };
+		A855D79624714D4000206560 /* JoinChatRoomResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77424714D4000206560 /* JoinChatRoomResponse.swift */; };
+		A855D79924714D4000206560 /* ExitChatRoomResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77724714D4000206560 /* ExitChatRoomResponse.swift */; };
+		A855D79A24714D4000206560 /* ChatRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77824714D4000206560 /* ChatRoom.swift */; };
+		A855D79B24714D4000206560 /* ListRoomsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77924714D4000206560 /* ListRoomsResponse.swift */; };
+		A855D79D24714D4000206560 /* ExecuteChatCommandResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77B24714D4000206560 /* ExecuteChatCommandResponse.swift */; };
+		A855D79E24714D4000206560 /* DeleteChatRoomResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77C24714D4000206560 /* DeleteChatRoomResponse.swift */; };
+		A855D7A024714D4000206560 /* ListMessagesNeedingModerationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77F24714D4000206560 /* ListMessagesNeedingModerationResponse.swift */; };
+		A855D7A124714D4000206560 /* ApproveMessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D78024714D4000206560 /* ApproveMessageRequest.swift */; };
+		A855D7A324714D4000206560 /* ApiResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D78224714D4000206560 /* ApiResponse.swift */; };
+		A855D7A624714D4D00206560 /* SportsTalkSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D7A524714D4D00206560 /* SportsTalkSDK.swift */; };
+		A855D7AB24714DC000206560 /* ChatClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D7AA24714DC000206560 /* ChatClient.swift */; };
+		A855D7AD24714DD000206560 /* ClientConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D7AC24714DD000206560 /* ClientConfig.swift */; };
+		A855D7B124716F0200206560 /* UserClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D7B024716F0200206560 /* UserClient.swift */; };
+		A85E7CF62473299000A26D54 /* CommentClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85E7CF52473299000A26D54 /* CommentClient.swift */; };
+		A85E7CF824732AB000A26D54 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85E7CF724732AB000A26D54 /* NetworkService.swift */; };
+		A85E7CFF24732BCC00A26D54 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85E7CFB24732BCB00A26D54 /* User.swift */; };
+		A85E7D0024732BCC00A26D54 /* DeleteUserResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85E7CFC24732BCB00A26D54 /* DeleteUserResponse.swift */; };
+		A85E7D0124732BCC00A26D54 /* ListUsersResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85E7CFD24732BCB00A26D54 /* ListUsersResponse.swift */; };
+		A85E7D0224732BCC00A26D54 /* UserList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85E7CFE24732BCB00A26D54 /* UserList.swift */; };
+		A85E7D042473343A00A26D54 /* UserClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85E7D032473343A00A26D54 /* UserClientTests.swift */; };
+		A8C1868624738B8D00C744DC /* ChatClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C1868524738B8D00C744DC /* ChatClientTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,13 +74,31 @@
 		80D415D123B607C600055739 /* SportsTalk_iOS_SDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SportsTalk_iOS_SDK.h; sourceTree = "<group>"; };
 		80D415D223B607C600055739 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8448316C2444479000C29381 /* CommentsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsService.swift; sourceTree = "<group>"; };
-		A8C61F932464D1B800D3FD94 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		A8C61F942464D1B800D3FD94 /* CommentConversation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentConversation.swift; sourceTree = "<group>"; };
-		A8C61F952464D1B800D3FD94 /* Room.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
-		A8C61F962464D1B800D3FD94 /* Reaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
-		A8C61F972464D1B800D3FD94 /* Report.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Report.swift; sourceTree = "<group>"; };
-		A8C61F982464D1B800D3FD94 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
-		A8C61F992464D1B800D3FD94 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		A855D76E24714D4000206560 /* ListChatRoomParticipantsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListChatRoomParticipantsResponse.swift; sourceTree = "<group>"; };
+		A855D77024714D4000206560 /* GetUpdatesResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetUpdatesResponse.swift; sourceTree = "<group>"; };
+		A855D77124714D4000206560 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		A855D77224714D4000206560 /* ListMessagesByUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListMessagesByUser.swift; sourceTree = "<group>"; };
+		A855D77424714D4000206560 /* JoinChatRoomResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinChatRoomResponse.swift; sourceTree = "<group>"; };
+		A855D77724714D4000206560 /* ExitChatRoomResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExitChatRoomResponse.swift; sourceTree = "<group>"; };
+		A855D77824714D4000206560 /* ChatRoom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatRoom.swift; sourceTree = "<group>"; };
+		A855D77924714D4000206560 /* ListRoomsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListRoomsResponse.swift; sourceTree = "<group>"; };
+		A855D77B24714D4000206560 /* ExecuteChatCommandResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExecuteChatCommandResponse.swift; sourceTree = "<group>"; };
+		A855D77C24714D4000206560 /* DeleteChatRoomResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteChatRoomResponse.swift; sourceTree = "<group>"; };
+		A855D77F24714D4000206560 /* ListMessagesNeedingModerationResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListMessagesNeedingModerationResponse.swift; sourceTree = "<group>"; };
+		A855D78024714D4000206560 /* ApproveMessageRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApproveMessageRequest.swift; sourceTree = "<group>"; };
+		A855D78224714D4000206560 /* ApiResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiResponse.swift; sourceTree = "<group>"; };
+		A855D7A524714D4D00206560 /* SportsTalkSDK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SportsTalkSDK.swift; sourceTree = "<group>"; };
+		A855D7AA24714DC000206560 /* ChatClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatClient.swift; sourceTree = "<group>"; };
+		A855D7AC24714DD000206560 /* ClientConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfig.swift; sourceTree = "<group>"; };
+		A855D7B024716F0200206560 /* UserClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserClient.swift; sourceTree = "<group>"; };
+		A85E7CF52473299000A26D54 /* CommentClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentClient.swift; sourceTree = "<group>"; };
+		A85E7CF724732AB000A26D54 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		A85E7CFB24732BCB00A26D54 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		A85E7CFC24732BCB00A26D54 /* DeleteUserResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteUserResponse.swift; sourceTree = "<group>"; };
+		A85E7CFD24732BCB00A26D54 /* ListUsersResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListUsersResponse.swift; sourceTree = "<group>"; };
+		A85E7CFE24732BCB00A26D54 /* UserList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserList.swift; sourceTree = "<group>"; };
+		A85E7D032473343A00A26D54 /* UserClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserClientTests.swift; sourceTree = "<group>"; };
+		A8C1868524738B8D00C744DC /* ChatClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatClientTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +131,7 @@
 		80428D0323B635B900A6CFBF /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				A85E7CF724732AB000A26D54 /* NetworkService.swift */,
 				80428D0423B635CC00A6CFBF /* UsersServices.swift */,
 				806D710E23BB284E00FBDA8E /* WebhooksServices.swift */,
 				80A1B72323BDA167009F6004 /* ModerationServices.swift */,
@@ -111,6 +148,7 @@
 				80428D0923B6360200A6CFBF /* ServicesAMS.swift */,
 				80428D0B23B6361D00A6CFBF /* ServicesBase.swift */,
 				80428D0D23B6363800A6CFBF /* ParametersBase.swift */,
+				A855D7A524714D4D00206560 /* SportsTalkSDK.swift */,
 			);
 			path = BaseServices;
 			sourceTree = "<group>";
@@ -119,6 +157,8 @@
 			isa = PBXGroup;
 			children = (
 				806D710523BB0A2700FBDA8E /* SportsTalk_iOS_SDKTests.swift */,
+				A85E7D032473343A00A26D54 /* UserClientTests.swift */,
+				A8C1868524738B8D00C744DC /* ChatClientTests.swift */,
 				806D710723BB0A2700FBDA8E /* Info.plist */,
 			);
 			path = SportsTalk_iOS_SDKTests;
@@ -147,6 +187,7 @@
 			children = (
 				80D415D123B607C600055739 /* SportsTalk_iOS_SDK.h */,
 				80D415D223B607C600055739 /* Info.plist */,
+				A855D7A924714DB300206560 /* Clients */,
 				8023405423BA245700A43C20 /* Constants */,
 				80428D0623B635DC00A6CFBF /* BaseServices */,
 				80428D0323B635B900A6CFBF /* Services */,
@@ -155,16 +196,61 @@
 			path = SportsTalk_iOS_SDK;
 			sourceTree = "<group>";
 		};
+		A855D76C24714D4000206560 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				A855D76E24714D4000206560 /* ListChatRoomParticipantsResponse.swift */,
+				A855D77024714D4000206560 /* GetUpdatesResponse.swift */,
+				A855D77124714D4000206560 /* Event.swift */,
+				A855D77224714D4000206560 /* ListMessagesByUser.swift */,
+				A855D77424714D4000206560 /* JoinChatRoomResponse.swift */,
+				A855D77724714D4000206560 /* ExitChatRoomResponse.swift */,
+				A855D77824714D4000206560 /* ChatRoom.swift */,
+				A855D77924714D4000206560 /* ListRoomsResponse.swift */,
+				A855D77B24714D4000206560 /* ExecuteChatCommandResponse.swift */,
+				A855D77C24714D4000206560 /* DeleteChatRoomResponse.swift */,
+				A855D77E24714D4000206560 /* Moderation */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		A855D77E24714D4000206560 /* Moderation */ = {
+			isa = PBXGroup;
+			children = (
+				A855D77F24714D4000206560 /* ListMessagesNeedingModerationResponse.swift */,
+				A855D78024714D4000206560 /* ApproveMessageRequest.swift */,
+			);
+			path = Moderation;
+			sourceTree = "<group>";
+		};
+		A855D7A924714DB300206560 /* Clients */ = {
+			isa = PBXGroup;
+			children = (
+				A855D7B024716F0200206560 /* UserClient.swift */,
+				A855D7AA24714DC000206560 /* ChatClient.swift */,
+				A85E7CF52473299000A26D54 /* CommentClient.swift */,
+			);
+			path = Clients;
+			sourceTree = "<group>";
+		};
+		A86D76BB2472BAAD00805B6C /* User */ = {
+			isa = PBXGroup;
+			children = (
+				A85E7CFC24732BCB00A26D54 /* DeleteUserResponse.swift */,
+				A85E7CFD24732BCB00A26D54 /* ListUsersResponse.swift */,
+				A85E7CFB24732BCB00A26D54 /* User.swift */,
+				A85E7CFE24732BCB00A26D54 /* UserList.swift */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
 		A8C61F922464D18900D3FD94 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				A8C61F982464D1B800D3FD94 /* Comment.swift */,
-				A8C61F942464D1B800D3FD94 /* CommentConversation.swift */,
-				A8C61F992464D1B800D3FD94 /* Message.swift */,
-				A8C61F962464D1B800D3FD94 /* Reaction.swift */,
-				A8C61F972464D1B800D3FD94 /* Report.swift */,
-				A8C61F952464D1B800D3FD94 /* Room.swift */,
-				A8C61F932464D1B800D3FD94 /* User.swift */,
+				A855D7AC24714DD000206560 /* ClientConfig.swift */,
+				A855D78224714D4000206560 /* ApiResponse.swift */,
+				A86D76BB2472BAAD00805B6C /* User */,
+				A855D76C24714D4000206560 /* Chat */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -279,7 +365,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A8C1868624738B8D00C744DC /* ChatClientTests.swift in Sources */,
 				806D710623BB0A2700FBDA8E /* SportsTalk_iOS_SDKTests.swift in Sources */,
+				A85E7D042473343A00A26D54 /* UserClientTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,23 +375,39 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A85E7CF62473299000A26D54 /* CommentClient.swift in Sources */,
+				A855D79E24714D4000206560 /* DeleteChatRoomResponse.swift in Sources */,
+				A855D7AB24714DC000206560 /* ChatClient.swift in Sources */,
+				A855D7A324714D4000206560 /* ApiResponse.swift in Sources */,
 				80428D0E23B6363800A6CFBF /* ParametersBase.swift in Sources */,
 				8448316D2444479000C29381 /* CommentsService.swift in Sources */,
-				A8C61F9E2464D1B800D3FD94 /* Reaction.swift in Sources */,
-				A8C61FA12464D1B800D3FD94 /* Message.swift in Sources */,
+				A855D7A624714D4D00206560 /* SportsTalkSDK.swift in Sources */,
+				A855D79D24714D4000206560 /* ExecuteChatCommandResponse.swift in Sources */,
+				A85E7CFF24732BCC00A26D54 /* User.swift in Sources */,
+				A855D79024714D4000206560 /* ListChatRoomParticipantsResponse.swift in Sources */,
 				80A1B72423BDA167009F6004 /* ModerationServices.swift in Sources */,
 				8023405623BA247000A43C20 /* AppConstants.swift in Sources */,
 				80A1B72623BDBD48009F6004 /* ChatRoomsServices.swift in Sources */,
+				A855D79324714D4000206560 /* Event.swift in Sources */,
+				A855D79424714D4000206560 /* ListMessagesByUser.swift in Sources */,
+				A85E7D0124732BCC00A26D54 /* ListUsersResponse.swift in Sources */,
+				A855D7B124716F0200206560 /* UserClient.swift in Sources */,
+				A855D7A024714D4000206560 /* ListMessagesNeedingModerationResponse.swift in Sources */,
 				806D710F23BB284E00FBDA8E /* WebhooksServices.swift in Sources */,
-				A8C61F9D2464D1B800D3FD94 /* Room.swift in Sources */,
-				A8C61F9C2464D1B800D3FD94 /* CommentConversation.swift in Sources */,
+				A85E7CF824732AB000A26D54 /* NetworkService.swift in Sources */,
+				A855D79224714D4000206560 /* GetUpdatesResponse.swift in Sources */,
 				80428D0C23B6361D00A6CFBF /* ServicesBase.swift in Sources */,
+				A855D7A124714D4000206560 /* ApproveMessageRequest.swift in Sources */,
+				A855D79A24714D4000206560 /* ChatRoom.swift in Sources */,
 				80428D0A23B6360200A6CFBF /* ServicesAMS.swift in Sources */,
-				A8C61FA02464D1B800D3FD94 /* Comment.swift in Sources */,
-				A8C61F9F2464D1B800D3FD94 /* Report.swift in Sources */,
+				A85E7D0224732BCC00A26D54 /* UserList.swift in Sources */,
+				A855D79B24714D4000206560 /* ListRoomsResponse.swift in Sources */,
 				80428D0523B635CC00A6CFBF /* UsersServices.swift in Sources */,
+				A85E7D0024732BCC00A26D54 /* DeleteUserResponse.swift in Sources */,
+				A855D79924714D4000206560 /* ExitChatRoomResponse.swift in Sources */,
+				A855D79624714D4000206560 /* JoinChatRoomResponse.swift in Sources */,
+				A855D7AD24714DD000206560 /* ClientConfig.swift in Sources */,
 				80428D0823B635EE00A6CFBF /* Services.swift in Sources */,
-				A8C61F9B2464D1B800D3FD94 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -488,6 +592,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -513,6 +618,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;

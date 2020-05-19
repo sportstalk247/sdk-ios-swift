@@ -6,11 +6,26 @@ let RESPONSE_PARAMETER_MESSAGE = "message"
 let RESPONSE_PARAMETER_USERS = "users"
 let RESPONSE_PARAMETER_CODE = "code"
 
+struct Config {
+    static let url = URL(string: "https://qa-talkapi.sportstalk247.com/api/v3/")
+    static let appId = "5ec0dc915617e0091844616a"
+    static let authToken = "ZPtTNX-DbUmf-L_k41RfQQz2rynOg7lkOqdpYwLqY7Rg"
+    static let TIMEOUT: Double = 10
+}
+
+struct Constants {
+    static let commentConversationId = "Demo_Conversation"
+    static let commentCommentId = "5e92b15d38a28d0b64536887"
+    static let commentOwnerId = "brenn"
+    static let customId = "/articles/2020-03-01/article1/something-very-important-happened"
+    static let propertyId = "sportstalk247.com/apidemo"
+    static let Expectation_Description = "Testing"
+}
+
 class SportsTalk_iOS_SDKTests: XCTestCase {
     
     let services = Services()
     
-    let Expectation_Description = "Testing"
     var TEST_USERID = "9940A8C9-2332-4824-B628-48390F367D29"
     var TEST_HANDLE = "GeorgeWASHING"
     let TEST_BANNED = true
@@ -53,26 +68,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     let RESPONSE_PARAMETER_HANDLE = "handle"
     let RESPONSE_PARAMETER_PROFILE_URL = "profileurl"
     let RESPONSE_PARAMETER_PICTURE_URL = "pictureurl"
-    let TIMEOUT: Double = 10
     var RESPONSE_MODERATIONQUEUE: [[String:Any]]?
     
-    struct Constants {
-        static let url = URL(string: "https://api.sportstalk247.com/api/v3")
-        static let appId = "5e92a5ce38a28d0b6453687a"
-        static let authToken = "QZF6YKDKSUCeL03tdA2l2gx4ckSvC7LkGsgmix-pBZLA"
-        static let commentConversationId = "Demo_Conversation"
-        static let commentCommentId = "5e92b15d38a28d0b64536887"
-        static let commentOwnerId = "brenn"
-        static let customId = "/articles/2020-03-01/article1/something-very-important-happened"
-        static let propertyId = "sportstalk247.com/apidemo"
-        
-    }
-
+    
     
     override func setUp() {
-        services.url =  Constants.url
-        services.appId = Constants.appId
-        services.authToken = Constants.authToken
+        services.url =  Config.url
+        services.appId = Config.appId
+        services.authToken = Config.authToken
         services.debug = true
     }
     
@@ -94,7 +97,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         createUser.pictureurl = TEST_PICTURE_URL
         createUser.profileurl = TEST_PROFILE_URL
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         var code = 0
         services.ams.usersServices(createUser) { (response) in
@@ -106,7 +109,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertEqual(TEST_PICTURE_URL?.absoluteString, responseData?[RESPONSE_PARAMETER_PICTURE_URL] as? String)
         XCTAssertTrue(code == 200)
@@ -118,7 +121,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let createUser = UsersServices.DeleteUser()
         createUser.userid = TEST_USERID
         print("user id \(TEST_USERID)")
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var code = 0
 
         services.ams.usersServices(createUser) { (response) in
@@ -126,7 +129,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(code == 200)
     }
@@ -137,7 +140,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let getUserDetail = UsersServices.GetUserDetails()
         getUserDetail.userid = TEST_USERID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.usersServices(getUserDetail) { (response) in
@@ -145,7 +148,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertEqual(TEST_DISPLAY_NAME, responseData?[RESPONSE_PARAMETER_DISPLAY_NAME] as? String)
         XCTAssertEqual(TEST_HANDLE, responseData?[RESPONSE_PARAMETER_HANDLE] as? String)
@@ -159,7 +162,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let listUsers = UsersServices.ListUsers()
         listUsers.limit = "2"
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var usersData:[[AnyHashable:Any]]?
 
         services.ams.usersServices(listUsers) { (response) in
@@ -168,7 +171,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertEqual(2, usersData?.count)
     }
 
@@ -182,7 +185,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let listUsersMore = UsersServices.ListUsersMore()
         listUsersMore.limit = "5"
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         var usersData = NSArray()
 
@@ -192,7 +195,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertEqual(5, usersData.count)
     }
     
@@ -201,7 +204,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         test_UserServices_UpdateUser()
         let banUser = UsersServices.BanUser()
         banUser.userid = TEST_USERID
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var banned:Bool?
 
         services.ams.usersServices(banUser){ (response) in
@@ -211,7 +214,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertTrue(banned ?? false)
     }
 
@@ -221,7 +224,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let restoreUser = UsersServices.RestoreUser()
         restoreUser.userid = TEST_USERID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var banned: Bool? = false
 
         services.ams.usersServices(restoreUser){ (response) in
@@ -231,7 +234,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(!(banned ?? true))
     }
@@ -244,7 +247,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
        searchUsersByHandle.limit = "5"
 
        var users:[[AnyHashable:Any]]?
-       let expectation = self.expectation(description: Expectation_Description)
+       let expectation = self.expectation(description: Constants.Expectation_Description)
 
        services.ams.usersServices(searchUsersByHandle) { (response) in
            let responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
@@ -253,7 +256,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
            expectation.fulfill()
        }
 
-       waitForExpectations(timeout: TIMEOUT, handler: nil)
+       waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssert((users?.count ?? 0) > 0)
 
@@ -266,7 +269,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         searchUsersByName.name = TEST_DISPLAY_NAME
 
         var users:[[AnyHashable:Any]]?
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
 
         services.ams.usersServices(searchUsersByName) { (response) in
             let responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
@@ -274,7 +277,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssert((users?.count ?? 0) > 0)
     }
@@ -286,7 +289,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         searchUsersByUserId.userId = TEST_USERID
 
         var users:[[AnyHashable:Any]]?
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
 
         services.ams.usersServices(searchUsersByUserId) { (response) in
             let responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
@@ -295,7 +298,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssert((users?.count ?? 0) > 0)
     }
@@ -306,14 +309,12 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         test_UserServices_UpdateUser()
         let createRoom = ChatRoomsServices.CreateRoomPostmoderated()
         createRoom.name = "Test Room Post Moderated 3"
-        createRoom.slug = "post-test-room-\(getDateTimeString())"
         createRoom.description = "Chat Room Newly Created"
         createRoom.enableactions = TEST_ENABLEACTIONS
         createRoom.enableenterandexit = TEST_ENABLEENTERANDEXIT
         createRoom.roomisopen = true
-        createRoom.userid = TEST_USERID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(createRoom){ (response) in
@@ -323,7 +324,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -333,15 +334,13 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         test_UserServices_UpdateUser()
         let createRoom = ChatRoomsServices.CreateRoomPremoderated()
         createRoom.name = "Test Room Pre Moderated 1"
-        createRoom.slug = "test-room-pre-moderated-\(getDateTimeString())"
         createRoom.description = "Chat Room Newly Created (Premoderated)"
         createRoom.enableactions = TEST_ENABLEACTIONS
         createRoom.enableenterandexit = TEST_ENABLEENTERANDEXIT
         createRoom.roomisopen = true
-        createRoom.userid = TEST_USERID
         createRoom.maxreports = 0
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(createRoom){ (response) in
@@ -351,7 +350,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -360,9 +359,9 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     {
         test_ChatRoomsServices_CreateRoomPostmoderated()
         let getRoomDetails = ChatRoomsServices.GetRoomDetails()
-        getRoomDetails.roomIdOrSlug = TEST_CHAT_ROOM_ID
+        getRoomDetails.roomid = TEST_CHAT_ROOM_ID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(getRoomDetails){ (response) in
@@ -370,7 +369,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -382,7 +381,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.roomid = TEST_CHAT_ROOM_ID
         request.userid = TEST_USERID
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var code = 200
 
         services.ams.chatRoomsServices(request){ (response) in
@@ -390,7 +389,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(code == 200)
     }
@@ -410,7 +409,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         updateRoom.throttle = TEST_THROTTLE
 
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(updateRoom){ (response) in
@@ -419,7 +418,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -432,7 +431,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         updateRoomCloseARoom.roomisopen = TEST_ROOMISOPEN
         updateRoomCloseARoom.roomid = TEST_CHAT_ROOM_ID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(updateRoomCloseARoom){ (response) in
@@ -441,7 +440,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -450,7 +449,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     {
         let listRooms = ChatRoomsServices.ListRooms()
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.chatRoomsServices(listRooms){ (response) in
@@ -474,7 +473,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         joinRoomAuthenticatedUser.displayname = TEST_DISPLAY_NAME
         joinRoomAuthenticatedUser.roomid = TEST_CHAT_ROOM_ID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(joinRoomAuthenticatedUser){ (response) in
@@ -482,7 +481,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -493,7 +492,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let joinRoomAnonymousUser = ChatRoomsServices.JoinRoomAnonymousUser()
         joinRoomAnonymousUser.roomid = TEST_CHAT_ROOM_ID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(joinRoomAnonymousUser){ (response) in
@@ -502,7 +501,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -514,7 +513,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         listRoomParticipants.cursor = TEST_CURSOR
         listRoomParticipants.roomid = TEST_CHAT_ROOM_ID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(listRoomParticipants){ (response) in
@@ -523,7 +522,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -536,7 +535,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         exitRoom.roomId = TEST_CHAT_ROOM_ID
         exitRoom.userid = TEST_USERID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var code = 0
 
         services.ams.chatRoomsServices(exitRoom){ (response) in
@@ -544,7 +543,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(code == 200)
     }
@@ -555,7 +554,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let getUpdates = ChatRoomsServices.GetUpdates()
         getUpdates.roomId = TEST_CHAT_ROOM_ID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(getUpdates){ (response) in
@@ -564,7 +563,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -576,7 +575,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         getUpdatesMore.roomIdOrLabel = TEST_CHAT_ROOM_ID
         getUpdatesMore.eventid = TEST_REPLY_TO
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[[AnyHashable:Any]]?
 
         services.ams.chatRoomsServices(getUpdatesMore){ (response) in
@@ -585,7 +584,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil && responseData!.isEmpty)
     }
@@ -598,7 +597,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         executeChatCommand.command = "Hello New Command"
         executeChatCommand.userid = TEST_USERID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(executeChatCommand){ (response) in
@@ -608,7 +607,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -625,7 +624,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         executeDanceAction.customid = TEST_CUSTOM_ID
         executeDanceAction.custompayload = TEST_CUSTOM_PAYLOAD
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var code = 0
 
         services.ams.chatRoomsServices(executeDanceAction){ (response) in
@@ -633,7 +632,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(code == 200)
     }
@@ -647,7 +646,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
          replyToAMessage.userid = TEST_USERID
          replyToAMessage.replyto = TEST_REPLY_TO
 
-         let expectation = self.expectation(description: Expectation_Description)
+         let expectation = self.expectation(description: Constants.Expectation_Description)
          var responseData:[AnyHashable:Any]?
 
          services.ams.chatRoomsServices(replyToAMessage){ (response) in
@@ -655,7 +654,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
              expectation.fulfill()
          }
 
-         waitForExpectations(timeout: TIMEOUT, handler: nil)
+         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
          XCTAssertTrue(responseData != nil)
      }
@@ -669,13 +668,13 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.userId = TEST_USERID
 
         var responseData:[AnyHashable:Any]?
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
 
         services.ams.chatRoomsServices(request) { (response) in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssert((responseData?.count ?? 0) > 0)
     }
     
@@ -686,7 +685,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
            removeMessage.chatMessageId = TEST_REPLY_TO // contains newest messsage id
            removeMessage.chatRoomId = TEST_CHAT_ROOM_ID
 
-           let expectation = self.expectation(description: Expectation_Description)
+           let expectation = self.expectation(description: Constants.Expectation_Description)
            var responseData:[AnyHashable:Any]?
 
            services.ams.chatRoomsServices(removeMessage){ (response) in
@@ -695,7 +694,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
                expectation.fulfill()
            }
 
-           waitForExpectations(timeout: TIMEOUT, handler: nil)
+           waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
            XCTAssertTrue(responseData != nil)
        }
@@ -708,7 +707,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         removeMessage.userid = TEST_USERID
         removeMessage.chatroomid = TEST_CHAT_ROOM_ID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var code = 0
 
         services.ams.chatRoomsServices(removeMessage){ (response) in
@@ -716,7 +715,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(code == 200)
     }
@@ -730,7 +729,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         reportMessage.chatRoomId = TEST_CHAT_ROOM_ID
         reportMessage.userid = TEST_USERID
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(reportMessage){ (response) in
@@ -739,7 +738,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -754,7 +753,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.reaction = "like"
         request.reacted = "true"
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.chatRoomsServices(request){ (response) in
@@ -763,7 +762,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -781,7 +780,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
          executeAdminCommand.customid = TEST_CUSTOM_ID
          executeAdminCommand.custompayload = TEST_CUSTOM_PAYLOAD
 
-         let expectation = self.expectation(description: Expectation_Description)
+         let expectation = self.expectation(description: Constants.Expectation_Description)
          var responseMessage:String?
 
          services.ams.chatRoomsServices(executeAdminCommand){ (response) in
@@ -789,7 +788,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
              expectation.fulfill()
          }
 
-         waitForExpectations(timeout: TIMEOUT, handler: nil)
+         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
          XCTAssertTrue(responseMessage != nil)
      }
@@ -802,7 +801,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         deleteAllEventsInRoom.command = "*deleteallevents zola"
         deleteAllEventsInRoom.chatroomid = TEST_CHAT_ROOM_ID
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var code = 200
         
         services.ams.chatRoomsServices(deleteAllEventsInRoom){ (response) in
@@ -810,7 +809,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
         
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(code == 200)
     }
@@ -828,7 +827,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         approveMessage.chatMessageId = messageId
         approveMessage.chatRoomId = chatRoomId
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.moderationServices(approveMessage){ (response) in
@@ -836,7 +835,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -845,7 +844,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         test_ChatRoomsServices_ReportMessage()
         let request = ModerationServices.ListMessagesNeedingModeration()
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.moderationServices(request){ (response) in
@@ -854,7 +853,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -864,7 +863,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let request = ModerationServices.ApproveCommentInQueue()
         request.commentid = "5e99869038a2831b30be124a"
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         
         var code = 0
         services.ams.moderationServices(request){ (response) in
@@ -872,7 +871,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(code == 200)
     }
@@ -882,7 +881,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let request = ModerationServices.ApproveCommentInQueue()
         request.commentid = "5e998cf038a2831b30be124f"
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         
         var code = 0
         services.ams.moderationServices(request){ (response) in
@@ -890,7 +889,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(code == 200)
     }
@@ -899,7 +898,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     {
         let request = ModerationServices.ListCommentsInModerationQueue()
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
 
         services.ams.moderationServices(request){ (response) in
@@ -907,7 +906,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -921,7 +920,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.type = "prepublish"
         request.url = URL(string: "https://localhost:3000")
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var code = 0
         services.ams.webhooksServices(request) { (response) in
             let data = response[RESPONSE_PARAMETER_DATA] as? [String: Any]
@@ -929,7 +928,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             code = response[RESPONSE_PARAMETER_CODE] as? Int ?? 0
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(code == 200)
     }
@@ -942,7 +941,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
            request.type = "postpublish"
            request.url = URL(string: "https://localhost:8080")
            
-           let expectation = self.expectation(description: Expectation_Description)
+           let expectation = self.expectation(description: Constants.Expectation_Description)
            var code = 0
            services.ams.webhooksServices(request) { (response) in
             let data = response[RESPONSE_PARAMETER_DATA] as? [String: Any]
@@ -950,7 +949,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
                code = response[RESPONSE_PARAMETER_CODE] as? Int ?? 0
                expectation.fulfill()
            }
-           waitForExpectations(timeout: TIMEOUT, handler: nil)
+           waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
            
            XCTAssertTrue(code == 200)
        }
@@ -958,13 +957,13 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
     func test_Webhooks_ListWebhooks(){
         let request = WebhooksServices.ListWebhooks()
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var code = 0
         services.ams.webhooksServices(request) { (response) in
             code = response[RESPONSE_PARAMETER_CODE] as? Int ?? 0
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(code == 200)
     }
@@ -977,13 +976,13 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.events = ["commentreply"]
         request.type = "postpublish"
         request.url = URL(string: "https://localhost:8085")
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var code = 0
         services.ams.webhooksServices(request) { (response) in
             code = response[RESPONSE_PARAMETER_CODE] as? Int ?? 0
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(code == 200)
     }
@@ -993,13 +992,13 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let request = WebhooksServices.DeleteWebhook()
         request.webhookId = TEST_WEBHOOK_ID
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var code = 0
         services.ams.webhooksServices(request) { (response) in
             code = response[RESPONSE_PARAMETER_CODE] as? Int ?? 0
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(code == 200)
     }
@@ -1021,14 +1020,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.udf1 = "/sample/userdefined1/emojis/😂🤣❤😍😒"
         request.udf2 = "/sample/userdefined2/intl/characters/äöüÄÖÜß"
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -1037,14 +1036,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let request = CommentsService.GetConversationById()
         request.comment_conversation_id = Constants.commentConversationId
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
 
         XCTAssertTrue(responseData != nil)
     }
@@ -1053,21 +1052,21 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let request = CommentsService.FindConversationByIdCustomId()
         request.customid = "/articles/2020-03-01/article1/something-very-important-happened-test"//Constants.customId
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
     
     func test_Comments_ListConversation(){
         let request = CommentsService.ListConversations()
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]? = [:]
         
         services.ams.commentsServices(request) {response in
@@ -1075,7 +1074,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1085,14 +1084,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let request = CommentsService.ListConversationsWithFilters()
         request.propertyid = Constants.propertyId
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1101,14 +1100,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         test_Comments_CreateAndUpdateConversation()
         let request = CommentsService.DeleteConversation()
         request.comment_conversation_id = TEST_CONVERSATION_ID_NEW
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1120,7 +1119,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.body = "A new Comment"
         request.tags = ["tag1","tag2"]
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
@@ -1128,7 +1127,7 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
             self.TEST_COMMENT_ID = responseData?["id"] as? String ?? ""
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1141,14 +1140,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.userid = "userid_georgew"
         request.body = "A new reply"
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1159,14 +1158,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.comment_conversation_id = Constants.commentConversationId
         request.comment_comment_id = Constants.commentCommentId
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1175,14 +1174,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let request = CommentsService.ListComments()
         request.comment_conversation_id = Constants.commentConversationId
         request.includeinactive = true
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1191,14 +1190,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         let request = CommentsService.ListComments()
         request.comment_conversation_id = Constants.commentConversationId
         request.includechildren = true
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1209,14 +1208,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.comment_conversation_id = Constants.commentConversationId
         request.comment_comment_id = Constants.commentCommentId
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1229,14 +1228,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.userid = Constants.commentOwnerId
         request.deleted = false // set to true to flag the comment and set to false to restore the flag
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1248,14 +1247,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.comment_comment_id = TEST_COMMENT_ID
         request.userid =  "userid_georgew"//Constants.commentOwnerId
         
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1269,14 +1268,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.body = "comment has been modified from body param"
         
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1290,14 +1289,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.reacted = true
         request.reaction = "like"
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1311,14 +1310,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.userid = "userid_georgew"
         request.vote = "up"
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1331,14 +1330,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.userid = "userid_georgew"
         request.vote = "down"
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1351,14 +1350,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.userid = "userid_georgew"
         request.vote = "none"
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
@@ -1371,14 +1370,14 @@ class SportsTalk_iOS_SDKTests: XCTestCase {
         request.userid = "userid_georgew"
         request.reporttype = "abuse"
 
-        let expectation = self.expectation(description: Expectation_Description)
+        let expectation = self.expectation(description: Constants.Expectation_Description)
         var responseData:[AnyHashable:Any]?
         
         services.ams.commentsServices(request) {response in
             responseData = response[RESPONSE_PARAMETER_DATA] as? [AnyHashable:Any]
             expectation.fulfill()
         }
-        waitForExpectations(timeout: TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         
         XCTAssertTrue(responseData != nil)
     }
