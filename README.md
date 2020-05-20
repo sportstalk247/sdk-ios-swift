@@ -1,105 +1,254 @@
+
 # Sportstalk 247 iOS SDK
 
-## Status: BETA
-This SDK is under active development and improvement. We are also very open to feedback if you experience pain points while using the SDK.
+  
 
-**TODO**
-- Create response models so we no longer need to delegate the task to the client
-- Improve JSON parsing by using [Codables](https://learnappmaking.com/codable-json-swift-how-to/)
+## Status: BETA
+
+This SDK is under active development and improvement. We are also very open to feedback if you experience pain points while using the SDK.
+  
 
 ## Usage
+
 The Sportstalk SDK is a helpful wrapper around the [Sportstalk API](https://apiref.sportstalk247.com/?version=latest)
+
+  
 
 The set of SDKs and source (iOS, Android, and JS) is here: [https://gitlab.com/sportstalk247/](https://gitlab.com/sportstalk247/)
 
+  
+
+  
 
 ```bash
 pod 'SportsTalk_iOS_SDK', :git=> 'https://gitlab.com/sportstalk247/sdk-ios-swift.git'
+
 ```
+
 You will need to register with SportsTalk and get an API Key in order to use sportstalk functions.
 
+  
 
-## GETTING STARTED: How to use the SDK
+  
+
+## GETTING STARTED: Setting up the SDK
+
 This Sportstalk SDK is meant to power custom chat applications.  Sportstalk does not enforce any restricitons on your UI design, but instead empowers your developers to focus on the user experience without worrying about the underlying chat behavior.
 
 Sportstalk is an EVENT DRIVEN API. When new talk events occur, the SDK will trigger appropriate callbacks, if set.
-At minimum, you will want to set 5 callbacks:
 
-*ExecuteChat 
-*PurgeMessages
-*ReactToMessage
-*AdminCommand
-
-See a simple example below:
-
-```python
+```swift
 import SportsTalk_iOS_SDK
 
-// first create a service
-let services = Services()
-services.authToken = "YourApiKeyHere"
+// First you'll need to create a ClientConfig class that you can use later on
+let config = ClientConfig(appId: "YourAppId", authToken: "YourApiKey", endpoint: "Your URL")
+let client = UserClient(config: config)
 
-// You can set the event handlers.
-services.ams.chatRoomsServices(ChatRoomsServices.ExecuteChatCommand()) { _ in }
-services.ams.moderationServies(ModerationServices.PurgeUserMessages()) { _ in }
-services.ams.chatRoomsServices(ChatRoomsServices.ReactToAMessageLike()) { _ in }
-services.ams.chatRoomsServices(ChatRoomsServices.ExecuteAdminCommand()) { _ in }
-
-// Set the user, if logged in.
-services.user = User(userId: UserId, handle: Handle)
-
-// List rooms, join a room
-services.ams.listRooms { _ in
-    services.ams.joinRoom(room: services.knownRooms.first)
-}
-...
+// You can set config to have your own endpoint or use the default endpoint like so
+let config = ClientConfig(appId: "YourAppId", authToken: "YourApiKey")
 ```
-For use of these events in action, see the demo page: [https://www.sportstalk247.com/demo.html](https://www.sportstalk247.com/demo.html)
 
-
-## Callback function overview 
-
+## Callback function overview
 Each and every api function has its callback, when the api is called you will get the response in the callback. You can use this to remove loading screens, hide advertisements, and so on.
 
-### Execute Chat Command
-This is the most critical callback. Each **new** chat event seen by the sdk client instance will be passed to this callback.  It is possible to render the entire chat experience with just this callback.
-Your UI solution should accept each chat event and render it.  This callback could also be used to trigger push notifications.
+### Creating/Updating a user
+Invoke this API method if you want to create a user or update an existing user.
 
-### onGoalEvent(event: EventResult)
-This is a **convenience wrapper** that only works with the built-in SDK `sendGoal`.  These methods make use of the custom event types exposed by the sportstalk REST api and are purely to make creating sports experiences simpler. The REST SportsTalk api does not understand a 'goal' event, but utilizes custom event types.  This call back should only be used if you are also using the defaults provided by `client.sendGoal()`.
-**Note that if this callback is registered, these custom goal events will NOT be sent to `onChatEvent`**
+When users send messages to a room the user ID is passed as a parameter. When you retrieve the events from a room, the user who generated the event is returned with the event data, so it is easy for your application to process and render chat events with minimal code.
+```swift
+import SportsTalk_iOS_SDK
 
-### Reply To A Message
-This is the event used for making a reply to a reply **instead of** using `Execute Chat Command` 
+let client = UserClient(config: config)
 
-### React To A Message
-If both are set, onReaction will be called **instead of** `Execute Chat Command`  for reply events.
+// Almost all api is designed to have a request and response model.
 
-### Purge Messages
-Clients should implement `PurgeUserMessages` if there is any moderation.  Purge events are used by the sportstalk SDK to let clients to know to remove messages that have been moderated as harmful or against policies and should be removed from the UI.
+func createUser() {
+    // To create a request, make use of the Services convenience class
+    let request = UsersServices.CreateUpdateUser()
+    request.userid =  "SomeUserId"
+    request.handle = "Sam"
+    request.displayname = "Sam"
+    request.pictureurl = URL(string: dummyUser?.pictureurl ?? "")
+    request.profileurl = URL(string: dummyUser?.profileurl ?? "")
 
-### Admin Command
-`ExecuteAdminCommand` will be triggered on a successful server response when an admin command **is sent**.  For instance, if an admin sends a purge command, `ExecuteAdminCommand` will be triggered when the purge command is sent, and `PurgeUserMessages` will be triggered with the purge message is sent from the API.
+    client.createOrUpdateUser(request) { (code, message, kind, user) in
+        // where; code: Int?, message: String?, kind: String?, user: User?
+        // Save user
+    }
+}
+```
 
-Note that if `onHelp` is set it will be triggered instead of onAdminCommand because there may be special considerations - loading a different screen, navigating to a website, etc.
+### Joining a Room as an Authenticated User
+```swift
+let client = ChatClient(config: config)
 
+func JoinRoom(_ room: ChatRoom, as user: User) {
+    let request = ChatRoomsServices.JoinRoomAuthenticatedUser()
+    request.userid = user.userid
+    request.displayname = user.displayname
+    request.roomid = room.id
+
+    client.joinRoomAuthenticated(request) { (code, message, _, response) in
+        // where response is model called JoinChatRoomResponse
+        // Process response
+    }
+}
+```
+### Joining a Room as Anonymous User
+```swift
+let client = ChatClient(config: config)
+
+func JoinRoom(_ room: ChatRoom) {
+    let request = ChatRoomsServices.JoinRoomAnonymousUser()
+    request.roomid = room.id
+
+    client.joinRoomAnonymous(request) { (code, message, _, response) in
+        // where response is model called JoinChatRoomResponse
+        // Process response
+    }
+}
+```
+### Joining a Room using Custom ID
+```swift
+let client = ChatClient(config: config)
+
+func JoinRoom(_ room: ChatRoom, as user: User) {
+    let request = ChatRoomsServices.JoinRoomByCustomId()
+    request.userid = user.userid
+    request.displayname = user.displayname
+    request.customid = room.customid
+
+    client.joinRoomByCustomId(request) { (code, message, _, response) in
+        // where response is model called JoinChatRoomResponse
+        // Process response
+    }
+}
+```
+### Get room updates
+
+To manually get room updates, use `ChatClient().getUpdates(request:completionHandler)`
+```swift
+let client = ChatClient(config: config)
+
+func getUpdates(_ room: ChatRoom) {
+    let request = ChatRoomsServices.GetUpdates()
+    request.roomid = room.id
+
+    client.getUpdates(request) { (code, message, _, response) in
+        // where response is model called GetUpdatesResponse
+        // Get an array of events from response.events
+    }
+}
+```
+### Start/Stop Getting Event Updates
+Get periodic updates from room by using ```client.startEventUpdates(roomId:completionHandler)```
+
+Only new events will be emitted, so it is up to you to collect the new events.
+
+To stop getting updates, simply call `client.stopEventUpdates()` anytime.
+
+Note: 
+`frequency` is optional and is set to 500 milliseconds by default
+
+Losing reference to ```client``` will stop the eventUpdates
+
+```swift
+let client = ChatClient(config: config)
+var events = [Event]()
+
+func receiveUpdates(from room: ChatRoom, every seconds: Int) {
+    client.startEventUpdates(from: roomid, frequency: seconds) { (code, message, _, event) in
+        if let event = event {
+            events.append(event)
+        }
+        
+        // Debug pulse
+        print("------------")
+        print(code ==  200 ? "pulse success" : "pulse failed")
+        print((event?.count ?? 0) > 0 ? "received \(event?.count) event" : "No new events")
+        print("------------")
+    }
+}
+
+func stopUpdates() {
+    // Ideally call this on viewDidDisappear() and deinit()
+    client.stopEventUpdates()
+}
+```
+
+### Sending A Message
+Use **SAY** command to send a message to the room. 
+example: ```SAY Hello World!``` or simply ```Hello World!```
+
+
+Perform **ACTIONS** by using / character
+example: ```/dance nicole ```
+
+User sees: ```You dance with Nicole```
+
+Nicole sees: ```(user) dances with you```
+
+Everyone else sees: ```(user) dances with Nicoel```
+
+This requires that the action command dance is on the approved list of commands and Nicole is the handle of a participant in the room, and that actions are allowed in the room
+
+```swift
+let client = ChatClient(config: config)
+
+func send(message: String, to room: ChatRoom, as user: User) {
+    // See for list of commands
+    let request = ChatRoomsServices.ExecuteChatCommand()
+    request.roomId = room.id
+    request.command = "SAY \(message)" 
+    request.userid = dummyUser?.userid
+
+    client.executeChatCommand(request) { (code, message, _, response) in
+        // where response is model called ExecuteChatCommandResponse
+        // Process response
+    }
+}
+```
+
+
+
+
+
+For use of these events in action, see the demo page: [https://www.sportstalk247.com/demo.html](https://www.sportstalk247.com/demo.html)
 
 ## The Bare Minimum
+
 The only critical events that you need to handle are `ExecuteChatCommand` which will be called for each new chat event, `ExecuteAdminCommand` which will handle messages from administrators, `PurgeUserMessages` which will be called when purge commands are issued to clear messages that violate content policy.
+
+  
 
 You will probably also want to use `ExecuteChatCommand` to show/hide any loading messages.
 
+  
+
 The easiest way to see how these event works is to see the demo page: https://www.sportstalk247.com/demo.html
 
+  
+
 # Chat Application Best Practices
+
 * Do not 'fire and forget' chat messages.  Most chat applications require some level of moderation.  Your UI should make sure to keep track of message metadata such as:
-    * Message ID
-    * User Handle for each message.
-    * User ID for each message.  In the event of moderation or purge events,  your app will need to be able to find and remove purged messages.
-    * Timestamp
+
+* Message ID
+
+* User Handle for each message.
+
+* User ID for each message.  In the event of moderation or purge events,  your app will need to be able to find and remove purged messages.
+
+* Timestamp
+
 * Use the promises from sendCommand, sendReply, etc, to show/hide some sort of indication that the message is being sent.
-* Make sure you handle errors for sending messages in case of network disruption.   For instance, `client.sendCommand('message').catch(handleErrorInUiFn)`
+
+* Make sure you handle errors for sending messages in case of network disruption. For instance, `client.sendCommand('message').catch(handleErrorInUiFn)`
+
+  
 
 ## Copyright & License
+
+  
 
 Copyright (c) 2019 Sportstalk247

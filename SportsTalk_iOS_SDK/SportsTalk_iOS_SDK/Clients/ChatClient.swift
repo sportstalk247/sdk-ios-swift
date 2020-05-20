@@ -35,6 +35,10 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     public override init(config: ClientConfig) {
         super.init(config: config)
     }
+    
+    deinit {
+        stopEventUpdates()
+    }
 }
 
 extension ChatClient {

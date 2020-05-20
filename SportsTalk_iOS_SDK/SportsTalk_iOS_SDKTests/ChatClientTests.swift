@@ -488,7 +488,7 @@ extension ChatClientTests {
             return
         }
         
-        self.client.startEventUpdates(from: roomid) { (code, message, _, event) in
+        client.startEventUpdates(from: roomid) { (code, message, _, event) in
             print("------------")
             print(code == 200 ? "pulse success" : "pulse failed")
             print((event?.count ?? 0) > 0 ? "received \(event?.count) event" : "No new events")
