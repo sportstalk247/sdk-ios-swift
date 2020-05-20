@@ -94,20 +94,6 @@ func JoinRoom(_ room: ChatRoom, as user: User) {
     }
 }
 ```
-### Joining a Room as Anonymous User
-```swift
-let client = ChatClient(config: config)
-
-func JoinRoom(_ room: ChatRoom) {
-    let request = ChatRoomsServices.JoinRoomAnonymousUser()
-    request.roomid = room.id
-
-    client.joinRoomAnonymous(request) { (code, message, _, response) in
-        // where response is model called JoinChatRoomResponse
-        // Process response
-    }
-}
-```
 ### Joining a Room using Custom ID
 ```swift
 let client = ChatClient(config: config)
@@ -188,7 +174,7 @@ User sees: ```You dance with Nicole```
 
 Nicole sees: ```(user) dances with you```
 
-Everyone else sees: ```(user) dances with Nicoel```
+Everyone else sees: ```(user) dances with Nicole```
 
 This requires that the action command dance is on the approved list of commands and Nicole is the handle of a participant in the room, and that actions are allowed in the room
 
