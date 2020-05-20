@@ -3,8 +3,8 @@ import SportsTalk_iOS_SDK
 
 struct Config {
     static let url = URL(string: "https://qa-talkapi.sportstalk247.com/api/v3/")
-    static let appId = "5ec0dc915617e0091844616a"
-    static let authToken = "ZPtTNX-DbUmf-L_k41RfQQz2rynOg7lkOqdpYwLqY7Rg"
+    static let appId = "5ebbe03d5617e00de4b044c2"
+    static let authToken = "lKXXRQ0QA0W7ySVNQa0Bhg8yDKrBMCfkGnfpsApZin-g"
     static let TIMEOUT: Double = 10
 }
 
@@ -30,6 +30,10 @@ class UserClientTests: XCTestCase {
         user.profileurl = "http://www.thepresidentshalloffame.com/1-george-washington"
         return user
     }()
+    
+    override func setUp() {
+        SportsTalkSDK.shared.debugMode = true
+    }
 }
 
 extension UserClientTests {
