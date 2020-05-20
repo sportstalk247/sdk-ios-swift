@@ -1,14 +1,6 @@
-//
-//  ChatEvent.swift
-//  SportsTalk_iOS_SDK
-//
-//  Created by Lawrence Cendana on 5/17/20.
-//  Copyright © 2020 krishna41. All rights reserved.
-//
-
 import Foundation
 
-public class Event: Codable {
+public class Event: Codable, Equatable {
     public var kind: String?
     public var id: String?
     public var roomid: String?
@@ -123,6 +115,10 @@ public class Event: Codable {
         self.reactions = try container.decodeIfPresent(Array<ChatEventReaction>.self, forKey: .reactions) ?? []
         self.moderation = try container.decodeIfPresent(String.self, forKey: .moderation)
         self.reports = try container.decodeIfPresent(Array<ChatEventReport>.self, forKey: .reports) ?? []
+    }
+    
+    public static func == (lhs: Event, rhs: Event) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 

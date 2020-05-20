@@ -1,11 +1,3 @@
-//
-//  ChatClient.swift
-//  SportsTalk_iOS_SDK
-//
-//  Created by Angelo Lesano on 5/17/20.
-//  Copyright © 2020 krishna41. All rights reserved.
-//
-
 import Foundation
 
 public protocol ChatClientProtocol {
@@ -18,32 +10,28 @@ public protocol ChatClientProtocol {
     func listRooms(_ request: ChatRoomsServices.ListRooms, completionHandler: @escaping Completion<ListRoomsResponse>)
     func listRoomParticipants(_ request: ChatRoomsServices.ListRoomParticipants, completionHandler: @escaping Completion<ListRoomsResponse>)
     func joinRoomAuthenticated(_ request: ChatRoomsServices.JoinRoomAuthenticatedUser, completionHandler: @escaping Completion<JoinChatRoomResponse>)
+    func joinRoomByCustomId(_ request: ChatRoomsServices.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>)
     func joinRoomAnonymous(_ request: ChatRoomsServices.JoinRoomAnonymousUser, completionHandler: @escaping Completion<JoinChatRoomResponse>)
     func exitRoom(_ request: ChatRoomsServices.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>)
     func getUpdates(_ request: ChatRoomsServices.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>)
     func getUpdatesMore(_ request: ChatRoomsServices.GetUpdatesMore, completionHandler: @escaping Completion<GetUpdatesResponse>)
     func executeChatCommand(_ request: ChatRoomsServices.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
-//    func chatRoomsServices(_ request: ChatRoomsServices.ExecuteDanceAction, completionHandler: @escaping CompletionHandler)
-//    func chatRoomsServices(_ request: ChatRoomsServices.ReplyToAMessage, completionHandler: @escaping CompletionHandler)
     func listMessagesByUser(_ request: ChatRoomsServices.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>)
-//    func chatRoomsServices(_ request: ChatRoomsServices.RemoveMessage, completionHandler: @escaping CompletionHandler)
-//    func chatRoomsServices(_ request: ChatRoomsServices.PurgeUserMessages, completionHandler: @escaping CompletionHandler)
     func reportMessage(_ request: ChatRoomsServices.ReportMessage, completionHandler: @escaping Completion<Event>)
     func reactToAMessage(_ request: ChatRoomsServices.ReactToAMessageLike, completionHandler: @escaping Completion<Event>)
-//    func chatRoomsServices(_ request: ChatRoomsServices.ExecuteAdminCommand, completionHandler: @escaping CompletionHandler)
-//    func chatRoomsServices(_ request: ChatRoomsServices.DeleteAllEventsInRoom, completionHandler: @escaping CompletionHandler)
+    func startEventUpdates(from room: String, frequency seconds: Double, completionHandler: @escaping Completion<[Event]>)
+    func stopEventUpdates()
     
-    // Moderation
     func approveMessage(_ request: ModerationServices.ApproveMessage, completionHandler: @escaping Completion<Event>)
     func listMessagesNeedingModeration(_ request: ModerationServices.ListMessagesNeedingModeration, completionHandler: @escaping Completion<ListMessagesNeedingModerationResponse>)
-
-//    func moderationServices(_ request: ModerationServices.ApproveCommentInQueue, completionHandler: @escaping CompletionHandler)
-//    func moderationServices(_ request: ModerationServices.RejectCommentInQueue, completionHandler: @escaping CompletionHandler)
-//    func moderationServices(_ request: ModerationServices.ListCommentsInModerationQueue, completionHandler: @escaping CompletionHandler)
     
 }
 
 public class ChatClient: NetworkService, ChatClientProtocol {
+    var timer: Timer?
+    var receivedEvents = [Event]()
+    var lastTimeStamp = Date.init(timeIntervalSince1970: 0)
+    
     public override init(config: ClientConfig) {
         super.init(config: config)
     }
@@ -104,6 +92,12 @@ extension ChatClient {
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
+    
+    public func joinRoomByCustomId(_ request: ChatRoomsServices.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
+        makeRequest("\(ServiceKeys.chatCustom)\(request.customid ?? emptyString)/join", withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
 
     public func joinRoomAnonymous(_ request: ChatRoomsServices.JoinRoomAnonymousUser, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
         makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/join", withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self, append: false) { (response) in
@@ -135,38 +129,12 @@ extension ChatClient {
         }
     }
 
-//    public func chatRoomsServices(_ request: ChatRoomsServices.ExecuteDanceAction , completionHandler: @escaping CompletionHandler)
-//    {
-//        makeRequest("\(ServiceKeys.chat)\(request.roomId ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST) { (response) in
-//            completionHandler(response)
-//        }
-//    }
-//
-//    public func chatRoomsServices(_ request: ChatRoomsServices.ReplyToAMessage , completionHandler: @escaping CompletionHandler)
-//    {
-//        makeRequest("\(ServiceKeys.chat)\(request.roomId ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST) { (response) in
-//            completionHandler(response)
-//        }
-//    }
-//
     public func listMessagesByUser(_ request: ChatRoomsServices.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>) {
         makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/messagesbyuser/\(request.userId ?? emptyString)", withData: request.toDictionary(), requestType: .GET, expectation: ListMessagesByUser.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
-//
-//    public func chatRoomsServices(_ request: ChatRoomsServices.RemoveMessage, completionHandler: @escaping CompletionHandler) {
-//        makeRequest("\(ServiceKeys.chat)\(request.chatRoomId ?? emptyString)/events/\(request.chatMessageId ?? emptyString)", withData: request.toDictionary(), requestType: .DELETE) { (response) in
-//            completionHandler(response)
-//        }
-//    }
 
-//    public func chatRoomsServices(_ request: ChatRoomsServices.PurgeUserMessages, completionHandler: @escaping CompletionHandler) {
-//        makeRequest("\(ServiceKeys.chat)\(request.chatroomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST) { (response) in
-//            completionHandler(response)
-//        }
-//    }
-//
     public func reportMessage(_ request: ChatRoomsServices.ReportMessage, completionHandler: @escaping Completion<Event>) {
         makeRequest("\(ServiceKeys.chat)\(request.chatRoomId ?? emptyString)/events/\(request.chat_room_newest_speech_id ?? emptyString)/report", withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
@@ -180,25 +148,10 @@ extension ChatClient {
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
-//
-//    public func chatRoomsServices(_ request: ChatRoomsServices.ExecuteAdminCommand , completionHandler: @escaping CompletionHandler)
-//    {
-//        makeRequest("\(ServiceKeys.chat)\(request.roomId ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST) { (response) in
-//            completionHandler(response)
-//        }
-//    }
-//
-//    public func chatRoomsServices(_ request: ChatRoomsServices.DeleteAllEventsInRoom, completionHandler: @escaping CompletionHandler) {
-//        makeRequest("\(ServiceKeys.chat)\(request.chatroomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST) { (response) in
-//            completionHandler(response)
-//        }
-//    }
-    
-//    struct rx { /* Add reactive funcs here */ }
 }
 
 
-// Moderation
+//MARK: - Moderation
 extension ChatClient {
     public func approveMessage(_ request: ModerationServices.ApproveMessage , completionHandler: @escaping Completion<Event>) {
         let url = "\(ServiceKeys.chatModeration)\(request.chatMessageId ?? emptyString)/applydecision"
@@ -213,6 +166,36 @@ extension ChatClient {
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
-//        struct rx { /* Add reactive funcs here */ }
+}
+
+// MARK: - Event Subscription
+extension ChatClient {
+    public func startEventUpdates(from room: String, frequency seconds: Double = 0.5,  completionHandler: @escaping Completion<[Event]>) {
+        let request = ChatRoomsServices.GetUpdates()
+        request.roomId = room
+            
+        timer = Timer.scheduledTimer(withTimeInterval: seconds, repeats: true, block: { _ in
+            self.getUpdates(request) { (code, message, kind, response) in
+                if let response = response {
+                    var emittableEvents = [Event]()
+                    
+                    for event in response.events {
+                        if let timestamp = event.ts {
+                            if timestamp > self.lastTimeStamp {
+                                self.lastTimeStamp = timestamp
+                                emittableEvents.append(event)
+                            }
+                        }
+                    }
+                    
+                    completionHandler(code, message, kind, emittableEvents)
+                }
+            }
+        })
+    }
     
+    public func stopEventUpdates() {
+        timer?.invalidate()
+        receivedEvents.removeAll()
+    }
 }
