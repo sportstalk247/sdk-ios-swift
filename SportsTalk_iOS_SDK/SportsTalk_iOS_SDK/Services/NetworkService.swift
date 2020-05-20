@@ -1,11 +1,3 @@
-//
-//  NetworkService.swift
-//  SportsTalk_iOS_SDK
-//
-//  Created by Angelo Lesano on 5/19/20.
-//  Copyright © 2020 krishna41. All rights reserved.
-//
-
 import Foundation
 
 public typealias Completion<T: Decodable> = (_ code: Int?, _ message: String?, _ kind: String?, _ data: T?) -> Void
@@ -19,7 +11,7 @@ enum RequestType: String {
 
 open class NetworkService {
     public var config: ClientConfig
-    public var debug: Bool = true
+    public var debug: Bool = SportsTalkSDK().debugMode
     
     init(config: ClientConfig) {
         self.config = config

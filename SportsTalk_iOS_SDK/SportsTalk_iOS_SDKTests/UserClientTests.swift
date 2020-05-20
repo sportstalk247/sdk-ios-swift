@@ -1,13 +1,21 @@
-//
-//  UserClientTests.swift
-//  SportsTalk_iOS_SDKTests
-//
-//  Created by Angelo Lesano on 5/19/20.
-//  Copyright © 2020 krishna41. All rights reserved.
-//
-
 import XCTest
 import SportsTalk_iOS_SDK
+
+struct Config {
+    static let url = URL(string: "https://qa-talkapi.sportstalk247.com/api/v3/")
+    static let appId = "5ec0dc915617e0091844616a"
+    static let authToken = "ZPtTNX-DbUmf-L_k41RfQQz2rynOg7lkOqdpYwLqY7Rg"
+    static let TIMEOUT: Double = 10
+}
+
+struct Constants {
+    static let commentConversationId = "Demo_Conversation"
+    static let commentCommentId = "5e92b15d38a28d0b64536887"
+    static let commentOwnerId = "brenn"
+    static let customId = "/articles/2020-03-01/article1/something-very-important-happened"
+    static let propertyId = "sportstalk247.com/apidemo"
+    static let Expectation_Description = "Testing"
+}
 
 class UserClientTests: XCTestCase {
     let client = UserClient(config: ClientConfig(appId: Config.appId, authToken: Config.authToken, endpoint: Config.url))
@@ -57,7 +65,7 @@ extension UserClientTests {
         var receivedCode: Int?
 
         client.deleteUser(request) { (code, message, _, response) in
-            print(message!)
+            print(message ?? "")
             print("userId: \(String(describing: response?.user?.userid))")
             
             receivedCode = code
@@ -79,7 +87,7 @@ extension UserClientTests {
         var receivedCode: Int?
         
         client.getUserDetails(request) { (code, message, _, user) in
-            print(message!)
+            print(message ?? "")
             print("user: \(String(describing: user?.displayname))")
             receivedUser = user
             receivedCode = code
@@ -119,11 +127,12 @@ extension UserClientTests {
         test_UserServices_UpdateUser()
         let request = UsersServices.BanUser()
         request.userid = dummyUser?.userid
+        
         let expectation = self.expectation(description: Constants.Expectation_Description)
         var banned: Bool?
 
         client.banUser(request) { (code, message, _, user) in
-            print(message!)
+            print(message ?? "")
             banned = user?.banned
             expectation.fulfill()
         }
@@ -142,7 +151,7 @@ extension UserClientTests {
         var banned: Bool? = false
         
         client.restoreUser(request) { (code, message, _, user) in
-            print(message!)
+            print(message ?? "")
             banned = user?.banned
             expectation.fulfill()
         }
@@ -162,7 +171,7 @@ extension UserClientTests {
         var receivedCode: Int?
         
         client.searchByHandle(request) { (code, message, _, response) in
-            print(message!)
+            print(message ?? "")
             print("found \(String(describing: response?.users.count))")
             
             receivedUsers = response?.users
@@ -185,7 +194,7 @@ extension UserClientTests {
         var receivedCode: Int?
         
         client.searchByName(request) { (code, message, _, response) in
-            print(message!)
+            print(message ?? "")
             print("found \(String(describing: response?.users.count))")
             receivedUsers = response?.users
             receivedCode = code
@@ -207,7 +216,7 @@ extension UserClientTests {
         var receivedCode: Int?
         
         client.searchByUserId(request) { (code, message, _, response) in
-            print(message!)
+            print(message ?? "")
             print("found \(String(describing: response?.users.count))")
             receivedUsers = response?.users
             receivedCode = code

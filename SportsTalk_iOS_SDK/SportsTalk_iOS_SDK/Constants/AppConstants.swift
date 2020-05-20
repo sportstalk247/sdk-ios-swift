@@ -20,6 +20,7 @@ let defaultLimit = "100"
 struct ServiceKeys {
     static let user = "user/users/"
     static let chat = "chat/rooms/"
+    static let chatCustom = "chat/roomsbycustomid/"
     static let chatModeration = "chat/moderation/queues/events/"
     static let webHooks = "webhook/hooks/"
     static let comments = "comment/conversations/"

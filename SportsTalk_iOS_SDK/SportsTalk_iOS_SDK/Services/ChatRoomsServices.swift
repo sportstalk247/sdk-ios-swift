@@ -520,6 +520,86 @@ public class ChatRoomsServices
         }
     }
     
+    /// Join A Room (By Custom Id)
+    ///
+    /// This method is the same as Join Room, except you can use your customid
+    ///
+    /// The benefit of this method is you don't need to query to get the roomid using customid, and then make another call to join the room. This eliminates a request and enables you to bring your chat experience to your user faster.
+    ///
+    /// Logged in users:
+    ///  * To log a user in, provide a unique user ID string and chat handle string. If this is the first time the user ID has been used a new user record will be created for the user. Whenever the user creates an event in the room by doing an action like saying something, the user information will be returned.
+    ///  * You can optionally also provide a URL to an image and a URL to a profile.
+    ///  * If you provide user information and the user already exists in the database, the user will be updated with the new information.
+    ///  * The user will be added to the list of participants in the room and the room participant count will increase.
+    ///  * The user will be removed from the room automatically after some time if the user doesn't perform any operations.
+    ///  * Users can only execute commands in the room if they have joined the room.
+    ///  * When a logged in user joins a room an entrance event is generated in the room.
+    ///  * When a logged in user leaves a room, an exit event is generated in the room.
+    ///
+    ///  Arguments:
+    ///
+    ///  customid: your custom id
+    ///
+    ///  userid: user id specific to App
+    ///
+    ///  handle: user handle specific to App
+    ///
+    ///  displayname: Display Name for user
+    ///
+    ///  pictureurl:  Picture url of user
+    ///
+    ///  profileurl: Profile url of user
+    ///
+    /// - Warning: This method requires authentication.
+    public class JoinRoomByCustomId: ParametersBase<JoinRoomByCustomId.Fields, JoinRoomByCustomId>
+    {
+       public enum Fields
+       {
+           case customid
+           case userid
+           case handle
+           case displayname
+           case pictureurl
+           case profileurl
+       }
+       
+       public var customid: String?
+       public var userid: String?
+       public var handle: String?
+       public var displayname: String?
+       public var pictureurl: URL?
+       public var profileurl: URL?
+       
+       override public func from(dictionary: [AnyHashable: Any]) -> JoinRoomByCustomId
+       {
+           set(dictionary: dictionary)
+           let ret = JoinRoomByCustomId()
+           
+           ret.customid = value(forKey: .customid)
+           ret.userid = value(forKey: .userid)
+           ret.handle = value(forKey: .handle)
+           ret.displayname = value(forKey: .displayname)
+           ret.pictureurl = value(forKey: .pictureurl)
+           ret.profileurl = value(forKey: .profileurl)
+           
+           return ret
+       }
+       
+       public func toDictionary() -> [AnyHashable: Any]
+       {
+           toDictionary = [AnyHashable: Any]()
+           
+           addRequired(key: .customid, value: customid)
+           addRequired(key: .userid, value: userid)
+           add(key: .handle, value: handle)
+           add(key: .displayname, value: displayname)
+           add(key: .pictureurl, value: pictureurl?.absoluteString)
+           add(key: .profileurl, value: profileurl?.absoluteString)
+           
+           return toDictionary
+       }
+    }
+    
     /// Join A Room (Anonymous User)
     ///
     /// A user can be added to a room in a logged in state or in an anonymous state. Typically the anonymous state is used so that people can see what is happening in the room and be enticed to register with you in order to participate in the conversation, as they must be logged in to say something or react to anything happening in the room.
@@ -1511,4 +1591,33 @@ public class ChatRoomsServices
             return toDictionary
         }
     }
+}
+
+// MARK: - Event Subscription
+extension ChatRoomsServices {
+    public class StartEventUpdates: ParametersBase<StartEventUpdates.Fields, StartEventUpdates>
+    {
+        public enum Fields
+        {
+            case roomId
+        }
+        
+        public var roomId: String?
+
+        override public func from(dictionary: [AnyHashable: Any]) -> StartEventUpdates
+        {
+            set(dictionary: dictionary)
+            let ret = StartEventUpdates()
+            ret.roomId = value(forKey: .roomId)
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any]
+        {
+            toDictionary = [AnyHashable: Any]()
+            addRequired(key: .roomId, value: roomId)
+            return toDictionary
+        }
+    }
+
 }
