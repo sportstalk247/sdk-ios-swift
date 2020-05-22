@@ -214,11 +214,53 @@ public class UsersServices
         }
     }
     
+    /// Use this method ban/restore a user.
+    ///
+    /// userid: (required) The applicaiton provided userid of the user to ban
+    /// banned: (required) set true to ban a user; set false to restore a user
+    ///
+    /// - Warning: This method requires authentication.
+    public class setBanStatus: ParametersBase<setBanStatus.Fields, setBanStatus>
+    {
+        public enum Fields
+        {
+            case userid
+            case banned
+        }
+
+        public var userid: String?
+        public var banned: Bool?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> setBanStatus
+        {
+            set(dictionary: dictionary)
+            let ret = setBanStatus()
+
+            ret.userid = value(forKey: .userid)
+            ret.banned = value(forKey: .banned)
+         
+            return ret
+        }
+
+        public func toDictionary() -> [AnyHashable: Any]
+        {
+            toDictionary = [AnyHashable: Any]()
+
+            add(key: .userid, value: userid)
+            add(key: .banned, value: banned)
+            
+            addRequired(key: .userid, value: userid)
+            
+            return toDictionary
+        }
+    }
+    
     /// Use this method ban a user.
     ///
     /// userid: (required) The applicaiton provided userid of the user to ban
     ///
     /// - Warning: This method requires authentication.
+    @available(swift, deprecated: 5, renamed: "setBanStatus", message: "Use setBanStatus with request.banned = true")
     public class BanUser: ParametersBase<BanUser.Fields, BanUser>
     {
         public enum Fields
@@ -257,6 +299,7 @@ public class UsersServices
     /// userid: (required) The applicaiton provided userid of the user to restore
     ///
     /// - Warning: This method requires authentication.
+    @available(swift, deprecated: 5, renamed: "setBanStatus", message: "Use setBanStatus with request.banned = false")
     public class RestoreUser: ParametersBase<RestoreUser.Fields, RestoreUser>
     {
         public enum Fields
@@ -309,7 +352,7 @@ public class UsersServices
     /// userid: Provide part of a userid to search by userid
     ///
     /// - Warning: This method requires authentication.
-    public class SearchUsersByHandle: ParametersBase<SearchUsersByHandle.Fields, SearchUsersByHandle>
+    public class SearchUser: ParametersBase<SearchUser.Fields, SearchUser>
     {
         public enum Fields
         {
@@ -321,21 +364,21 @@ public class UsersServices
         }
 
         public var cursor:String?
-        public var limit:String?
+        public var limit:Int?
         public var name:String?
         public var handle:String?
         public var userid:String?
 
-        override public func from(dictionary: [AnyHashable: Any]) -> SearchUsersByHandle
+        override public func from(dictionary: [AnyHashable: Any]) -> SearchUser
         {
             set(dictionary: dictionary)
-            let ret = SearchUsersByHandle()
+            let ret = SearchUser()
 
             ret.cursor = value(forKey: .cursor)
             ret.limit = value(forKey: .limit)
             ret.name = value(forKey: .name)
-            ret.handle = value(forKey: .handle)
             ret.userid = value(forKey: .userid)
+            ret.handle = value(forKey: .handle)
 
             return ret
         }
@@ -348,6 +391,62 @@ public class UsersServices
             add(key: .limit, value: limit)
             add(key: .name, value: name)
             add(key: .userid, value: userid)
+            add(key: .handle, value: handle)
+            return toDictionary
+        }
+    }
+    
+    /// Searches the users in an app
+    ///
+    /// Use this method to cursor through a list of users. This method will return users in the order in which they were created, so it is safe to add new users while cursoring through the list.
+    ///
+    /// userid: Required. If the userid is new then the user will be created. If the userid is already in use in the database then the user will be updated.
+    ///
+    /// Arguments:
+    ///
+    /// cursor: Each call to ListUsers will return a result set with a 'nextCursor' value. To get the next page of users, pass this value as the optional 'cursor' property. To get the first page of users, omit the 'cursor' argument.
+    ///
+    /// limit: You can omit this optional argument, in which case the default limit is 200 users to return.
+    ///
+    /// name: Provide part of a name to search the user name field
+    ///
+    /// handle: Provide part of a handle to search by handle
+    ///
+    /// userid: Provide part of a userid to search by userid
+    ///
+    /// - Warning: This method requires authentication.
+    @available(swift, deprecated: 5, renamed: "SearchUser", message: "Use SearchUser with request.handle = \"user_handle\"")
+    public class SearchUsersByHandle: ParametersBase<SearchUsersByHandle.Fields, SearchUsersByHandle>
+    {
+        public enum Fields
+        {
+            case cursor
+            case limit
+            case handle
+        }
+
+        public var cursor:String?
+        public var limit:String?
+        public var handle:String?
+
+        override public func from(dictionary: [AnyHashable: Any]) -> SearchUsersByHandle
+        {
+            set(dictionary: dictionary)
+            let ret = SearchUsersByHandle()
+
+            ret.cursor = value(forKey: .cursor)
+            ret.limit = value(forKey: .limit)
+            ret.handle = value(forKey: .handle)
+
+            return ret
+        }
+
+        public func toDictionary() -> [AnyHashable: Any]
+        {
+            toDictionary = [AnyHashable: Any]()
+
+            add(key: .cursor, value: cursor)
+            add(key: .limit, value: limit)
             addRequired(key: .handle, value: handle)
             return toDictionary
         }
@@ -372,6 +471,7 @@ public class UsersServices
     /// userid: Provide part of a userid to search by userid
     ///
     /// - Warning: This method requires authentication.
+    @available(swift, deprecated: 5, renamed: "SearchUser", message: "Use SearchUser with request.name = \"user_name\"")
     public class SearchUsersByName: ParametersBase<SearchUsersByName.Fields, SearchUsersByName>
     {
         public enum Fields
@@ -379,15 +479,11 @@ public class UsersServices
             case cursor
             case limit
             case name
-            case handle
-            case userid
         }
 
         public var cursor:String?
         public var limit:String?
         public var name:String?
-        public var handle:String?
-        public var userId:String?
 
         override public func from(dictionary: [AnyHashable: Any]) -> SearchUsersByName
         {
@@ -397,8 +493,6 @@ public class UsersServices
             ret.cursor = value(forKey: .cursor)
             ret.limit = value(forKey: .limit)
             ret.name = value(forKey: .name)
-            ret.handle = value(forKey: .handle)
-            ret.userId = value(forKey: .userid)
 
             return ret
         }
@@ -410,8 +504,6 @@ public class UsersServices
             add(key: .cursor, value: cursor)
             add(key: .limit, value: limit)
             addRequired(key: .name, value: name)
-            add(key: .handle, value: handle)
-            add(key: .userid, value: userId)
             
             return toDictionary
         }
@@ -436,6 +528,7 @@ public class UsersServices
     /// userid: Provide part of a userid to search by userid
     ///
     /// - Warning: This method requires authentication.
+    @available(swift, deprecated: 5, renamed: "SearchUser", message: "Use SearchUser with request.userid = \"user_userid\"")
     public class SearchUsersByUserId: ParametersBase<SearchUsersByUserId.Fields, SearchUsersByUserId>
     {
         public enum Fields
@@ -450,8 +543,6 @@ public class UsersServices
 
         public var cursor:String?
         public var limit:String?
-        public var name:String?
-        public var handle:String?
         public var userId:String?
 
         override public func from(dictionary: [AnyHashable: Any]) -> SearchUsersByUserId
@@ -461,8 +552,6 @@ public class UsersServices
 
             ret.cursor = value(forKey: .cursor)
             ret.limit = value(forKey: .limit)
-            ret.name = value(forKey: .name)
-            ret.handle = value(forKey: .handle)
             ret.userId = value(forKey: .userid)
 
             return ret
@@ -474,8 +563,6 @@ public class UsersServices
 
             add(key: .cursor, value: cursor)
             add(key: .limit, value: limit)
-            add(key: .name, value: name)
-            add(key: .handle, value: handle)
             addRequired(key: .userid, value: userId)
             
             return toDictionary

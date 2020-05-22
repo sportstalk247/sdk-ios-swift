@@ -11,7 +11,6 @@ enum RequestType: String {
 
 open class NetworkService {
     public var config: ClientConfig
-    public var debug: Bool = SportsTalkSDK().debugMode
     
     init(config: ClientConfig) {
         self.config = config
@@ -37,7 +36,7 @@ open class NetworkService {
                     completionHandler(nil)
                 } else {
                     if let data = data {
-                        if self.debug {
+                        if SportsTalkSDK.shared.debugMode {
                             print("Response(\(serviceName ?? "non service")): \(data.string ?? "")")
                         }
                         
@@ -111,7 +110,7 @@ open class NetworkService {
         request.addValue(contentTypeValue, forHTTPHeaderField: contentTypeTitle)
         request.addValue(config.authToken, forHTTPHeaderField: tokenTitle)
         
-        if self.debug {
+        if SportsTalkSDK.shared.debugMode {
             request.log()
         }
         

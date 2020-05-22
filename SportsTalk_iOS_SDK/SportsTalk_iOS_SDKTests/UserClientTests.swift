@@ -30,8 +30,8 @@ class UserClientTests: XCTestCase {
         user.profileurl = "http://www.thepresidentshalloffame.com/1-george-washington"
         return user
     }()
-    
-    override func setUp() {
+        
+    override func setUpWithError() throws {
         SportsTalkSDK.shared.debugMode = true
     }
 }
@@ -126,6 +126,25 @@ extension UserClientTests {
         XCTAssertTrue(receivedCode == 200)
         XCTAssertEqual(5, receivedUsers?.count)
     }
+    
+    func test_UsersServices_setBanStatus() {
+        test_UserServices_UpdateUser()
+        let request = UsersServices.setBanStatus()
+        request.userid = dummyUser?.userid
+        request.banned = true
+        
+        let expectation = self.expectation(description: Constants.Expectation_Description)
+        var banned: Bool?
+
+        client.setBanStatus(request) { (code, message, _, user) in
+            print(message ?? "")
+            banned = user?.banned
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(banned == request.banned)
+    }
 
     func test_UserServices_BanUser() {
         test_UserServices_UpdateUser()
@@ -163,6 +182,32 @@ extension UserClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertTrue(!(banned ?? true))
     }
+    
+    func test_UsersServices_SearchUser() {
+        test_UserServices_UpdateUser()
+        let request = UsersServices.SearchUser()
+        request.handle = dummyUser?.handle ?? "Sam"
+        request.limit = 5
+        
+        let expectation = self.expectation(description: Constants.Expectation_Description)
+        var receivedUsers: [User]?
+        var receivedCode: Int?
+        
+        client.searchUser(request) { (code, message, _, response) in
+            print(message ?? "")
+            
+            print("found \(String(describing: response?.users.count))")
+            response?.users.forEach { print( $0.displayname ?? "unknown name" ) }
+            receivedUsers = response?.users
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert((receivedUsers?.count ?? 0) > 0)
+        XCTAssert(receivedCode == 200)
+
+    }
 
     func test_UserServices_SearchUsersByHandle() {
         test_UserServices_UpdateUser()
@@ -177,7 +222,7 @@ extension UserClientTests {
         client.searchByHandle(request) { (code, message, _, response) in
             print(message ?? "")
             print("found \(String(describing: response?.users.count))")
-            
+            response?.users.forEach { print( $0.displayname ?? "unknown name" ) }
             receivedUsers = response?.users
             receivedCode = code
             expectation.fulfill()
@@ -200,6 +245,7 @@ extension UserClientTests {
         client.searchByName(request) { (code, message, _, response) in
             print(message ?? "")
             print("found \(String(describing: response?.users.count))")
+            response?.users.forEach { print( $0.displayname ?? "unknown name" ) }
             receivedUsers = response?.users
             receivedCode = code
             expectation.fulfill()
@@ -222,6 +268,7 @@ extension UserClientTests {
         client.searchByUserId(request) { (code, message, _, response) in
             print(message ?? "")
             print("found \(String(describing: response?.users.count))")
+            response?.users.forEach { print( $0.displayname ?? "unknown name" ) }
             receivedUsers = response?.users
             receivedCode = code
             expectation.fulfill()
