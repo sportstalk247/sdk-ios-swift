@@ -9,7 +9,7 @@ public struct ApiResponse<T: Codable>: Codable {
     
     private enum CodingKeys: String, CodingKey {
         case kind
-        case message
+        case message = "errorMessage"
         case code
         case data
     }

@@ -19,12 +19,39 @@ class ChatClientTests: XCTestCase {
     var dummyEvent: Event? { didSet { print("Event saved: \(String(describing: self.dummyEvent?.id))") }  }
     var dummyEventNeedingModeration: Event? { didSet { print("Event saved: \(String(describing: self.dummyEventNeedingModeration?.id))") }  }
     
-    override func setUp() {
+    override func setUpWithError() throws {
         SportsTalkSDK.shared.debugMode = true
     }
 }
 
 extension ChatClientTests {
+    func test_ChatRoomsServices_CreateRoom() {
+        let request = ChatRoomsServices.CreateRoom()
+        request.name = "Test Room Post Moderated 3"
+        request.customid = "some-custom-id"
+        request.description = "Chat Room Newly Created"
+        request.moderation = "post"
+        request.enableactions = true
+        request.enableenterandexit = false
+        request.roomisopen = true
+        
+        let expectation = self.expectation(description: Constants.Expectation_Description)
+        var receivedCode: Int?
+        var receivedRoom: ChatRoom?
+        
+        client.createRoom(request) { (code, message, _, room) in
+            print(message ?? "")
+            receivedCode = code
+            receivedRoom = room
+            self.dummyRoom = room
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+        XCTAssertTrue(receivedRoom != nil)
+    }
+    
     func test_ChatRoomsServices_CreateRoomPostmoderated() {
         let request = ChatRoomsServices.CreateRoomPostmoderated()
         request.name = "Test Room Post Moderated 3"
@@ -207,6 +234,37 @@ extension ChatClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertTrue(receivedCode == 200)
     }
+    
+    func test_ChatRoomsServices_JoinRoom() {
+        if dummyUser ==  nil {
+            self.createUpdateUser()
+        }
+        
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPostmoderated()
+        }
+        
+        let request = ChatRoomsServices.JoinRoom()
+        request.userid = dummyUser?.userid
+        request.displayname = dummyUser?.displayname
+        request.roomid = dummyRoom?.id
+
+        let expectation = self.expectation(description: Constants.Expectation_Description)
+        var receivedCode: Int?
+        var receivedUser: User?
+        
+        client.joinRoom(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            receivedUser = response?.user
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+
+        XCTAssertTrue(receivedCode == 200)
+        XCTAssertTrue(receivedUser != nil)
+    }
 
     func test_ChatRoomsServices_JoinRoomAuthenticatedUser() {
         if dummyUser ==  nil {
@@ -370,6 +428,28 @@ extension ChatClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertTrue(receivedCode == 200)
     }
+    
+    func test_ChatRoomsServices_SendReply() {
+        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        let request = ChatRoomsServices.SendReply()
+        request.roomId = dummyRoom?.id
+        request.command = "SAY Hello SPORTSTALKSDK World!"
+        request.userid = dummyUser?.userid
+        
+        let expectation = self.expectation(description: Constants.Expectation_Description)
+            var receivedCode: Int?
+        
+            client.sendReply(request) { (code, message, _, response) in
+                print(message ?? "")
+                print("Executed command: \(response?.speech?.body ?? "failed")")
+                receivedCode = code
+                self.dummyEvent = response?.speech
+                expectation.fulfill()
+            }
+
+            waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+            XCTAssertTrue(receivedCode == 200)
+    }
 
     func test_ChatRoomsServices_ListMessagesByUsers() {
         test_ChatRoomsServices_ExecuteChatCommand()
@@ -414,9 +494,9 @@ extension ChatClientTests {
 
     func test_ChatRoomsServices_ReactToAMessage() {
         test_ChatRoomsServices_ExecuteChatCommand()
-        let request = ChatRoomsServices.ReactToAMessageLike()
+        let request = ChatRoomsServices.ReactToEvent()
         request.roomId = dummyRoom?.id
-        request.roomNewestEventId = dummyEvent?.id
+        request.eventid = dummyEvent?.id
         request.userid = dummyUser?.userid
         request.reaction = "like"
         request.reacted = "true"
@@ -424,7 +504,7 @@ extension ChatClientTests {
         let expectation = self.expectation(description: Constants.Expectation_Description)
         var receivedCode: Int?
         
-        client.reactToAMessage(request) { (code, message, _, event) in
+        client.reactToEvent(request) { (code, message, _, event) in
             print(message ?? "")
             receivedCode = code
             expectation.fulfill()
@@ -436,16 +516,16 @@ extension ChatClientTests {
 }
 // MARK: - Moderation
 extension ChatClientTests {
-    func test_ModerationServices_ApproveMessage() {
-        test_ModerationServices_ListMessagesNeedingModeration()
-        let request = ModerationServices.ApproveMessage()
+    func test_ModerationServices_ApproveEvent() {
+        test_ModerationServices_ListMessagesInModerationQueue()
+        let request = ModerationServices.ApproveEvent()
         request.chatMessageId = dummyEventNeedingModeration?.id
         request.chatRoomId = dummyRoom?.id
 
         let expectation = self.expectation(description: Constants.Expectation_Description)
         var receivedCode: Int?
         
-        client.approveMessage(request) { (code, message, _, event) in
+        client.approveEvent(request) { (code, message, _, event) in
             print(message ?? "")
             receivedCode = code
             expectation.fulfill()
@@ -455,14 +535,34 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
-    func test_ModerationServices_ListMessagesNeedingModeration() {
+    func test_ModerationServices_RejectEvent() {
+        test_ModerationServices_ListMessagesInModerationQueue()
+        let request = ModerationServices.RejectEvent()
+        request.chatMessageId = dummyEventNeedingModeration?.id
+        request.chatRoomId = dummyRoom?.id
+
+        let expectation = self.expectation(description: Constants.Expectation_Description)
+        var receivedCode: Int?
+        
+        client.rejectEvent(request) { (code, message, _, event) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+
+    
+    func test_ModerationServices_ListMessagesInModerationQueue() {
         test_ChatRoomsServices_ReportMessage()
-        let request = ModerationServices.ListMessagesNeedingModeration()
+        let request = ModerationServices.listMessagesInModerationQueue()
         
         let expectation = self.expectation(description: Constants.Expectation_Description)
         var receivedCode: Int?
         
-        client.listMessagesNeedingModeration(request) { (code, message, _, response) in
+        client.listMessagesInModerationQueue(request) { (code, message, _, response) in
             print(message ?? "")
             receivedCode = code
             self.dummyEventNeedingModeration = response?.events.first
@@ -488,16 +588,18 @@ extension ChatClientTests {
             return
         }
         
-        client.startEventUpdates(from: roomid) { (code, message, _, event) in
+        SportsTalkSDK.shared.debugMode = false
+        client.startListeningToChatUpdates(from: roomid) { (code, message, _, event) in
             print("------------")
             print(code == 200 ? "pulse success" : "pulse failed")
-            print((event?.count ?? 0) > 0 ? "received \(event?.count) event" : "No new events")
+            print((event?.count ?? 0) > 0 ? "received \(String(describing: event?.count)) event" : "No new events")
             print("------------")
             receivedCode = code
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(Int(Config.TIMEOUT) - 1)) {
-            self.client.stopEventUpdates()
+            self.client.stopListeningToChatUpdates()
+            SportsTalkSDK.shared.debugMode = true
             expectation.fulfill()
         }
         

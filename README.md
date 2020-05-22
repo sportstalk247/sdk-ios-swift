@@ -78,15 +78,16 @@ func createUser() {
 }
 ```
 
-### Joining a Room as an Authenticated User
+### Joining a Room
 ```swift
 let client = ChatClient(config: config)
 
 func JoinRoom(_ room: ChatRoom, as user: User) {
-    let request = ChatRoomsServices.JoinRoomAuthenticatedUser()
+    let request = ChatRoomsServices.JoinRoom()
+    request.roomid = room.id
+    // To join as Authenticated user, include the user to your request
     request.userid = user.userid
     request.displayname = user.displayname
-    request.roomid = room.id
 
     client.joinRoomAuthenticated(request) { (code, message, _, response) in
         // where response is model called JoinChatRoomResponse
@@ -127,11 +128,11 @@ func getUpdates(_ room: ChatRoom) {
 }
 ```
 ### Start/Stop Getting Event Updates
-Get periodic updates from room by using ```client.startEventUpdates(roomId:completionHandler)```
+Get periodic updates from room by using ```client.startListeningToChatUpdates(roomId:completionHandler)```
 
 Only new events will be emitted, so it is up to you to collect the new events.
 
-To stop getting updates, simply call `client.stopEventUpdates()` anytime.
+To stop getting updates, simply call `client.stopListeningToChatUpdates()` anytime.
 
 Note: 
 `frequency` is optional and is set to 500 milliseconds by default
@@ -143,7 +144,7 @@ let client = ChatClient(config: config)
 var events = [Event]()
 
 func receiveUpdates(from room: ChatRoom, every seconds: Int) {
-    client.startEventUpdates(from: roomid, frequency: seconds) { (code, message, _, event) in
+    client.startListeningToChatUpdates(from: roomid, frequency: seconds) { (code, message, _, event) in
         if let event = event {
             events.append(event)
         }
@@ -158,7 +159,7 @@ func receiveUpdates(from room: ChatRoom, every seconds: Int) {
 
 func stopUpdates() {
     // Ideally call this on viewDidDisappear() and deinit()
-    client.stopEventUpdates()
+    client.stopListeningToChatUpdates()
 }
 ```
 
@@ -231,9 +232,26 @@ The easiest way to see how these event works is to see the demo page: https://ww
 
 * Make sure you handle errors for sending messages in case of network disruption. For instance, `client.sendCommand('message').catch(handleErrorInUiFn)`
 
+* Enable/Disable debug mode with SportsTalkSDK.shared.debugMode = true/false
   
 
-## Copyright & License
+# Improvements on this version
+## Depracations
+### UserClient
+* `func banUser(...)` deprecated in favor of `func setBanStatus(...)`
+* `func restoreUser(...)` deprecated in favor of `func setBanStatus(...)`
+* `func searchByHandle(...)` deprecated in favor of `func searchUser(...)`
+* `func searchByName(...)` deprecated in favor of `func searchUser(...)`
+* `func searchByUserId(...)` deprecated in favor of `func searchUser(...)`
+
+### ChatClient
+* `func joinRoomAuthenticated(...)` deprecated in favor of `func joinRoom(...)`
+* `func joinRoomAnonymous(...)` deprecated in favor of `func joinRoom(...)`
+* `func createRoomPostModerated` deprecated in favor of `func createRoom(...)`
+* `func createRoomPreModerated` deprecated in favor of `func createRoom(...)`
+
+
+# Copyright & License
 
   
 

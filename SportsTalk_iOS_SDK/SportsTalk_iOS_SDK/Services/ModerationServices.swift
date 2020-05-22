@@ -8,7 +8,7 @@ public class ModerationServices
     /// If the room is set to use POST-MODERATION, messages will only be sent to the moderation queue if they are reported.
     ///
     /// - Warning: Requires Authentication
-    public class ApproveMessage: ParametersBase<ApproveMessage.Fields, ApproveMessage>
+    public class ApproveEvent: ParametersBase<ApproveEvent.Fields, ApproveEvent>
     {
         public enum Fields
         {
@@ -19,29 +19,61 @@ public class ModerationServices
         
         public var chatRoomId: String?
         public var chatMessageId: String?
-        public var approve: Bool?  = true
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ApproveMessage
+        override public func from(dictionary: [AnyHashable: Any]) -> ApproveEvent
         {
             set(dictionary: dictionary)
-            let ret = ApproveMessage()
+            let ret = ApproveEvent()
             
             ret.chatRoomId = value(forKey: .chatRoomId)
             ret.chatMessageId = value(forKey: .chatMessageId)
-            ret.approve = value(forKey: .approve)
             return ret
         }
         
         public func toDictionary() -> [AnyHashable: Any]
         {
             toDictionary = [AnyHashable: Any]()
-            add(key: .approve, value: approve)
+            add(key: .approve, value: true)
             addRequired(key: .chatRoomId, value: chatRoomId)
             addRequired(key: .chatMessageId, value: chatMessageId)
             
             return toDictionary
         }
     }
+    
+    public class RejectEvent: ParametersBase<RejectEvent.Fields, RejectEvent>
+    {
+        public enum Fields
+        {
+            case chatRoomId
+            case chatMessageId
+            case approve
+        }
+        
+        public var chatRoomId: String?
+        public var chatMessageId: String?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> RejectEvent
+        {
+            set(dictionary: dictionary)
+            let ret = RejectEvent()
+            
+            ret.chatRoomId = value(forKey: .chatRoomId)
+            ret.chatMessageId = value(forKey: .chatMessageId)
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any]
+        {
+            toDictionary = [AnyHashable: Any]()
+            add(key: .approve, value: false)
+            addRequired(key: .chatRoomId, value: chatRoomId)
+            addRequired(key: .chatMessageId, value: chatMessageId)
+            
+            return toDictionary
+        }
+    }
+
     
     /// List all the messages in the moderation queue
     ///
@@ -50,7 +82,7 @@ public class ModerationServices
     /// roomId: (optional) Provide the ID for a room to filter for only the queued events for a specific room
     /// cursor: (optional) Provide cursor value to get the next page of results.
     /// - Warning: Requires Authentication
-    public class ListMessagesNeedingModeration: ParametersBase<ListMessagesNeedingModeration.Fields, ListMessagesNeedingModeration>
+    public class listMessagesInModerationQueue: ParametersBase<listMessagesInModerationQueue.Fields, listMessagesInModerationQueue>
        {
             public enum Fields
             {
@@ -63,10 +95,10 @@ public class ModerationServices
            public var roomId: String?
            public var cursor: String?
            
-           override public func from(dictionary: [AnyHashable: Any]) -> ListMessagesNeedingModeration
+           override public func from(dictionary: [AnyHashable: Any]) -> listMessagesInModerationQueue
            {
                set(dictionary: dictionary)
-               let ret = ListMessagesNeedingModeration()
+               let ret = listMessagesInModerationQueue()
                
                ret.limit = value(forKey: .limit)
                ret.roomId = value(forKey: .roomId)
