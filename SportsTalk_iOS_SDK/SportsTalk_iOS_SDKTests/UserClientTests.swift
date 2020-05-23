@@ -126,8 +126,8 @@ extension UserClientTests {
         XCTAssertTrue(receivedCode == 200)
         XCTAssertEqual(5, receivedUsers?.count)
     }
-    
-    func test_UsersServices_setBanStatus() {
+
+    func test_UserServices_BanUser() {
         test_UserServices_UpdateUser()
         let request = UsersServices.setBanStatus()
         request.userid = dummyUser?.userid
@@ -143,44 +143,27 @@ extension UserClientTests {
         }
         
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-        XCTAssertTrue(banned == request.banned)
-    }
-
-    func test_UserServices_BanUser() {
-        test_UserServices_UpdateUser()
-        let request = UsersServices.BanUser()
-        request.userid = dummyUser?.userid
-        
-        let expectation = self.expectation(description: Constants.Expectation_Description)
-        var banned: Bool?
-
-        client.banUser(request) { (code, message, _, user) in
-            print(message ?? "")
-            banned = user?.banned
-            expectation.fulfill()
-        }
-        
-        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-        XCTAssertTrue(banned ?? false)
+        XCTAssertTrue(banned == true)
     }
 
     func test_UserServices_RestoreUser()
     {
-        test_UserServices_BanUser()
-        let request = UsersServices.RestoreUser()
+        test_UserServices_UpdateUser()
+        let request = UsersServices.setBanStatus()
         request.userid = dummyUser?.userid
-
-        let expectation = self.expectation(description: Constants.Expectation_Description)
-        var banned: Bool? = false
+        request.banned = false
         
-        client.restoreUser(request) { (code, message, _, user) in
+        let expectation = self.expectation(description: Constants.Expectation_Description)
+        var banned: Bool?
+
+        client.setBanStatus(request) { (code, message, _, user) in
             print(message ?? "")
             banned = user?.banned
             expectation.fulfill()
         }
         
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-        XCTAssertTrue(!(banned ?? true))
+        XCTAssertTrue(banned == false)
     }
     
     func test_UsersServices_SearchUser() {
@@ -196,77 +179,6 @@ extension UserClientTests {
         client.searchUser(request) { (code, message, _, response) in
             print(message ?? "")
             
-            print("found \(String(describing: response?.users.count))")
-            response?.users.forEach { print( $0.displayname ?? "unknown name" ) }
-            receivedUsers = response?.users
-            receivedCode = code
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-        XCTAssert((receivedUsers?.count ?? 0) > 0)
-        XCTAssert(receivedCode == 200)
-
-    }
-
-    func test_UserServices_SearchUsersByHandle() {
-        test_UserServices_UpdateUser()
-        let request = UsersServices.SearchUsersByHandle()
-        request.handle = dummyUser?.handle ?? "Sam"
-        request.limit = "5"
-
-        let expectation = self.expectation(description: Constants.Expectation_Description)
-        var receivedUsers: [User]?
-        var receivedCode: Int?
-        
-        client.searchByHandle(request) { (code, message, _, response) in
-            print(message ?? "")
-            print("found \(String(describing: response?.users.count))")
-            response?.users.forEach { print( $0.displayname ?? "unknown name" ) }
-            receivedUsers = response?.users
-            receivedCode = code
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-        XCTAssert((receivedUsers?.count ?? 0) > 0)
-        XCTAssert(receivedCode == 200)
-    }
-
-    func test_UserServices_SearchUsersByName() {
-        test_UserServices_UpdateUser()
-        let request = UsersServices.SearchUsersByName()
-        request.name = dummyUser?.displayname ?? "Sam"
-
-        let expectation = self.expectation(description: Constants.Expectation_Description)
-        var receivedUsers: [User]?
-        var receivedCode: Int?
-        
-        client.searchByName(request) { (code, message, _, response) in
-            print(message ?? "")
-            print("found \(String(describing: response?.users.count))")
-            response?.users.forEach { print( $0.displayname ?? "unknown name" ) }
-            receivedUsers = response?.users
-            receivedCode = code
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-        XCTAssert((receivedUsers?.count ?? 0) > 0)
-        XCTAssert(receivedCode == 200)
-    }
-
-    func test_UserServices_SearchUsersByUserId() {
-        test_UserServices_UpdateUser()
-        let request = UsersServices.SearchUsersByUserId()
-        request.userId = dummyUser?.userid
-
-        let expectation = self.expectation(description: Constants.Expectation_Description)
-        var receivedUsers: [User]?
-        var receivedCode: Int?
-        
-        client.searchByUserId(request) { (code, message, _, response) in
-            print(message ?? "")
             print("found \(String(describing: response?.users.count))")
             response?.users.forEach { print( $0.displayname ?? "unknown name" ) }
             receivedUsers = response?.users

@@ -87,160 +87,6 @@ public class ChatRoomsServices
         }
     }
     
-    /// Creates a new chat room (Postmoderated)
-    ///
-    /// name: (required) The name of the room
-    ///
-    /// customid: (optional) A customid for the room. Can be unused, or a unique key.
-    ///
-    /// description: (optional) The description of the room
-    ///
-    /// enableactions: (optional) [true/false] Turns action commands on or off
-    ///
-    /// enableenterandexit: (optional) [true/false] Turn enter and exit events on or off. Disable for large rooms to reduce noise.
-    ///
-    /// enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
-    ///
-    /// delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
-    ///
-    /// maxreportss: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
-    ///
-    /// - Warning: This method requires authentication.
-    @available(swift, deprecated: 5, renamed: "CreateRoom", message: "Use CreateRoom with request.moderation = \"post\"")
-    public class CreateRoomPostmoderated: ParametersBase<CreateRoomPostmoderated.Fields, CreateRoomPostmoderated>
-    {
-        public enum Fields {
-            case name
-            case customid
-            case description
-            case moderation
-            case enableactions
-            case enableenterandexit
-            case enableprofanityfilter
-            case roomisopen
-            case maxreports
-        }
-        
-        public var name: String?
-        public var customid: String?
-        public var description: String?
-        public var enableactions: Bool?
-        public var enableenterandexit: Bool?
-        public var enableprofanityfilter: Bool?
-        public var roomisopen: Bool?
-        public var maxreports: Int? = 3
-        
-        override public func from(dictionary: [AnyHashable: Any]) -> CreateRoomPostmoderated
-        {
-            set(dictionary: dictionary)
-            let ret = CreateRoomPostmoderated()
-        
-            ret.name = value(forKey: .name)
-            ret.customid = value(forKey: .customid)
-            ret.description = value(forKey: .description)
-            ret.enableactions = value(forKey: .enableactions)
-            ret.enableenterandexit = value(forKey: .enableenterandexit)
-            ret.enableprofanityfilter = value(forKey: .enableprofanityfilter)
-            ret.roomisopen = value(forKey: .roomisopen)
-            ret.maxreports = value(forKey: .maxreports)
-            
-            return ret
-        }
-        
-        public func toDictionary() -> [AnyHashable: Any]
-        {
-            toDictionary = [AnyHashable: Any]()
-            
-            addRequired(key: .name, value: name)
-            
-            add(key: .name, value: name)
-            add(key: .customid, value: customid)
-            add(key: .description, value: description)
-            add(key: .moderation, value: "post")
-            add(key: .enableactions, value: enableactions)
-            add(key: .enableenterandexit, value: enableenterandexit)
-            add(key: .enableprofanityfilter, value: enableprofanityfilter)
-            add(key: .roomisopen, value: roomisopen)
-            add(key: .maxreports, value: maxreports)
-            
-            return toDictionary
-        }
-    }
-    
-    /// Creates a new chat room (Premoderated)
-    ///
-    /// name: (required) The name of the room
-    ///
-    /// customid: (optional) A customid for the room. Can be unused, or a unique key.
-    ///
-    /// description: (optional) The description of the room
-    ///
-    /// enableactions: (optional) [true/false] Turns action commands on or off
-    ///
-    /// enableenterandexit: (optional) [true/false] Turn enter and exit events on or off. Disable for large rooms to reduce noise.
-    ///
-    /// enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
-    ///
-    /// delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
-    ///
-    /// maxreportss: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
-    ///
-    /// - Warning: This method requires authentication.
-    @available(swift, deprecated: 5, renamed: "CreateRoom", message: "Use CreateRoom with request.moderation = \"pre\"")
-    public class CreateRoomPremoderated: ParametersBase<CreateRoomPremoderated.Fields, CreateRoomPremoderated>
-    {
-        public enum Fields
-        {
-            case name
-            case customid
-            case description
-            case moderation
-            case enableactions
-            case enableenterandexit
-            case roomisopen
-            case maxreports
-        }
-        
-        public var name: String?
-        public var customid: String?
-        public var description: String?
-        public var enableactions: Bool?
-        public var enableenterandexit: Bool?
-        public var roomisopen: Bool?
-        public var maxreports: Int? = 3
-        
-        override public func from(dictionary: [AnyHashable: Any]) -> CreateRoomPremoderated {
-            set(dictionary: dictionary)
-            let ret = CreateRoomPremoderated()
-            
-            ret.name = value(forKey: .name)
-            ret.customid = value(forKey: .customid)
-            ret.description = value(forKey: .description)
-            ret.enableactions = value(forKey: .enableactions)
-            ret.enableenterandexit = value(forKey: .enableenterandexit)
-            ret.roomisopen = value(forKey: .roomisopen)
-            ret.maxreports = value(forKey: .maxreports)
-            return ret
-        }
-        
-        public func toDictionary() -> [AnyHashable: Any]
-        {
-            toDictionary = [AnyHashable: Any]()
-            
-            addRequired(key: .name, value: name)
-            
-            add(key: .name, value: name)
-            add(key: .customid, value: customid)
-            add(key: .description, value: description)
-            add(key: .moderation, value: "pre")
-            add(key: .enableactions, value: enableactions)
-            add(key: .enableenterandexit, value: enableenterandexit)
-            add(key: .roomisopen, value: roomisopen)
-            add(key: .maxreports, value: maxreports)
-            return toDictionary
-        }
-    }
-    
     /// Get the details for a room
     ///
     /// roomIdOrSlug: Room Id or Slug of a specific room againts which you want to fetch the details
@@ -605,85 +451,6 @@ public class ChatRoomsServices
             return toDictionary
         }
     }
-   
-    /// Join A Room (Anonymous User)
-    ///
-    /// You can join a room either by using the room ID or label. First this method attempts to join a room with the specified ID. If the ID is not found, it attempts to join using the specified label. Labels must be URL friendly. The label is provided when the room is created. For example, if you wanted to label the room with the ID of a match, you can join the room without the need to invoke list rooms to get a room id.
-    ///
-    /// Logged in users:
-    ///  * To log a user in, provide a unique user ID string and chat handle string. If this is the first time the user ID has been used a new user record will be created for the user. Whenever the user creates an event in the room by doing an action like saying something, the user information will be returned.
-    ///  * You can optionally also provide a URL to an image and a URL to a profile.
-    ///  * If you provide user information and the user already exists in the database, the user will be updated with the new information.
-    ///  * The user will be added to the list of participants in the room and the room participant count will increase.
-    ///  * The user will be removed from the room automatically after some time if the user doesn't perform any operations.
-    ///  * Users can only execute commands in the room if they have joined the room.
-    ///  * When a logged in user joins a room an entrance event is generated in the room.
-    ///  * When a logged in user leaves a room, an exit event is generated in the room.
-    ///
-    ///  Arguments:
-    ///
-    ///  roomid:  The room you want to join
-    ///
-    ///  userid: user id specific to App
-    ///
-    ///  handle: user handle specific to App
-    ///
-    ///  displayname: Display Name for user
-    ///
-    ///  pictureurl:  Picture url of user
-    ///
-    ///  profileurl: Profile url of user
-    ///
-    /// - Warning: This method requires authentication.
-    @available(swift, deprecated: 5, renamed: "JoinRoom", message: "Use JoinRoom with a user")
-    public class JoinRoomAuthenticatedUser: ParametersBase<JoinRoomAuthenticatedUser.Fields, JoinRoomAuthenticatedUser>
-    {
-        public enum Fields
-        {
-            case roomid
-            case userid
-            case handle
-            case displayname
-            case pictureurl
-            case profileurl
-        }
-        
-        public var roomid: String?
-        public var userid: String?
-        public var handle: String?
-        public var displayname: String?
-        public var pictureurl: URL?
-        public var profileurl: URL?
-        
-        override public func from(dictionary: [AnyHashable: Any]) -> JoinRoomAuthenticatedUser
-        {
-            set(dictionary: dictionary)
-            let ret = JoinRoomAuthenticatedUser()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.userid = value(forKey: .userid)
-            ret.handle = value(forKey: .handle)
-            ret.displayname = value(forKey: .displayname)
-            ret.pictureurl = value(forKey: .pictureurl)
-            ret.profileurl = value(forKey: .profileurl)
-            
-            return ret
-        }
-        
-        public func toDictionary() -> [AnyHashable: Any]
-        {
-            toDictionary = [AnyHashable: Any]()
-            
-            addRequired(key: .roomid, value: roomid)
-            add(key: .userid, value: userid)
-            add(key: .handle, value: handle)
-            add(key: .displayname, value: displayname)
-            add(key: .pictureurl, value: pictureurl?.absoluteString)
-            add(key: .profileurl, value: profileurl?.absoluteString)
-            
-            return toDictionary
-        }
-    }
     
     /// Join A Room (By Custom Id)
     ///
@@ -764,49 +531,7 @@ public class ChatRoomsServices
            return toDictionary
        }
     }
-    
-    /// Join A Room (Anonymous User)
-    ///
-    /// A user can be added to a room in a logged in state or in an anonymous state. Typically the anonymous state is used so that people can see what is happening in the room and be enticed to register with you in order to participate in the conversation, as they must be logged in to say something or react to anything happening in the room.
-    ///
-    /// Anonymous users:
-    ///  * The request to join the room will return the URL to query to get updates only. It will not update participant count or show this person as being a member of the room.
-    ///  * Anonymous users cannot contribute to the conversation, and do not perform actions or generate enter or exit events.
-    ///
-    ///  Arguments:
-    ///
-    ///  roomid:  The room you want to join
-    ///
-    /// - Warning: This method requires authentication.
-    @available(swift, deprecated: 5, renamed: "JoinRoom", message: "Use JoinRoom without setting a user")
-    public class JoinRoomAnonymousUser: ParametersBase<JoinRoomAnonymousUser.Fields, JoinRoomAnonymousUser>
-    {
-        public enum Fields
-        {
-            case roomid
-        }
-        
-        public var roomid: String?
-        
-        override public func from(dictionary: [AnyHashable: Any]) -> JoinRoomAnonymousUser
-        {
-            set(dictionary: dictionary)
-            let ret = JoinRoomAnonymousUser()
-            
-            ret.roomid = value(forKey: .roomid)
-            
-            return ret
-        }
-        
-        public func toDictionary() -> [AnyHashable: Any]
-        {
-            toDictionary = [AnyHashable: Any]()
-            
-            addRequired(key: .roomid, value: roomid)
-            
-            return toDictionary
-        }
-    }
+
     
     /// List all the participants in the specified room
     ///
@@ -871,11 +596,11 @@ public class ChatRoomsServices
     {
         public enum Fields
         {
-            case roomId
+            case roomid
             case userid
         }
         
-        public var roomId: String?
+        public var roomid: String?
         public var userid: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> ExitRoom
@@ -883,7 +608,7 @@ public class ChatRoomsServices
             set(dictionary: dictionary)
             let ret = ExitRoom()
             
-            ret.roomId = value(forKey: .roomId)
+            ret.roomid = value(forKey: .roomid)
             ret.userid = value(forKey: .userid)
             
             return ret
@@ -893,7 +618,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomid, value: roomid)
             add(key: .userid, value: userid)
             
             return toDictionary
@@ -923,17 +648,17 @@ public class ChatRoomsServices
     {
         public enum Fields
         {
-            case roomId
+            case roomid
         }
         
-        public var roomId: String?
+        public var roomid: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> GetUpdates
         {
             set(dictionary: dictionary)
             let ret = GetUpdates()
             
-            ret.roomId = value(forKey: .roomId)
+            ret.roomid = value(forKey: .roomid)
             
             return ret
         }
@@ -942,7 +667,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomid, value: roomid)
             
             return toDictionary
         }
@@ -1057,7 +782,7 @@ public class ChatRoomsServices
     {
         public enum Fields
         {
-            case roomId
+            case roomid
             case command
             case userid
             case customtype
@@ -1065,7 +790,7 @@ public class ChatRoomsServices
             case custompayload
         }
         
-        public var roomId: String?
+        public var roomid: String?
         public var command: String?
         public var userid: String?
         public var customtype: String?
@@ -1077,7 +802,7 @@ public class ChatRoomsServices
             set(dictionary: dictionary)
             let ret = ExecuteChatCommand()
             
-            ret.roomId = value(forKey: .roomId)
+            ret.roomid = value(forKey: .roomid)
             ret.command = value(forKey: .command)
             ret.userid = value(forKey: .userid)
             ret.customtype = value(forKey: .customtype)
@@ -1091,7 +816,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomid, value: roomid)
             add(key: .command, value: command)
             add(key: .userid, value: userid)
             add(key: .customtype, value: customtype)
@@ -1160,7 +885,7 @@ public class ChatRoomsServices
     {
         public enum Fields
         {
-            case roomId
+            case roomid
             case command
             case userid
             case customtype
@@ -1168,7 +893,7 @@ public class ChatRoomsServices
             case custompayload
         }
         
-        public var roomId: String?
+        public var roomid: String?
         public var command: String?
         public var userid: String?
         public var customtype: String?
@@ -1180,7 +905,7 @@ public class ChatRoomsServices
             set(dictionary: dictionary)
             let ret = ExecuteDanceAction()
             
-            ret.roomId = value(forKey: .roomId)
+            ret.roomid = value(forKey: .roomid)
             ret.command = value(forKey: .command)
             ret.userid = value(forKey: .userid)
             ret.customtype = value(forKey: .customtype)
@@ -1194,7 +919,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomid, value: roomid)
             add(key: .command, value: command)
             add(key: .userid, value: userid)
             add(key: .customtype, value: customtype)
@@ -1257,27 +982,27 @@ public class ChatRoomsServices
     ///  custompayload: any payload.
     ///
     /// - Warning: This method requires authentication.
-    public class SendReply: ParametersBase<SendReply.Fields, SendReply>
+    public class SendQuotedReply: ParametersBase<SendQuotedReply.Fields, SendQuotedReply>
     {
         public enum Fields
         {
-            case roomId
+            case roomid
             case command
             case userid
             case replyto
         }
         
-        public var roomId: String?
+        public var roomid: String?
         public var command: String?
         public var userid: String?
         public var replyto: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> SendReply
+        override public func from(dictionary: [AnyHashable: Any]) -> SendQuotedReply
         {
             set(dictionary: dictionary)
-            let ret = SendReply()
+            let ret = SendQuotedReply()
             
-            ret.roomId = value(forKey: .roomId)
+            ret.roomid = value(forKey: .roomid)
             ret.command = value(forKey: .command)
             ret.userid = value(forKey: .userid)
             ret.replyto = value(forKey: .replyto)
@@ -1289,7 +1014,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomid, value: roomid)
             add(key: .command, value: command)
             add(key: .userid, value: userid)
             add(key: .replyto, value: replyto)
@@ -1365,24 +1090,31 @@ public class ChatRoomsServices
     ///  chatMessageId:  the message you want to remove
     ///
     /// - Warning: This method requires authentication.
-    public class RemoveMessage: ParametersBase<RemoveMessage.Fields, RemoveMessage>
+    public class PermanentlyDeleteEvent: ParametersBase<PermanentlyDeleteEvent.Fields, PermanentlyDeleteEvent>
     {
         public enum Fields
         {
-            case chatRoomId
-            case chatMessageId
+            case roomid
+            case eventid
+            case userid
         }
         
-        public var chatRoomId: String?
-        public var chatMessageId: String?
+        public var roomid: String!
+        public var eventid: String!
+        public var userid: String!
+        public var deleted: Bool = true
+        public var permanent: Bool = true
         
-        override public func from(dictionary: [AnyHashable: Any]) -> RemoveMessage
+        override public func from(dictionary: [AnyHashable: Any]) -> PermanentlyDeleteEvent
         {
             set(dictionary: dictionary)
-            let ret = RemoveMessage()
+            let ret = PermanentlyDeleteEvent()
             
-            ret.chatRoomId = value(forKey: .chatRoomId)
-            ret.chatMessageId = value(forKey: .chatMessageId)
+            ret.roomid = value(forKey: .roomid)
+            ret.eventid = value(forKey: .eventid)
+            ret.userid = value(forKey: .userid)
+            ret.deleted = true
+            ret.permanent = true
             
             return ret
         }
@@ -1391,8 +1123,9 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .chatRoomId, value: chatRoomId)
-            addRequired(key: .chatMessageId, value: chatMessageId)
+            addRequired(key: .roomid, value: roomid)
+            addRequired(key: .eventid, value: eventid)
+            addRequired(key: .userid, value: userid)
             
             return toDictionary
         }
@@ -1531,14 +1264,14 @@ public class ChatRoomsServices
     {
         public enum Fields
         {
-            case roomId
+            case roomid
             case eventid
             case userid
             case reaction
             case reacted
         }
         
-        public var roomId: String?
+        public var roomid: String?
         public var eventid: String?
         public var userid: String?
         public var reaction: String?
@@ -1549,7 +1282,7 @@ public class ChatRoomsServices
             set(dictionary: dictionary)
             let ret = ReactToEvent()
             
-            ret.roomId = value(forKey: .roomId)
+            ret.roomid = value(forKey: .roomid)
             ret.eventid = value(forKey: .eventid)
             ret.userid = value(forKey: .userid)
             ret.reaction = value(forKey: .reaction)
@@ -1562,7 +1295,7 @@ public class ChatRoomsServices
         {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomid, value: roomid)
             addRequired(key: .eventid, value: eventid)
             add(key: .userid, value: userid)
             add(key: .reaction, value: reaction)
