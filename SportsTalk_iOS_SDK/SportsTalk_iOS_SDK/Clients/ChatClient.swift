@@ -15,7 +15,7 @@ public protocol ChatClientProtocol {
     func getUpdatesMore(_ request: ChatRoomsServices.GetUpdatesMore, completionHandler: @escaping Completion<GetUpdatesResponse>)
     func executeChatCommand(_ request: ChatRoomsServices.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func sendQuotedReply(_ request: ChatRoomsServices.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
-    func permanentlyDeleteEvent(_ request: ChatRoomsServices.PermanentlyDeleteEvent, completionHandler: @escaping Completion<Event>)
+//    func permanentlyDeleteEvent(_ request: ChatRoomsServices.PermanentlyDeleteEvent, completionHandler: @escaping Completion<Event>)
 //    func flagEventLogicallyDeleted(_ request: ChatRoomsServices.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func listMessagesByUser(_ request: ChatRoomsServices.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>)
     func reportMessage(_ request: ChatRoomsServices.ReportMessage, completionHandler: @escaping Completion<Event>)
@@ -124,14 +124,6 @@ extension ChatClient {
     
     public func sendQuotedReply(_ request: ChatRoomsServices.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
         makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
-        }
-    }
-    
-    public func permanentlyDeleteEvent(_ request: ChatRoomsServices.PermanentlyDeleteEvent, completionHandler: @escaping Completion<Event>) {
-        let serviceKey = "\(ServiceKeys.chat)\(request.roomid ?? emptyString)/events/\(request.eventid ?? emptyString)/setdeleted?userid=\(request.userid ?? emptyString)&deleted=\(request.deleted)&permanentifnoreplies=\(request.permanent)"
-        
-        makeRequest(serviceKey, withData: nil, requestType: .PUT, expectation: Event.self) { response in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
