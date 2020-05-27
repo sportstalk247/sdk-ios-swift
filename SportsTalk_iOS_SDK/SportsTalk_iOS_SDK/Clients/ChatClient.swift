@@ -14,7 +14,9 @@ public protocol ChatClientProtocol {
     func getUpdates(_ request: ChatRoomsServices.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>)
     func getUpdatesMore(_ request: ChatRoomsServices.GetUpdatesMore, completionHandler: @escaping Completion<GetUpdatesResponse>)
     func executeChatCommand(_ request: ChatRoomsServices.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
-    func sendReply(_ request: ChatRoomsServices.SendReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
+    func sendQuotedReply(_ request: ChatRoomsServices.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
+//    func permanentlyDeleteEvent(_ request: ChatRoomsServices.PermanentlyDeleteEvent, completionHandler: @escaping Completion<Event>)
+//    func flagEventLogicallyDeleted(_ request: ChatRoomsServices.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func listMessagesByUser(_ request: ChatRoomsServices.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>)
     func reportMessage(_ request: ChatRoomsServices.ReportMessage, completionHandler: @escaping Completion<Event>)
     func reactToEvent(_ request: ChatRoomsServices.ReactToEvent, completionHandler: @escaping Completion<Event>)
@@ -24,13 +26,6 @@ public protocol ChatClientProtocol {
     func approveEvent(_ request: ModerationServices.ApproveEvent, completionHandler: @escaping Completion<Event>)
     func rejectEvent(_ request: ModerationServices.RejectEvent, completionHandler: @escaping Completion<Event>)
     func listMessagesInModerationQueue(_ request: ModerationServices.listMessagesInModerationQueue, completionHandler: @escaping Completion<ListMessagesNeedingModerationResponse>)
-    
-    
-    /* Deprecated */
-    func joinRoomAuthenticated(_ request: ChatRoomsServices.JoinRoomAuthenticatedUser, completionHandler: @escaping Completion<JoinChatRoomResponse>)
-    func joinRoomAnonymous(_ request: ChatRoomsServices.JoinRoomAnonymousUser, completionHandler: @escaping Completion<JoinChatRoomResponse>)
-    func createRoomPostModerated(_ request: ChatRoomsServices.CreateRoomPostmoderated, completionHandler: @escaping Completion<ChatRoom>)
-    func createRoomPreModerated(_ request: ChatRoomsServices.CreateRoomPremoderated, completionHandler: @escaping Completion<ChatRoom>)
 }
 
 public class ChatClient: NetworkService, ChatClientProtocol {
@@ -104,13 +99,13 @@ extension ChatClient {
     }
 
     public func exitRoom(_ request: ChatRoomsServices.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomId ?? emptyString)/exit", withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { (response) in
+        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/exit", withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func getUpdates(_ request: ChatRoomsServices.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomId ?? emptyString)/updates", withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self) { (response) in
+        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/updates", withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -122,13 +117,13 @@ extension ChatClient {
     }
 
     public func executeChatCommand(_ request: ChatRoomsServices.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomId ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
-    public func sendReply(_ request: ChatRoomsServices.SendReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomId ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+    public func sendQuotedReply(_ request: ChatRoomsServices.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
+        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -146,7 +141,7 @@ extension ChatClient {
     }
     
     public func reactToEvent(_ request: ChatRoomsServices.ReactToEvent, completionHandler: @escaping Completion<Event>) {
-        let url = "\(ServiceKeys.chat)\(request.roomId ?? emptyString)/events/\(request.eventid ?? emptyString)/react"
+        let url = "\(ServiceKeys.chat)\(request.roomid ?? emptyString)/events/\(request.eventid ?? emptyString)/react"
         makeRequest(url, withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
@@ -182,7 +177,7 @@ extension ChatClient {
 extension ChatClient {
     public func startListeningToChatUpdates(from room: String, frequency seconds: Double = 0.5,  completionHandler: @escaping Completion<[Event]>) {
         let request = ChatRoomsServices.GetUpdates()
-        request.roomId = room
+        request.roomid = room
             
         timer = Timer.scheduledTimer(withTimeInterval: seconds, repeats: true, block: { _ in
             self.getUpdates(request) { (code, message, kind, response) in
@@ -207,36 +202,5 @@ extension ChatClient {
     public func stopListeningToChatUpdates() {
         timer?.invalidate()
         receivedEvents.removeAll()
-    }
-}
-
-// MARK: - Deprecated
-extension ChatClient {
-    @available(swift, deprecated: 5, renamed: "JoinRoom", message: "Use JoinRoom with a user")
-    public func joinRoomAuthenticated(_ request: ChatRoomsServices.JoinRoomAuthenticatedUser, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/join", withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
-        }
-    }
-    
-    @available(swift, deprecated: 5, renamed: "JoinRoom", message: "Use JoinRoom without setting a user")
-    public func createRoomPostModerated(_ request: ChatRoomsServices.CreateRoomPostmoderated, completionHandler: @escaping Completion<ChatRoom>) {
-        makeRequest(ServiceKeys.chat, withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
-        }
-    }
-
-    @available(swift, deprecated: 5, renamed: "CreateRoom", message: "Use CreateRoom with request.moderation = \"post\"")
-    public func createRoomPreModerated(_ request: ChatRoomsServices.CreateRoomPremoderated, completionHandler: @escaping Completion<ChatRoom>) {
-        makeRequest(ServiceKeys.chat, withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
-        }
-    }
-    
-    @available(swift, deprecated: 5, renamed: "CreateRoom", message: "Use CreateRoom with request.moderation = \"pre\"")
-    public func joinRoomAnonymous(_ request: ChatRoomsServices.JoinRoomAnonymousUser, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/join", withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self, append: false) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
-        }
     }
 }
