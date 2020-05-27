@@ -384,7 +384,7 @@ extension ChatClientTests {
         
         client.getUpdates(request) { (code, message, _, response) in
             print(message ?? "")
-            print(response?.cursor)
+            print(String(describing: response?.cursor))
             receivedCode = code
             expectation.fulfill()
         }
