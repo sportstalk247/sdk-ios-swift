@@ -170,12 +170,20 @@ public struct EventType {
 }
 
 internal func ISODateFormat(_ string: String) -> Date? {
-    let formatter = ISO8601DateFormatter()
-    formatter.timeZone = TimeZone(secondsFromGMT: 0)
-    formatter.formatOptions = [.withFullDate,
-                               .withFullTime,
-                               .withDashSeparatorInDate,
-                               .withFractionalSeconds]
-            
-    return formatter.date(from: string)
+    if #available(iOS 11.0, *) {
+        let formatter = ISO8601DateFormatter()
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.formatOptions = [.withFullDate,
+                                   .withFullTime,
+                                   .withDashSeparatorInDate,
+                                   .withFractionalSeconds]
+        return formatter.date(from: string)
+    } else {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .iso8601)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX"
+        return formatter.date(from: string)
+    }
 }
