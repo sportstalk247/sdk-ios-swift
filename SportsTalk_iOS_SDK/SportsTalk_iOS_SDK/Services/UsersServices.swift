@@ -173,46 +173,6 @@ public class UsersServices
             return toDictionary
         }
     }
-
-    /// Use this method to cursor through a list of users. This method will return users in the order in which they were created, so it is safe to add new users while cursoring through the list.
-    ///
-    /// cursor: Each call to ListUsers will return a result set with a 'nextCursor' value. To get the next page of users, pass this value as the optional 'cursor' property. To get the first page of users, omit the 'cursor' argument.
-    ///
-    /// limit: You can omit this optional argument, in which case the default limit is 200 users to return.
-    ///
-    /// - Warning: This method requires authentication.
-    public class ListUsersMore: ParametersBase<ListUsersMore.Fields, ListUsersMore>
-    {
-        public enum Fields
-        {
-            case cursor
-            case limit
-        }
-
-        public var cursor: String?
-        public var limit: String? = defaultLimit
-
-        override public func from(dictionary: [AnyHashable: Any]) -> ListUsersMore
-        {
-            set(dictionary: dictionary)
-            let ret = ListUsersMore()
-
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
-
-            return ret
-        }
-
-        public func toDictionary() -> [AnyHashable: Any]
-        {
-            toDictionary = [AnyHashable: Any]()
-
-            add(key: .cursor, value: cursor)
-            add(key: .limit, value: limit)
-            
-            return toDictionary
-        }
-    }
     
     /// Use this method ban/restore a user.
     ///

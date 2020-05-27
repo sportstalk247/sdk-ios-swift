@@ -1,4 +1,3 @@
-
 # Sportstalk 247 iOS SDK
 
   
@@ -135,7 +134,7 @@ Only new events will be emitted, so it is up to you to collect the new events.
 To stop getting updates, simply call `client.stopListeningToChatUpdates()` anytime.
 
 Note: 
-`frequency` is optional and is set to 500 milliseconds by default
+Updates are received every 500 milliseconds.
 
 Losing reference to ```client``` will stop the eventUpdates
 
@@ -143,8 +142,8 @@ Losing reference to ```client``` will stop the eventUpdates
 let client = ChatClient(config: config)
 var events = [Event]()
 
-func receiveUpdates(from room: ChatRoom, every seconds: Int) {
-    client.startListeningToChatUpdates(from: roomid, frequency: seconds) { (code, message, _, event) in
+func receiveUpdates(from room: ChatRoom) {
+    client.startListeningToChatUpdates(from: roomid) { (code, message, _, event) in
         if let event = event {
             events.append(event)
         }
@@ -233,22 +232,6 @@ The easiest way to see how these event works is to see the demo page: https://ww
 * Make sure you handle errors for sending messages in case of network disruption. For instance, `client.sendCommand('message').catch(handleErrorInUiFn)`
 
 * Enable/Disable debug mode with SportsTalkSDK.shared.debugMode = true/false
-  
-
-# Improvements on this version
-## Depracations
-### UserClient
-* `func banUser(...)` deprecated in favor of `func setBanStatus(...)`
-* `func restoreUser(...)` deprecated in favor of `func setBanStatus(...)`
-* `func searchByHandle(...)` deprecated in favor of `func searchUser(...)`
-* `func searchByName(...)` deprecated in favor of `func searchUser(...)`
-* `func searchByUserId(...)` deprecated in favor of `func searchUser(...)`
-
-### ChatClient
-* `func joinRoomAuthenticated(...)` deprecated in favor of `func joinRoom(...)`
-* `func joinRoomAnonymous(...)` deprecated in favor of `func joinRoom(...)`
-* `func createRoomPostModerated` deprecated in favor of `func createRoom(...)`
-* `func createRoomPreModerated` deprecated in favor of `func createRoom(...)`
 
 
 # Copyright & License

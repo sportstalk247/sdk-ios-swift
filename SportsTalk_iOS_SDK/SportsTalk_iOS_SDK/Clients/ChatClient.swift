@@ -20,7 +20,7 @@ public protocol ChatClientProtocol {
     func listMessagesByUser(_ request: ChatRoomsServices.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>)
     func reportMessage(_ request: ChatRoomsServices.ReportMessage, completionHandler: @escaping Completion<Event>)
     func reactToEvent(_ request: ChatRoomsServices.ReactToEvent, completionHandler: @escaping Completion<Event>)
-    func startListeningToChatUpdates(from room: String, frequency seconds: Double, completionHandler: @escaping Completion<[Event]>)
+    func startListeningToChatUpdates(from room: String, completionHandler: @escaping Completion<[Event]>)
     func stopListeningToChatUpdates()
     
     func approveEvent(_ request: ModerationServices.ApproveEvent, completionHandler: @escaping Completion<Event>)
@@ -175,11 +175,11 @@ extension ChatClient {
 
 // MARK: - Event Subscription
 extension ChatClient {
-    public func startListeningToChatUpdates(from room: String, frequency seconds: Double = 0.5,  completionHandler: @escaping Completion<[Event]>) {
+    public func startListeningToChatUpdates(from room: String, completionHandler: @escaping Completion<[Event]>) {
         let request = ChatRoomsServices.GetUpdates()
         request.roomid = room
             
-        timer = Timer.scheduledTimer(withTimeInterval: seconds, repeats: true, block: { _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { _ in
             self.getUpdates(request) { (code, message, kind, response) in
                 if let response = response {
                     var emittableEvents = [Event]()

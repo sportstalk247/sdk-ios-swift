@@ -640,8 +640,9 @@ public class ChatRoomsServices
     ///
     ///  Arguments:
     ///
-    ///  roomid:  Room id that you want to exit
+    ///  roomid:  Room id that you want to update
     ///
+    ///  cursor:  Used in cursoring through the list. Gets the next batch of users. Read 'nextCur' property of result set and pass as cursor value.
     ///
     /// - Warning: This method requires authentication.
     public class GetUpdates: ParametersBase<GetUpdates.Fields, GetUpdates>
@@ -649,9 +650,11 @@ public class ChatRoomsServices
         public enum Fields
         {
             case roomid
+            case cursor
         }
         
         public var roomid: String?
+        public var cursor: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> GetUpdates
         {
@@ -659,6 +662,7 @@ public class ChatRoomsServices
             let ret = GetUpdates()
             
             ret.roomid = value(forKey: .roomid)
+            ret.cursor = value(forKey: .cursor)
             
             return ret
         }
@@ -668,57 +672,7 @@ public class ChatRoomsServices
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
-            
-            return toDictionary
-        }
-    }
-    
-    /// Get the Recent Updates to a Room
-    ///
-    /// You can use this function to poll the room to get the recent events in the room. The recommended poll interval is 500ms. Each event has an ID and a timestamp. To detect new messages using polling, call this function and then process items with a newer timestamp than the most recent one you have already processed.
-    ///
-    /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
-    ///
-    /// exit event: A user has exited chat. message: A user has communicated a message. reply: A user sent a message in response to another user. reaction: A user has reacted to a message posted by another user. action: A user is performing an ACTION (emote) alone or with another user.
-    ///
-    ///  Enter and Exit Events:
-    ///
-    ///  Enter and Exit events may not be sent if the room is expected to have a very large number of users.
-    ///
-    ///  Arguments:
-    ///
-    ///  roomid:  Room id that you want to exit
-    ///
-    ///  eventid: ID of most recent event captured. The call to get updates will return only events newer than this one
-    ///
-    /// - Warning: This method requires authentication.
-    public class GetUpdatesMore: ParametersBase<GetUpdatesMore.Fields, GetUpdatesMore>
-    {
-        public enum Fields
-        {
-            case roomIdOrLabel
-            case eventid
-        }
-        
-        public var roomIdOrLabel: String?
-        public var eventid: String?
-        
-        override public func from(dictionary: [AnyHashable: Any]) -> GetUpdatesMore
-        {
-            set(dictionary: dictionary)
-            let ret = GetUpdatesMore()
-            
-            ret.roomIdOrLabel = value(forKey: .roomIdOrLabel)
-            ret.eventid = value(forKey: .eventid)
-            
-            return ret
-        }
-        
-        public func toDictionary() -> [AnyHashable: Any]
-        {
-            toDictionary = [AnyHashable: Any]()
-            
-            addRequired(key: .eventid, value: eventid)
+            add(key: .cursor, value: cursor)
             
             return toDictionary
         }
