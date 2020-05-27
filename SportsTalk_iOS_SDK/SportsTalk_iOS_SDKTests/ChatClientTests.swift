@@ -393,25 +393,6 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
 
-    func test_ChatRoomsServices_GetUpdatesMore() {
-        test_ChatRoomsServices_ExecuteChatCommand()
-        let request = ChatRoomsServices.GetUpdatesMore()
-        request.roomIdOrLabel = dummyRoom?.id
-        request.eventid = dummyEvent?.id
-
-        let expectation = self.expectation(description: Constants.Expectation_Description)
-        var receivedCode: Int?
-        
-        client.getUpdatesMore(request) { (code, message, _, response) in
-            print(message ?? "")
-            receivedCode = code
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-        XCTAssertTrue(receivedCode == 200)
-    }
-
      func test_ChatRoomsServices_ExecuteChatCommand() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         let request = ChatRoomsServices.ExecuteChatCommand()
@@ -445,6 +426,30 @@ extension ChatClientTests {
         var receivedCode: Int?
     
         client.sendQuotedReply(request) { (code, message, _, response) in
+            print(message ?? "")
+            print("Replied to: \(String(describing: response?.speech?.userid))")
+            print("With Command: \(String(describing: request.command))")
+            receivedCode = code
+            self.dummyEvent = response?.speech
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_SendThreadedReply() {
+        test_ChatRoomsServices_ListMessagesByUsers()
+        let request = ChatRoomsServices.SendThreadedReply()
+        request.roomid = dummyRoom?.id
+        request.command = "SAY Hello SPORTSTALKSDK World!"
+        request.userid = dummyUser?.userid
+        request.replyto = dummyEventList?.first?.id
+        
+        let expectation = self.expectation(description: Constants.Expectation_Description)
+        var receivedCode: Int?
+    
+        client.sendThreadedReply(request) { (code, message, _, response) in
             print(message ?? "")
             print("Replied to: \(String(describing: response?.speech?.userid))")
             print("With Command: \(String(describing: request.command))")

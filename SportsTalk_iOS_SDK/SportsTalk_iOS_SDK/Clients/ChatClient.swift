@@ -12,9 +12,9 @@ public protocol ChatClientProtocol {
     func joinRoomByCustomId(_ request: ChatRoomsServices.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>)
     func exitRoom(_ request: ChatRoomsServices.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>)
     func getUpdates(_ request: ChatRoomsServices.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>)
-    func getUpdatesMore(_ request: ChatRoomsServices.GetUpdatesMore, completionHandler: @escaping Completion<GetUpdatesResponse>)
     func executeChatCommand(_ request: ChatRoomsServices.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func sendQuotedReply(_ request: ChatRoomsServices.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
+    func sendThreadedReply(_ request: ChatRoomsServices.SendThreadedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
 //    func permanentlyDeleteEvent(_ request: ChatRoomsServices.PermanentlyDeleteEvent, completionHandler: @escaping Completion<Event>)
 //    func flagEventLogicallyDeleted(_ request: ChatRoomsServices.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func listMessagesByUser(_ request: ChatRoomsServices.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>)
@@ -110,12 +110,6 @@ extension ChatClient {
         }
     }
 
-    public func getUpdatesMore(_ request: ChatRoomsServices.GetUpdatesMore, completionHandler: @escaping Completion<GetUpdatesResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomIdOrLabel ?? emptyString)/updates", withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
-        }
-    }
-
     public func executeChatCommand(_ request: ChatRoomsServices.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
         makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
@@ -123,6 +117,12 @@ extension ChatClient {
     }
     
     public func sendQuotedReply(_ request: ChatRoomsServices.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
+        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func sendThreadedReply(_ request: ChatRoomsServices.SendThreadedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
         makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
