@@ -384,6 +384,7 @@ extension ChatClientTests {
         
         client.getUpdates(request) { (code, message, _, response) in
             print(message ?? "")
+            print(response?.cursor)
             receivedCode = code
             expectation.fulfill()
         }
@@ -456,25 +457,25 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
-    func test_ChatRoomsServices_permanentlyDeleteEvent() {
-        test_ChatRoomsServices_ListMessagesByUsers()
-        let request = ChatRoomsServices.PermanentlyDeleteEvent()
-        request.roomid = dummyRoom?.id
-        request.eventid = dummyEventList?.first?.id
-        request.userid = dummyUser?.userid
-            
-            let expectation = self.expectation(description: Constants.Expectation_Description)
-            var receivedCode: Int?
-        
-            client.permanentlyDeleteEvent(request) { (code, message, _, response) in
-                print(message ?? "")
-                receivedCode = code
-                expectation.fulfill()
-            }
-
-            waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-            XCTAssertTrue(receivedCode == 200)
-    }
+//    func test_ChatRoomsServices_permanentlyDeleteEvent() {
+//        test_ChatRoomsServices_ListMessagesByUsers()
+//        let request = ChatRoomsServices.PermanentlyDeleteEvent()
+//        request.roomid = dummyRoom?.id
+//        request.eventid = dummyEventList?.first?.id
+//        request.userid = dummyUser?.userid
+//            
+//            let expectation = self.expectation(description: Constants.Expectation_Description)
+//            var receivedCode: Int?
+//        
+//            client.permanentlyDeleteEvent(request) { (code, message, _, response) in
+//                print(message ?? "")
+//                receivedCode = code
+//                expectation.fulfill()
+//            }
+//
+//            waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+//            XCTAssertTrue(receivedCode == 200)
+//    }
 
     func test_ChatRoomsServices_ListMessagesByUsers() {
         test_ChatRoomsServices_ExecuteChatCommand()
