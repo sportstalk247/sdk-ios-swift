@@ -1,5 +1,5 @@
 import XCTest
-import SportsTalk_iOS_SDK
+import SportsTalk247
 
 struct Config {
     static let url = URL(string: "https://qa-talkapi.sportstalk247.com/api/v3/")
@@ -38,7 +38,7 @@ class UserClientTests: XCTestCase {
 
 extension UserClientTests {
     func test_UserServices_UpdateUser() {
-        let request = UsersServices.CreateUpdateUser()
+        let request = UserRequest.CreateUpdateUser()
         request.userid =  UUID().uuidString
         request.handle = "Sam"
         request.displayname = "Sam"
@@ -61,7 +61,7 @@ extension UserClientTests {
         
     func test_UserServices_DeleteUser() {
         test_UserServices_UpdateUser()
-        let request = UsersServices.DeleteUser()
+        let request = UserRequest.DeleteUser()
         request.userid = dummyUser?.userid
         print("user id \(String(describing: dummyUser?.userid))")
         
@@ -83,7 +83,7 @@ extension UserClientTests {
 
     func test_UserServices_GetUserDetails() {
         test_UserServices_UpdateUser()
-        let request = UsersServices.GetUserDetails()
+        let request = UserRequest.GetUserDetails()
         request.userid = dummyUser?.userid
 
         let expectation = self.expectation(description: Constants.Expectation_Description)
@@ -109,7 +109,7 @@ extension UserClientTests {
         test_UserServices_UpdateUser()
         test_UserServices_UpdateUser()
         test_UserServices_UpdateUser()
-        let request = UsersServices.ListUsers()
+        let request = UserRequest.ListUsers()
         request.limit = "5"
 
         let expectation = self.expectation(description: Constants.Expectation_Description)
@@ -129,7 +129,7 @@ extension UserClientTests {
 
     func test_UserServices_BanUser() {
         test_UserServices_UpdateUser()
-        let request = UsersServices.setBanStatus()
+        let request = UserRequest.setBanStatus()
         request.userid = dummyUser?.userid
         request.banned = true
         
@@ -149,7 +149,7 @@ extension UserClientTests {
     func test_UserServices_RestoreUser()
     {
         test_UserServices_UpdateUser()
-        let request = UsersServices.setBanStatus()
+        let request = UserRequest.setBanStatus()
         request.userid = dummyUser?.userid
         request.banned = false
         
@@ -168,7 +168,7 @@ extension UserClientTests {
     
     func test_UsersServices_SearchUser() {
         test_UserServices_UpdateUser()
-        let request = UsersServices.SearchUser()
+        let request = UserRequest.SearchUser()
         request.handle = dummyUser?.handle ?? "Sam"
         request.limit = 5
         

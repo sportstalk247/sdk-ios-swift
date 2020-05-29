@@ -1,7 +1,6 @@
 import Foundation
 
-public class ChatRoomsServices
-{
+public class ChatRequest {
     /// Creates a new chat room (Postmoderated)
     ///
     /// name: (required) The name of the room
@@ -25,8 +24,7 @@ public class ChatRoomsServices
     /// maxreportss: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
     ///
     /// - Warning: This method requires authentication.
-    public class CreateRoom: ParametersBase<CreateRoom.Fields, CreateRoom>
-    {
+    public class CreateRoom: ParametersBase<CreateRoom.Fields, CreateRoom> {
         public enum Fields {
             case name
             case customid
@@ -50,8 +48,7 @@ public class ChatRoomsServices
         public var maxreports: Int? = 3
         
         
-        override public func from(dictionary: [AnyHashable: Any]) -> CreateRoom
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> CreateRoom {
             set(dictionary: dictionary)
             let ret = CreateRoom()
         
@@ -67,8 +64,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .name, value: name)
@@ -92,17 +88,14 @@ public class ChatRoomsServices
     /// roomIdOrSlug: Room Id or Slug of a specific room againts which you want to fetch the details
     ///
     /// - Warning: This method requires authentication.
-    public class GetRoomDetails: ParametersBase<GetRoomDetails.Fields, GetRoomDetails>
-    {
-        public enum Fields
-        {
+    public class GetRoomDetails: ParametersBase<GetRoomDetails.Fields, GetRoomDetails> {
+        public enum Fields {
             case roomIdOrSlug
         }
         
         public var roomid: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> GetRoomDetails
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> GetRoomDetails {
             set(dictionary: dictionary)
             let ret = GetRoomDetails()
             
@@ -111,8 +104,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomIdOrSlug, value: roomid)
@@ -127,18 +119,15 @@ public class ChatRoomsServices
     /// roomid: that you want to delete
     ///
     /// - Warning: This method requires authentication.
-    public class DeleteRoom: ParametersBase<DeleteRoom.Fields, DeleteRoom>
-    {
-        public enum Fields
-        {
+    public class DeleteRoom: ParametersBase<DeleteRoom.Fields, DeleteRoom> {
+        public enum Fields {
             case roomid
         }
         
         public var roomid: String?
         public var userid: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> DeleteRoom
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> DeleteRoom {
             set(dictionary: dictionary)
             let ret = DeleteRoom()
             ret.roomid = value(forKey: .roomid)
@@ -146,8 +135,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .roomid, value: roomid)
@@ -184,10 +172,8 @@ public class ChatRoomsServices
     /// userid:  user id specific to App
     ///
     /// - Warning: This method requires authentication.
-    public class UpdateRoom: ParametersBase<UpdateRoom.Fields, UpdateRoom>
-    {
-        public enum Fields
-        {
+    public class UpdateRoom: ParametersBase<UpdateRoom.Fields, UpdateRoom> {
+        public enum Fields {
             case roomid
             case slug
             case name
@@ -215,8 +201,7 @@ public class ChatRoomsServices
         public var throttle:Int?
         public var userid:String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> UpdateRoom
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> UpdateRoom {
             set(dictionary: dictionary)
             let ret = UpdateRoom()
             
@@ -236,8 +221,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
@@ -283,10 +267,8 @@ public class ChatRoomsServices
     /// userid:  user id specific to App
     ///
     /// - Warning: This method requires authentication.
-    public class UpdateRoomCloseARoom: ParametersBase<UpdateRoomCloseARoom.Fields, UpdateRoomCloseARoom>
-    {
-        public enum Fields
-        {
+    public class UpdateRoomCloseARoom: ParametersBase<UpdateRoomCloseARoom.Fields, UpdateRoomCloseARoom> {
+        public enum Fields {
             case roomid
             case slug
             case name
@@ -312,8 +294,7 @@ public class ChatRoomsServices
         public var roomisopen:Bool? = false
         public var userid:String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> UpdateRoomCloseARoom
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> UpdateRoomCloseARoom {
             set(dictionary: dictionary)
             let ret = UpdateRoomCloseARoom()
             
@@ -332,8 +313,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .roomid, value: roomid)
@@ -357,19 +337,15 @@ public class ChatRoomsServices
     /// Rooms can be public or private. This method lists all public rooms that everyone can see.
     ///
     /// - Warning: This method requires authentication.
-    public class ListRooms
-    {
+    public class ListRooms {
         public init() { }
         
-        public func from(dictionary: [AnyHashable: Any]) -> ListRooms
-        {
+        public func from(dictionary: [AnyHashable: Any]) -> ListRooms {
             let ret = ListRooms()
-            
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             return [AnyHashable: Any]()
         }
     }
@@ -403,10 +379,8 @@ public class ChatRoomsServices
     ///  profileurl: Profile url of user
     ///
     /// - Warning: This method requires authentication.
-    public class JoinRoom: ParametersBase<JoinRoom.Fields, JoinRoom>
-    {
-        public enum Fields
-        {
+    public class JoinRoom: ParametersBase<JoinRoom.Fields, JoinRoom> {
+        public enum Fields {
             case roomid
             case userid
             case handle
@@ -422,8 +396,7 @@ public class ChatRoomsServices
         public var pictureurl: URL?
         public var profileurl: URL?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> JoinRoom
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> JoinRoom {
             set(dictionary: dictionary)
             let ret = JoinRoom()
             
@@ -437,8 +410,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
@@ -483,10 +455,8 @@ public class ChatRoomsServices
     ///  profileurl: Profile url of user
     ///
     /// - Warning: This method requires authentication.
-    public class JoinRoomByCustomId: ParametersBase<JoinRoomByCustomId.Fields, JoinRoomByCustomId>
-    {
-       public enum Fields
-       {
+    public class JoinRoomByCustomId: ParametersBase<JoinRoomByCustomId.Fields, JoinRoomByCustomId> {
+       public enum Fields {
            case customid
            case userid
            case handle
@@ -502,8 +472,7 @@ public class ChatRoomsServices
        public var pictureurl: URL?
        public var profileurl: URL?
        
-       override public func from(dictionary: [AnyHashable: Any]) -> JoinRoomByCustomId
-       {
+       override public func from(dictionary: [AnyHashable: Any]) -> JoinRoomByCustomId {
            set(dictionary: dictionary)
            let ret = JoinRoomByCustomId()
            
@@ -517,8 +486,7 @@ public class ChatRoomsServices
            return ret
        }
        
-       public func toDictionary() -> [AnyHashable: Any]
-       {
+       public func toDictionary() -> [AnyHashable: Any] {
            toDictionary = [AnyHashable: Any]()
            
            addRequired(key: .customid, value: customid)
@@ -548,10 +516,8 @@ public class ChatRoomsServices
     ///  limit: default is 200
     ///
     /// - Warning: This method requires authentication.
-    public class ListRoomParticipants: ParametersBase<ListRoomParticipants.Fields, ListRoomParticipants>
-    {
-        public enum Fields
-        {
+    public class ListRoomParticipants: ParametersBase<ListRoomParticipants.Fields, ListRoomParticipants> {
+        public enum Fields {
             case roomid
             case cursor
             case limit
@@ -561,8 +527,7 @@ public class ChatRoomsServices
         public var cursor: String? = ""
         public var limit: Int? = 200
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ListRoomParticipants
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ListRoomParticipants {
             set(dictionary: dictionary)
             let ret = ListRoomParticipants()
             ret.roomid = value(forKey: .roomid)
@@ -572,8 +537,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .cursor, value: cursor)
@@ -592,10 +556,8 @@ public class ChatRoomsServices
     ///  userid:  user id specific to App
     ///
     /// - Warning: This method requires authentication.
-    public class ExitRoom: ParametersBase<ExitRoom.Fields, ExitRoom>
-    {
-        public enum Fields
-        {
+    public class ExitRoom: ParametersBase<ExitRoom.Fields, ExitRoom> {
+        public enum Fields {
             case roomid
             case userid
         }
@@ -603,8 +565,7 @@ public class ChatRoomsServices
         public var roomid: String?
         public var userid: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ExitRoom
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ExitRoom {
             set(dictionary: dictionary)
             let ret = ExitRoom()
             
@@ -614,8 +575,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
@@ -645,10 +605,8 @@ public class ChatRoomsServices
     ///  cursor:  Used in cursoring through the list. Gets the next batch of users. Read 'nextCur' property of result set and pass as cursor value.
     ///
     /// - Warning: This method requires authentication.
-    public class GetUpdates: ParametersBase<GetUpdates.Fields, GetUpdates>
-    {
-        public enum Fields
-        {
+    public class GetUpdates: ParametersBase<GetUpdates.Fields, GetUpdates> {
+        public enum Fields {
             case roomid
             case cursor
         }
@@ -656,8 +614,7 @@ public class ChatRoomsServices
         public var roomid: String?
         public var cursor: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> GetUpdates
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> GetUpdates {
             set(dictionary: dictionary)
             let ret = GetUpdates()
             
@@ -667,8 +624,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
@@ -732,10 +688,8 @@ public class ChatRoomsServices
     ///  custompayload: any payload.
     ///
     /// - Warning: This method requires authentication.
-    public class ExecuteChatCommand: ParametersBase<ExecuteChatCommand.Fields, ExecuteChatCommand>
-    {
-        public enum Fields
-        {
+    public class ExecuteChatCommand: ParametersBase<ExecuteChatCommand.Fields, ExecuteChatCommand> {
+        public enum Fields {
             case roomid
             case command
             case userid
@@ -751,8 +705,7 @@ public class ChatRoomsServices
         public var customid: String?
         public var custompayload: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ExecuteChatCommand
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ExecuteChatCommand {
             set(dictionary: dictionary)
             let ret = ExecuteChatCommand()
             
@@ -766,8 +719,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
@@ -835,10 +787,8 @@ public class ChatRoomsServices
     ///  custompayload: any payload.
     ///
     /// - Warning: This method requires authentication.
-    public class ExecuteDanceAction: ParametersBase<ExecuteDanceAction.Fields, ExecuteDanceAction>
-    {
-        public enum Fields
-        {
+    public class ExecuteDanceAction: ParametersBase<ExecuteDanceAction.Fields, ExecuteDanceAction> {
+        public enum Fields {
             case roomid
             case command
             case userid
@@ -854,8 +804,7 @@ public class ChatRoomsServices
         public var customid: String?
         public var custompayload: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ExecuteDanceAction
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ExecuteDanceAction {
             set(dictionary: dictionary)
             let ret = ExecuteDanceAction()
             
@@ -869,8 +818,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
@@ -936,10 +884,8 @@ public class ChatRoomsServices
     ///  custompayload: any payload.
     ///
     /// - Warning: This method requires authentication.
-    public class SendQuotedReply: ParametersBase<SendQuotedReply.Fields, SendQuotedReply>
-    {
-        public enum Fields
-        {
+    public class SendQuotedReply: ParametersBase<SendQuotedReply.Fields, SendQuotedReply> {
+        public enum Fields {
             case roomid
             case command
             case userid
@@ -951,8 +897,7 @@ public class ChatRoomsServices
         public var userid: String?
         public var replyto: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> SendQuotedReply
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> SendQuotedReply {
             set(dictionary: dictionary)
             let ret = SendQuotedReply()
             
@@ -964,8 +909,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
@@ -1029,10 +973,8 @@ public class ChatRoomsServices
     ///  custompayload: any payload.
     ///
     /// - Warning: This method requires authentication.
-    public class SendThreadedReply: ParametersBase<SendThreadedReply.Fields, SendThreadedReply>
-    {
-        public enum Fields
-        {
+    public class SendThreadedReply: ParametersBase<SendThreadedReply.Fields, SendThreadedReply> {
+        public enum Fields {
             case roomid
             case command
             case userid
@@ -1044,8 +986,7 @@ public class ChatRoomsServices
         public var userid: String?
         public var replyto: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> SendThreadedReply
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> SendThreadedReply {
             set(dictionary: dictionary)
             let ret = SendThreadedReply()
             
@@ -1057,8 +998,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
@@ -1085,10 +1025,8 @@ public class ChatRoomsServices
     ///  limit: default 200
     ///
     /// - Warning: This method requires authentication.
-    public class ListMessagesByUser: ParametersBase<ListMessagesByUser.Fields, ListMessagesByUser>
-    {
-        public enum Fields
-        {
+    public class ListMessagesByUser: ParametersBase<ListMessagesByUser.Fields, ListMessagesByUser> {
+        public enum Fields {
             case cursor
             case limit
             case userid
@@ -1100,8 +1038,7 @@ public class ChatRoomsServices
         public var userId: String?
         public var roomid: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ListMessagesByUser
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ListMessagesByUser {
             set(dictionary: dictionary)
             let ret = ListMessagesByUser()
             
@@ -1112,8 +1049,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .cursor, value: cursor)
@@ -1136,10 +1072,8 @@ public class ChatRoomsServices
     ///  chatMessageId:  the message you want to remove
     ///
     /// - Warning: This method requires authentication.
-    public class PermanentlyDeleteEvent: ParametersBase<PermanentlyDeleteEvent.Fields, PermanentlyDeleteEvent>
-    {
-        public enum Fields
-        {
+    public class PermanentlyDeleteEvent: ParametersBase<PermanentlyDeleteEvent.Fields, PermanentlyDeleteEvent> {
+        public enum Fields {
             case roomid
             case eventid
             case userid
@@ -1151,8 +1085,7 @@ public class ChatRoomsServices
         public var deleted: Bool = true
         public var permanent: Bool = true
         
-        override public func from(dictionary: [AnyHashable: Any]) -> PermanentlyDeleteEvent
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> PermanentlyDeleteEvent {
             set(dictionary: dictionary)
             let ret = PermanentlyDeleteEvent()
             
@@ -1165,8 +1098,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
@@ -1191,10 +1123,8 @@ public class ChatRoomsServices
     ///  chatroomid: room id, against which you want to purge the messages
     ///
     /// - Warning: This method requires authentication.
-    public class PurgeUserMessages: ParametersBase<PurgeUserMessages.Fields, PurgeUserMessages>
-    {
-        public enum Fields
-        {
+    public class PurgeUserMessages: ParametersBase<PurgeUserMessages.Fields, PurgeUserMessages> {
+        public enum Fields {
             case command
             case chatroomid
             case userid
@@ -1204,8 +1134,7 @@ public class ChatRoomsServices
         public var chatroomid: String?
         public var command: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> PurgeUserMessages
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> PurgeUserMessages {
             set(dictionary: dictionary)
             let ret = PurgeUserMessages()
             
@@ -1216,8 +1145,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .chatroomid, value: chatroomid)
@@ -1244,10 +1172,8 @@ public class ChatRoomsServices
     ///  chatMessageId: message id, that you want to report.
     ///
     /// - Warning: This method requires authentication.
-    public class ReportMessage: ParametersBase<ReportMessage.Fields, ReportMessage>
-    {
-        public enum Fields
-        {
+    public class ReportMessage: ParametersBase<ReportMessage.Fields, ReportMessage> {
+        public enum Fields {
             case chatRoomId
             case chatMessageId
             case chat_room_newest_speech_id
@@ -1261,8 +1187,7 @@ public class ChatRoomsServices
         public var userid: String?
         public var reporttype = "abuse"
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ReportMessage
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ReportMessage {
             set(dictionary: dictionary)
             let ret = ReportMessage()
             
@@ -1275,8 +1200,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .userid, value: userid)
@@ -1306,10 +1230,8 @@ public class ChatRoomsServices
     ///  reaction: e.g. like
     ///
     /// - Warning: This method requires authentication.
-    public class ReactToEvent: ParametersBase<ReactToEvent.Fields, ReactToEvent>
-    {
-        public enum Fields
-        {
+    public class ReactToEvent: ParametersBase<ReactToEvent.Fields, ReactToEvent> {
+        public enum Fields {
             case roomid
             case eventid
             case userid
@@ -1323,8 +1245,7 @@ public class ChatRoomsServices
         public var reaction: String?
         public var reacted: String? = "true"
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ReactToEvent
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ReactToEvent {
             set(dictionary: dictionary)
             let ret = ReactToEvent()
             
@@ -1337,8 +1258,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
@@ -1399,10 +1319,8 @@ public class ChatRoomsServices
     ///  custompayload: any payload.
     ///
     /// - Warning: This method requires authentication.
-    public class ExecuteAdminCommand: ParametersBase<ExecuteAdminCommand.Fields, ExecuteAdminCommand>
-    {
-        public enum Fields
-        {
+    public class ExecuteAdminCommand: ParametersBase<ExecuteAdminCommand.Fields, ExecuteAdminCommand> {
+        public enum Fields {
             case roomId
             case command
             case userid
@@ -1418,8 +1336,7 @@ public class ChatRoomsServices
         public var customid: String?
         public var custompayload: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ExecuteAdminCommand
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ExecuteAdminCommand {
             set(dictionary: dictionary)
             let ret = ExecuteAdminCommand()
             
@@ -1433,8 +1350,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomId, value: roomId)
@@ -1500,10 +1416,8 @@ public class ChatRoomsServices
     ///  custompayload: any payload.
     ///
     /// - Warning: This method requires authentication.
-    public class DeleteAllEventsInRoom: ParametersBase<DeleteAllEventsInRoom.Fields, DeleteAllEventsInRoom>
-    {
-        public enum Fields
-        {
+    public class DeleteAllEventsInRoom: ParametersBase<DeleteAllEventsInRoom.Fields, DeleteAllEventsInRoom> {
+        public enum Fields {
             case command
             case chatroomid
             case userid
@@ -1513,8 +1427,7 @@ public class ChatRoomsServices
         public var chatroomid: String?
         public var command: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> DeleteAllEventsInRoom
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> DeleteAllEventsInRoom {
             set(dictionary: dictionary)
             let ret = DeleteAllEventsInRoom()
             
@@ -1525,8 +1438,7 @@ public class ChatRoomsServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .chatroomid, value: chatroomid)
@@ -1539,30 +1451,25 @@ public class ChatRoomsServices
 }
 
 // MARK: - Event Subscription
-extension ChatRoomsServices {
-    public class StartEventUpdates: ParametersBase<StartEventUpdates.Fields, StartEventUpdates>
-    {
-        public enum Fields
-        {
+extension ChatRequest {
+    public class StartEventUpdates: ParametersBase<StartEventUpdates.Fields, StartEventUpdates> {
+        public enum Fields {
             case roomId
         }
         
         public var roomId: String?
 
-        override public func from(dictionary: [AnyHashable: Any]) -> StartEventUpdates
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> StartEventUpdates {
             set(dictionary: dictionary)
             let ret = StartEventUpdates()
             ret.roomId = value(forKey: .roomId)
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             addRequired(key: .roomId, value: roomId)
             return toDictionary
         }
     }
-
 }

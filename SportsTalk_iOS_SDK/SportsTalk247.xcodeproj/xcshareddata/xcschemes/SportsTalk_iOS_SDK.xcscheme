@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "80D415CD23B607C600055739"
-               BuildableName = "SportsTalk_iOS_SDK.framework"
-               BlueprintName = "SportsTalk_iOS_SDK"
-               ReferencedContainer = "container:SportsTalk_iOS_SDK.xcodeproj">
+               BuildableName = "SportsTalk247.framework"
+               BlueprintName = "SportsTalk247"
+               ReferencedContainer = "container:SportsTalk247.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "806D710223BB0A2700FBDA8E"
-               BuildableName = "SportsTalk_iOS_SDKTests.xctest"
-               BlueprintName = "SportsTalk_iOS_SDKTests"
-               ReferencedContainer = "container:SportsTalk_iOS_SDK.xcodeproj">
+               BuildableName = "SportsTalk247Tests.xctest"
+               BlueprintName = "SportsTalk247Tests"
+               ReferencedContainer = "container:SportsTalk247.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -61,9 +61,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "80D415CD23B607C600055739"
-            BuildableName = "SportsTalk_iOS_SDK.framework"
-            BlueprintName = "SportsTalk_iOS_SDK"
-            ReferencedContainer = "container:SportsTalk_iOS_SDK.xcodeproj">
+            BuildableName = "SportsTalk247.framework"
+            BlueprintName = "SportsTalk247"
+            ReferencedContainer = "container:SportsTalk247.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

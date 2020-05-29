@@ -1,7 +1,6 @@
 import Foundation
 
-public class UsersServices
-{
+public class UserRequest {
     
     /// Invoke this API method if you want to create a user or update an existing user.
     ///
@@ -18,10 +17,8 @@ public class UsersServices
     /// profileurl: Optional. The profileurl for this user.
     ///
     /// - Warning: Do not use this method to convert an anonymous user into a known user. Use the Convert User api method instead.
-    public class CreateUpdateUser: ParametersBase<CreateUpdateUser.Fields, CreateUpdateUser>
-    {
-        public enum Fields
-        {
+    public class CreateUpdateUser: ParametersBase<CreateUpdateUser.Fields, CreateUpdateUser> {
+        public enum Fields {
             case userid
             case handle
             case displayname
@@ -35,8 +32,7 @@ public class UsersServices
         public var pictureurl: URL?
         public var profileurl: URL?
 
-        override public func from(dictionary: [AnyHashable: Any]) -> CreateUpdateUser
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> CreateUpdateUser {
             set(dictionary: dictionary)
             let ret = CreateUpdateUser()
 
@@ -49,8 +45,7 @@ public class UsersServices
             return ret
         }
 
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
 
             addRequired(key: .userid, value: userid)
@@ -70,16 +65,14 @@ public class UsersServices
     /// UserId is the app specific User ID provided by your application.
     ///
     /// - Warning: This method requires authentication
-    public class DeleteUser: ParametersBase<DeleteUser.Fields,DeleteUser>
-    {
-        public enum Fields
-        {
+    public class DeleteUser: ParametersBase<DeleteUser.Fields,DeleteUser> {
+        public enum Fields {
             case userid
         }
+        
         public var userid: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> UsersServices.DeleteUser
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> UserRequest.DeleteUser {
             set(dictionary: dictionary)
             let ret = DeleteUser()
             
@@ -88,8 +81,7 @@ public class UsersServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable : Any]
-        {
+        public func toDictionary() -> [AnyHashable : Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .userid, value: userid)
             addRequired(key: .userid, value: userid)
@@ -106,17 +98,14 @@ public class UsersServices
     /// UserId is the app specific User ID provided by your application.
     ///
     /// - Warning: This method requires authentication
-    public class GetUserDetails: ParametersBase<GetUserDetails.Fields, GetUserDetails>
-    {
-        public enum Fields
-        {
+    public class GetUserDetails: ParametersBase<GetUserDetails.Fields, GetUserDetails> {
+        public enum Fields {
             case userid
         }
         
         public var userid: String?
 
-        override public func from(dictionary: [AnyHashable: Any]) -> GetUserDetails
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> GetUserDetails {
             set(dictionary: dictionary)
             let ret = GetUserDetails()
             ret.userid = value(forKey: .userid)
@@ -124,8 +113,7 @@ public class UsersServices
             return ret
         }
 
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
 
             addRequired(key: .userid, value: userid)
@@ -141,10 +129,8 @@ public class UsersServices
     /// limit: You can omit this optional argument, in which case the default limit is 200 users to return.
     ///
     /// - Warning: This method requires authentication.
-    public class ListUsers: ParametersBase<ListUsers.Fields, ListUsers>
-    {
-        public enum Fields
-        {
+    public class ListUsers: ParametersBase<ListUsers.Fields, ListUsers> {
+        public enum Fields {
             case cursor
             case limit
         }
@@ -152,8 +138,7 @@ public class UsersServices
         public var cursor: String?
         public var limit: String? = defaultLimit
 
-        override public func from(dictionary: [AnyHashable: Any]) -> ListUsers
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ListUsers {
             set(dictionary: dictionary)
             let ret = ListUsers()
 
@@ -163,8 +148,7 @@ public class UsersServices
             return ret
         }
 
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
 
             add(key: .cursor, value: cursor)
@@ -180,10 +164,8 @@ public class UsersServices
     /// banned: (required) set true to ban a user; set false to restore a user
     ///
     /// - Warning: This method requires authentication.
-    public class setBanStatus: ParametersBase<setBanStatus.Fields, setBanStatus>
-    {
-        public enum Fields
-        {
+    public class setBanStatus: ParametersBase<setBanStatus.Fields, setBanStatus> {
+        public enum Fields {
             case userid
             case banned
         }
@@ -191,8 +173,7 @@ public class UsersServices
         public var userid: String?
         public var banned: Bool?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> setBanStatus
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> setBanStatus {
             set(dictionary: dictionary)
             let ret = setBanStatus()
 
@@ -202,8 +183,7 @@ public class UsersServices
             return ret
         }
 
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
 
             add(key: .userid, value: userid)
@@ -234,10 +214,8 @@ public class UsersServices
     /// userid: Provide part of a userid to search by userid
     ///
     /// - Warning: This method requires authentication.
-    public class SearchUser: ParametersBase<SearchUser.Fields, SearchUser>
-    {
-        public enum Fields
-        {
+    public class SearchUser: ParametersBase<SearchUser.Fields, SearchUser> {
+        public enum Fields {
             case cursor
             case limit
             case name
@@ -251,8 +229,7 @@ public class UsersServices
         public var handle:String?
         public var userid:String?
 
-        override public func from(dictionary: [AnyHashable: Any]) -> SearchUser
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> SearchUser {
             set(dictionary: dictionary)
             let ret = SearchUser()
 
@@ -265,8 +242,7 @@ public class UsersServices
             return ret
         }
 
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
 
             add(key: .cursor, value: cursor)

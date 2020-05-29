@@ -1,7 +1,6 @@
 import Foundation
 
-public class WebhooksServices
-{
+public class WebhookRequest {
     
     /// Creates a new webhook or updates an existing webhook
     ///
@@ -40,10 +39,8 @@ public class WebhooksServices
     ///  type: (required) ["prepublish"/"postpublish"] Sets the type of webhook. See TYPES below.
     ///  events: (required) An array of strings indicating which event types activate your webhook. See events below for allowed values.
     /// - Warning: Requires Authentication.
-    public class CreateReplaceWebhook: ParametersBase<CreateReplaceWebhook.Fields, CreateReplaceWebhook>
-    {
-        public enum Fields
-        {
+    public class CreateReplaceWebhook: ParametersBase<CreateReplaceWebhook.Fields, CreateReplaceWebhook> {
+        public enum Fields {
             case label
             case url
             case enabled
@@ -57,8 +54,7 @@ public class WebhooksServices
         public var type: String?
         public var events: [String]?
 
-        override public func from(dictionary: [AnyHashable: Any]) -> CreateReplaceWebhook
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> CreateReplaceWebhook {
             set(dictionary: dictionary)
             let ret = CreateReplaceWebhook()
 
@@ -71,8 +67,7 @@ public class WebhooksServices
             return ret
         }
 
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
 
             addRequired(key: .label, value: label)
@@ -87,26 +82,18 @@ public class WebhooksServices
     
     /// Gets a list of webhooks
     /// - Warning: This method requires authentication
-    public class ListWebhooks
-    {
-        public init()
-        {
-            
-        }
+    public class ListWebhooks {
+        public init() {}
         
-        public func from(dictionary: [AnyHashable: Any]) -> ListWebhooks
-        {
+        public func from(dictionary: [AnyHashable: Any]) -> ListWebhooks {
             let ret = ListWebhooks()
-
             return ret
         }
 
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             return [AnyHashable: Any]()
         }
     }
-    
     
     /// Updates an exisiting webhook by replacing its properties with the new values
     ///
@@ -145,10 +132,8 @@ public class WebhooksServices
     ///  type: (required) ["prepublish"/"postpublish"] Sets the type of webhook. See TYPES below.
     ///  events: (required) An array of strings indicating which event types activate your webhook. See events below for allowed values.
     /// - Warning: Requires Authentication.
-    public class UpdateWebhook: ParametersBase<UpdateWebhook.Fields, UpdateWebhook>
-    {
-        public enum Fields
-        {
+    public class UpdateWebhook: ParametersBase<UpdateWebhook.Fields, UpdateWebhook> {
+        public enum Fields {
             case id
             case label
             case url
@@ -164,8 +149,7 @@ public class WebhooksServices
         public var type: String?
         public var events: [String]?
 
-        override public func from(dictionary: [AnyHashable: Any]) -> UpdateWebhook
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> UpdateWebhook {
             set(dictionary: dictionary)
             let ret = UpdateWebhook()
 
@@ -179,8 +163,7 @@ public class WebhooksServices
             return ret
         }
 
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
 
             add(key: .id, value: webhookId)
@@ -203,32 +186,26 @@ public class WebhooksServices
     
     /// Deletes the specified webhook by ID
     /// - Warning: This method requires authentication
-    public class DeleteWebhook: ParametersBase<UpdateWebhook.Fields, DeleteWebhook>
-    {
-        public enum Fields
-        {
+    public class DeleteWebhook: ParametersBase<UpdateWebhook.Fields, DeleteWebhook> {
+        public enum Fields {
             case id
         }
         
         public var webhookId:String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> DeleteWebhook
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> DeleteWebhook {
             let ret = DeleteWebhook()
             ret.webhookId = value(forKey: .id)
             
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
-            
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .id, value: webhookId)
             
             return toDictionary
-            
         }
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
-public class CommentsService
-{
+
+public class CommentRequest {
     
     /// Creates a conversation (a context for comments)
     ///
@@ -44,10 +44,8 @@ public class CommentsService
     /// * maxreportss: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
     ///
     /// - Warning: This method requires authentication.
-    public class CreateUpdateConversation: ParametersBase<CreateUpdateConversation.Fields,CreateUpdateConversation>
-    {
-        public enum Fields
-        {
+    public class CreateUpdateConversation: ParametersBase<CreateUpdateConversation.Fields,CreateUpdateConversation> {
+        public enum Fields {
             case conversationid
             case owneruserid
             case property
@@ -75,8 +73,7 @@ public class CommentsService
         public var udf1: String?
         public var udf2: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.CreateUpdateConversation
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.CreateUpdateConversation {
             set(dictionary: dictionary)
             let ret = CreateUpdateConversation()
             ret.conversationid = value(forKey: .conversationid)
@@ -94,8 +91,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .conversationid, value:  conversationid)
@@ -124,8 +120,7 @@ public class CommentsService
     /// * comment_conversation_id : (required) The ID of the conversation which is a context for comments. The ID must be URL ENCODED.
     ///
     /// - Warning: This method requires authentication.
-    public class GetConversationById: ParametersBase<GetConversationById.Fields,GetConversationById>
-    {
+    public class GetConversationById: ParametersBase<GetConversationById.Fields,GetConversationById> {
         public enum Fields
         {
             case comment_conversation_id
@@ -133,15 +128,14 @@ public class CommentsService
         
         public var comment_conversation_id: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.GetConversationById {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.GetConversationById {
             set(dictionary: dictionary)
             let ret = GetConversationById()
             ret.comment_conversation_id = value(forKey: .comment_conversation_id)
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .comment_conversation_id, value: comment_conversation_id)
@@ -159,25 +153,21 @@ public class CommentsService
     /// * customid : (Required) Locates a conversation using the custom ID.
     ///
     /// - Warning: This method requires authentication.
-    public class FindConversationByIdCustomId: ParametersBase<FindConversationByIdCustomId.Fields,FindConversationByIdCustomId>
-    {
-        public enum Fields
-        {
+    public class FindConversationByIdCustomId: ParametersBase<FindConversationByIdCustomId.Fields,FindConversationByIdCustomId> {
+        public enum Fields {
             case customid
         }
         
         public var customid: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.FindConversationByIdCustomId
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.FindConversationByIdCustomId {
             set(dictionary: dictionary)
             let ret = FindConversationByIdCustomId()
             ret.customid = value(forKey: .customid)
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .customid, value: customid)
@@ -206,8 +196,7 @@ public class CommentsService
     /// Retrieves metadata about all conversations for a property. Whenever you create a conversation, you provide a property to associate it with. This returns the metadata for all conversations associated with a property.
     ///
     /// - Warning: This method requires authentication.
-    public class ListConversations: ParametersBase<ListConversations.Fields,ListConversations>
-    {
+    public class ListConversations: ParametersBase<ListConversations.Fields,ListConversations> {
         public enum Fields
         {
             case propertyid
@@ -219,8 +208,7 @@ public class CommentsService
         public var cursor: String?
         public var limit: Int? = 200
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.ListConversations
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.ListConversations {
             set(dictionary: dictionary)
             let ret = ListConversations()
             ret.propertyid = value(forKey: .propertyid)
@@ -229,8 +217,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .propertyid, value: propertyid)
             add(key: .cursor, value: cursor)
@@ -257,10 +244,8 @@ public class CommentsService
     /// Retrieves metadata about all conversations for a property. Whenever you create a conversation, you provide a property to associate it with. This returns the metadata for all conversations associated with a property.
     ///
     /// - Warning: This method requires authentication.
-    public class ListConversationsWithFilters: ParametersBase<ListConversationsWithFilters.Fields,ListConversationsWithFilters>
-    {
-        public enum Fields
-        {
+    public class ListConversationsWithFilters: ParametersBase<ListConversationsWithFilters.Fields,ListConversationsWithFilters> {
+        public enum Fields {
             case propertyid
             case cursor
             case limit
@@ -270,8 +255,7 @@ public class CommentsService
         public var cursor: String?
         public var limit: Int? = 200
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.ListConversationsWithFilters
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.ListConversationsWithFilters {
             set(dictionary: dictionary)
             let ret = ListConversationsWithFilters()
             ret.propertyid = value(forKey: .propertyid)
@@ -280,8 +264,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .propertyid, value: propertyid)
             add(key: .cursor, value: cursor)
@@ -298,26 +281,21 @@ public class CommentsService
     /// CURSORING:
     ///
     /// - Warning: This method requires authentication.
-    public class DeleteConversation: ParametersBase<DeleteConversation.Fields,DeleteConversation>
-    {
-        
-        public enum Fields
-        {
+    public class DeleteConversation: ParametersBase<DeleteConversation.Fields,DeleteConversation> {
+        public enum Fields {
             case comment_conversation_id
         }
         
         public var comment_conversation_id: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.DeleteConversation
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.DeleteConversation {
             set(dictionary: dictionary)
             let ret = DeleteConversation()
             ret.comment_conversation_id = value(forKey: .comment_conversation_id)
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .comment_conversation_id, value: comment_conversation_id)
@@ -342,11 +320,8 @@ public class CommentsService
     ///
     ///
     /// - Warning: This method requires authentication.
-    public class CreateAndPublishComment: ParametersBase<CreateAndPublishComment.Fields,CreateAndPublishComment>
-    {
-        
-        public enum Fields
-        {
+    public class CreateAndPublishComment: ParametersBase<CreateAndPublishComment.Fields,CreateAndPublishComment> {
+        public enum Fields {
             case comment_conversation_id
             case userid
             case body
@@ -360,8 +335,7 @@ public class CommentsService
         public var replyto: String?
         public var tags: [String]?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.CreateAndPublishComment
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.CreateAndPublishComment {
             set(dictionary: dictionary)
             let ret = CreateAndPublishComment()
             ret.comment_conversation_id = value(forKey: .comment_conversation_id)
@@ -372,8 +346,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .comment_conversation_id, value: comment_conversation_id)
             add(key: .userid, value: userid)
@@ -424,11 +397,8 @@ public class CommentsService
     /// * customtags : (optional) A comma delimited list of tags
     ///
     /// - Warning: This method requires authentication.
-    public class CreateAndPublishCommentNewUser: ParametersBase<CreateAndPublishCommentNewUser.Fields,CreateAndPublishCommentNewUser>
-    {
-        
-        public enum Fields
-        {
+    public class CreateAndPublishCommentNewUser: ParametersBase<CreateAndPublishCommentNewUser.Fields,CreateAndPublishCommentNewUser> {
+        public enum Fields {
             case comment_conversation_id
             case userid
             case body
@@ -462,8 +432,7 @@ public class CommentsService
         public var customtags: [String]?
         public var tags: [String]?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.CreateAndPublishCommentNewUser
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.CreateAndPublishCommentNewUser {
             set(dictionary: dictionary)
             let ret = CreateAndPublishCommentNewUser()
             ret.comment_conversation_id = value(forKey: .comment_conversation_id)
@@ -484,8 +453,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             toDictionary = [AnyHashable: Any]()
             add(key: .comment_conversation_id, value: comment_conversation_id)
@@ -530,10 +498,8 @@ public class CommentsService
     /// * replyto : (optional) The ID of the comment that this is a reply to.
     ///
     /// - Warning: This method requires authentication.
-    public class ReplyToAComment: ParametersBase<ReplyToAComment.Fields,ReplyToAComment>
-    {
-        public enum Fields
-        {
+    public class ReplyToAComment: ParametersBase<ReplyToAComment.Fields,ReplyToAComment> {
+        public enum Fields {
             case comment_conversation_id
             case comment_comment_id
             case userid
@@ -545,8 +511,7 @@ public class CommentsService
         public var userid: String?
         public var body: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.ReplyToAComment
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.ReplyToAComment {
             set(dictionary: dictionary)
             let ret = ReplyToAComment()
             ret.comment_conversation_id = value(forKey: .comment_conversation_id)
@@ -556,8 +521,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .comment_conversation_id, value: comment_conversation_id)
@@ -585,10 +549,8 @@ public class CommentsService
     /// * comment_comment_id : (required) The unique ID of the comment we will reply to.
     ///
     /// - Warning: This method requires authentication.
-    public class GetCommentById: ParametersBase<GetCommentById.Fields,GetCommentById>
-    {
-        public enum Fields
-        {
+    public class GetCommentById: ParametersBase<GetCommentById.Fields,GetCommentById> {
+        public enum Fields {
             case comment_conversation_id
             case comment_comment_id
         }
@@ -596,8 +558,7 @@ public class CommentsService
         public var comment_conversation_id: String?
         public var comment_comment_id: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.GetCommentById
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.GetCommentById {
             set(dictionary: dictionary)
             let ret = GetCommentById()
             ret.comment_conversation_id = value(forKey: .comment_conversation_id)
@@ -606,8 +567,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .comment_conversation_id, value: comment_conversation_id)
             add(key: .comment_comment_id, value: comment_comment_id)
@@ -654,11 +614,8 @@ public class CommentsService
     ///         * includeinactive : (optional, default is false) If true, return comments that are inactive (for example, disabled by moderation)
     ///
     /// - Warning: This method requires authentication.
-    public class ListComments: ParametersBase<ListComments.Fields,ListComments>
-    {
-        
-        public enum Fields
-        {
+    public class ListComments: ParametersBase<ListComments.Fields,ListComments> {
+        public enum Fields {
             case comment_conversation_id
             case cursor
             case limit
@@ -676,8 +633,7 @@ public class CommentsService
         public var includechildren: Bool? = false
         public var includeinactive: Bool? = false
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.ListComments
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.ListComments {
             set(dictionary: dictionary)
             let ret = ListComments()
             ret.comment_conversation_id = value(forKey: .comment_conversation_id)
@@ -690,8 +646,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .comment_conversation_id, value: comment_conversation_id)
             add(key: .cursor, value: cursor)
@@ -745,11 +700,8 @@ public class CommentsService
     ///         * includeinactive : (optional, default is false) If true, return comments that are inactive (for example, disabled by moderation)
     ///
     /// - Warning: This method requires authentication.
-    public class ListReplies: ParametersBase<ListReplies.Fields,ListReplies>
-    {
-        
-        public enum Fields
-        {
+    public class ListReplies: ParametersBase<ListReplies.Fields,ListReplies> {
+        public enum Fields {
             case comment_conversation_id
             case comment_comment_id
             case cursor
@@ -769,8 +721,7 @@ public class CommentsService
         public var includechildren: Bool? = false
         public var includeinactive: Bool? = false
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.ListReplies
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.ListReplies {
             set(dictionary: dictionary)
             let ret = ListReplies()
             ret.comment_conversation_id = value(forKey: .comment_conversation_id)
@@ -785,8 +736,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .comment_conversation_id, value: comment_conversation_id)
             add(key: .comment_comment_id, value: comment_comment_id)
@@ -822,11 +772,8 @@ public class CommentsService
     /// If you want to mark a comment as deleted, and replies are still visible, use "true" for the logical delete value. If you want to permanently delete the comment and all of its replies, pass false.
     ///
     /// - Warning: This method requires authentication.
-    public class FlagCommentAsDeleted: ParametersBase<FlagCommentAsDeleted.Fields,FlagCommentAsDeleted>
-    {
-        
-        public enum Fields
-        {
+    public class FlagCommentAsDeleted: ParametersBase<FlagCommentAsDeleted.Fields,FlagCommentAsDeleted> {
+        public enum Fields {
             case comment_conversation_id
             case comment_comment_id
             case userid
@@ -840,8 +787,7 @@ public class CommentsService
         public var deleted: Bool? = true
         public var permanentifnoreplies: Bool?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.FlagCommentAsDeleted
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.FlagCommentAsDeleted {
             set(dictionary: dictionary)
             
             let ret = FlagCommentAsDeleted()
@@ -853,8 +799,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .comment_conversation_id, value: comment_conversation_id)
@@ -885,11 +830,8 @@ public class CommentsService
     /// * userid: (required) This is the application specific user ID of the user deleting the comment. Must be the owner of the comment or authorized moderator.
     ///
     /// - Warning: This method requires authentication.
-    public class DeleteCommentPermanent: ParametersBase<DeleteCommentPermanent.Fields,DeleteCommentPermanent>
-    {
-        
-        public enum Fields
-        {
+    public class DeleteCommentPermanent: ParametersBase<DeleteCommentPermanent.Fields,DeleteCommentPermanent> {
+        public enum Fields {
             case comment_conversation_id
             case comment_comment_id
             case userid
@@ -899,8 +841,7 @@ public class CommentsService
         public var comment_comment_id: String?
         public var userid: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.DeleteCommentPermanent
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.DeleteCommentPermanent {
             set(dictionary: dictionary)
             
             let ret = DeleteCommentPermanent()
@@ -911,8 +852,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .comment_conversation_id, value: comment_conversation_id)
@@ -941,11 +881,8 @@ public class CommentsService
     /// * body : (required) The new body contents of the comment.
     ///
     /// - Warning: This method requires authentication.
-    public class UpdateComment: ParametersBase<UpdateComment.Fields,UpdateComment>
-    {
-        
-        public enum Fields
-        {
+    public class UpdateComment: ParametersBase<UpdateComment.Fields,UpdateComment> {
+        public enum Fields {
             case comment_conversation_id
             case comment_comment_id
             case userid
@@ -958,8 +895,7 @@ public class CommentsService
         public var body: String?
         public var comment: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.UpdateComment
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.UpdateComment {
             set(dictionary: dictionary)
             
             let ret = UpdateComment()
@@ -970,8 +906,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .comment_conversation_id, value: comment_conversation_id)
@@ -1003,11 +938,8 @@ public class CommentsService
     /// * reacted : (required) true or false, to toggle the reaction on or off for this user.
     ///
     /// - Warning: This method requires authentication.
-    public class ReactToCommentLike: ParametersBase<ReactToCommentLike.Fields,ReactToCommentLike>
-    {
-        
-        public enum Fields
-        {
+    public class ReactToCommentLike: ParametersBase<ReactToCommentLike.Fields,ReactToCommentLike> {
+        public enum Fields {
             case comment_conversation_id
             case comment_comment_id
             case userid
@@ -1021,8 +953,7 @@ public class CommentsService
         public var comment_conversation_id: String?
         public var comment_comment_id: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.ReactToCommentLike
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.ReactToCommentLike {
             set(dictionary: dictionary)
             
             let ret = ReactToCommentLike()
@@ -1035,8 +966,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .comment_conversation_id, value: comment_conversation_id)
@@ -1068,11 +998,8 @@ public class CommentsService
     /// * userid : (required) The application specific user id performing the action.
     ///
     /// - Warning: This method requires authentication.
-    public class VoteUpOrDownOnComment: ParametersBase<VoteUpOrDownOnComment.Fields,VoteUpOrDownOnComment>
-    {
-        
-        public enum Fields
-        {
+    public class VoteUpOrDownOnComment: ParametersBase<VoteUpOrDownOnComment.Fields,VoteUpOrDownOnComment> {
+        public enum Fields {
             case comment_conversation_id
             case comment_comment_id
             case userid
@@ -1084,8 +1011,7 @@ public class CommentsService
         public var userid: String?
         public var vote: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.VoteUpOrDownOnComment
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.VoteUpOrDownOnComment {
             set(dictionary: dictionary)
             
             let ret = VoteUpOrDownOnComment()
@@ -1097,8 +1023,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .comment_conversation_id, value: comment_conversation_id)
@@ -1128,10 +1053,8 @@ public class CommentsService
     /// * userid : (required) The application specific user id performing the action.
     ///
     /// - Warning: This method requires authentication.
-    public class ReportComment: ParametersBase<ReportComment.Fields,ReportComment>
-    {
-        public enum Fields
-        {
+    public class ReportComment: ParametersBase<ReportComment.Fields,ReportComment> {
+        public enum Fields {
             case comment_conversation_id
             case comment_comment_id
             case userid
@@ -1143,8 +1066,7 @@ public class CommentsService
         public var userid: String?
         public var reporttype: String?
         
-        override func from(dictionary: [AnyHashable : Any]) -> CommentsService.ReportComment
-        {
+        override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.ReportComment {
             set(dictionary: dictionary)
             
             let ret = ReportComment()
@@ -1156,8 +1078,7 @@ public class CommentsService
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .comment_conversation_id, value: comment_conversation_id)
             add(key: .comment_comment_id, value: comment_comment_id)
