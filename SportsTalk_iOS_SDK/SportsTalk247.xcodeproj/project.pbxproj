@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		8023405623BA247000A43C20 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8023405523BA247000A43C20 /* AppConstants.swift */; };
-		80428D0523B635CC00A6CFBF /* UsersServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80428D0423B635CC00A6CFBF /* UsersServices.swift */; };
-		806D710823BB0A2700FBDA8E /* SportsTalk_iOS_SDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D415CE23B607C600055739 /* SportsTalk_iOS_SDK.framework */; };
-		806D710F23BB284E00FBDA8E /* WebhooksServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 806D710E23BB284E00FBDA8E /* WebhooksServices.swift */; };
-		80A1B72423BDA167009F6004 /* ModerationServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A1B72323BDA167009F6004 /* ModerationServices.swift */; };
-		80A1B72623BDBD48009F6004 /* ChatRoomsServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A1B72523BDBD48009F6004 /* ChatRoomsServices.swift */; };
-		80D415D323B607C600055739 /* SportsTalk_iOS_SDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 80D415D123B607C600055739 /* SportsTalk_iOS_SDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8448316D2444479000C29381 /* CommentsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448316C2444479000C29381 /* CommentsService.swift */; };
+		80428D0523B635CC00A6CFBF /* UserRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80428D0423B635CC00A6CFBF /* UserRequest.swift */; };
+		806D710823BB0A2700FBDA8E /* SportsTalk247.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D415CE23B607C600055739 /* SportsTalk247.framework */; };
+		806D710F23BB284E00FBDA8E /* WebhookRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 806D710E23BB284E00FBDA8E /* WebhookRequest.swift */; };
+		80A1B72423BDA167009F6004 /* ModerationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A1B72323BDA167009F6004 /* ModerationRequest.swift */; };
+		80A1B72623BDBD48009F6004 /* ChatRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A1B72523BDBD48009F6004 /* ChatRequest.swift */; };
+		80D415D323B607C600055739 /* SportsTalk247.h in Headers */ = {isa = PBXBuildFile; fileRef = 80D415D123B607C600055739 /* SportsTalk247.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8448316D2444479000C29381 /* CommentRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448316C2444479000C29381 /* CommentRequest.swift */; };
 		A855D79024714D4000206560 /* ListChatRoomParticipantsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D76E24714D4000206560 /* ListChatRoomParticipantsResponse.swift */; };
 		A855D79224714D4000206560 /* GetUpdatesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77024714D4000206560 /* GetUpdatesResponse.swift */; };
 		A855D79324714D4000206560 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77124714D4000206560 /* Event.swift */; };
@@ -54,16 +54,16 @@
 
 /* Begin PBXFileReference section */
 		8023405523BA247000A43C20 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
-		80428D0423B635CC00A6CFBF /* UsersServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersServices.swift; sourceTree = "<group>"; };
-		806D710323BB0A2700FBDA8E /* SportsTalk_iOS_SDKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SportsTalk_iOS_SDKTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		80428D0423B635CC00A6CFBF /* UserRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRequest.swift; sourceTree = "<group>"; };
+		806D710323BB0A2700FBDA8E /* SportsTalk247Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SportsTalk247Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		806D710723BB0A2700FBDA8E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		806D710E23BB284E00FBDA8E /* WebhooksServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebhooksServices.swift; sourceTree = "<group>"; };
-		80A1B72323BDA167009F6004 /* ModerationServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModerationServices.swift; sourceTree = "<group>"; };
-		80A1B72523BDBD48009F6004 /* ChatRoomsServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomsServices.swift; sourceTree = "<group>"; };
-		80D415CE23B607C600055739 /* SportsTalk_iOS_SDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SportsTalk_iOS_SDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		80D415D123B607C600055739 /* SportsTalk_iOS_SDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SportsTalk_iOS_SDK.h; sourceTree = "<group>"; };
+		806D710E23BB284E00FBDA8E /* WebhookRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebhookRequest.swift; sourceTree = "<group>"; };
+		80A1B72323BDA167009F6004 /* ModerationRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModerationRequest.swift; sourceTree = "<group>"; };
+		80A1B72523BDBD48009F6004 /* ChatRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRequest.swift; sourceTree = "<group>"; };
+		80D415CE23B607C600055739 /* SportsTalk247.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SportsTalk247.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80D415D123B607C600055739 /* SportsTalk247.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SportsTalk247.h; sourceTree = "<group>"; };
 		80D415D223B607C600055739 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8448316C2444479000C29381 /* CommentsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsService.swift; sourceTree = "<group>"; };
+		8448316C2444479000C29381 /* CommentRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentRequest.swift; sourceTree = "<group>"; };
 		A855D76E24714D4000206560 /* ListChatRoomParticipantsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListChatRoomParticipantsResponse.swift; sourceTree = "<group>"; };
 		A855D77024714D4000206560 /* GetUpdatesResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetUpdatesResponse.swift; sourceTree = "<group>"; };
 		A855D77124714D4000206560 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -96,7 +96,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				806D710823BB0A2700FBDA8E /* SportsTalk_iOS_SDK.framework in Frameworks */,
+				806D710823BB0A2700FBDA8E /* SportsTalk247.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,11 +122,11 @@
 			isa = PBXGroup;
 			children = (
 				A85E7CF724732AB000A26D54 /* NetworkService.swift */,
-				80428D0423B635CC00A6CFBF /* UsersServices.swift */,
-				806D710E23BB284E00FBDA8E /* WebhooksServices.swift */,
-				80A1B72323BDA167009F6004 /* ModerationServices.swift */,
-				80A1B72523BDBD48009F6004 /* ChatRoomsServices.swift */,
-				8448316C2444479000C29381 /* CommentsService.swift */,
+				80428D0423B635CC00A6CFBF /* UserRequest.swift */,
+				806D710E23BB284E00FBDA8E /* WebhookRequest.swift */,
+				80A1B72323BDA167009F6004 /* ModerationRequest.swift */,
+				80A1B72523BDBD48009F6004 /* ChatRequest.swift */,
+				8448316C2444479000C29381 /* CommentRequest.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -140,21 +140,21 @@
 			path = BaseServices;
 			sourceTree = "<group>";
 		};
-		806D710423BB0A2700FBDA8E /* SportsTalk_iOS_SDKTests */ = {
+		806D710423BB0A2700FBDA8E /* SportsTalk247Tests */ = {
 			isa = PBXGroup;
 			children = (
 				A85E7D032473343A00A26D54 /* UserClientTests.swift */,
 				A8C1868524738B8D00C744DC /* ChatClientTests.swift */,
 				806D710723BB0A2700FBDA8E /* Info.plist */,
 			);
-			path = SportsTalk_iOS_SDKTests;
+			path = SportsTalk247Tests;
 			sourceTree = "<group>";
 		};
 		80D415C423B607C600055739 = {
 			isa = PBXGroup;
 			children = (
-				80D415D023B607C600055739 /* SportsTalk_iOS_SDK */,
-				806D710423BB0A2700FBDA8E /* SportsTalk_iOS_SDKTests */,
+				80D415D023B607C600055739 /* SportsTalk247 */,
+				806D710423BB0A2700FBDA8E /* SportsTalk247Tests */,
 				80D415CF23B607C600055739 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -162,16 +162,16 @@
 		80D415CF23B607C600055739 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				80D415CE23B607C600055739 /* SportsTalk_iOS_SDK.framework */,
-				806D710323BB0A2700FBDA8E /* SportsTalk_iOS_SDKTests.xctest */,
+				80D415CE23B607C600055739 /* SportsTalk247.framework */,
+				806D710323BB0A2700FBDA8E /* SportsTalk247Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		80D415D023B607C600055739 /* SportsTalk_iOS_SDK */ = {
+		80D415D023B607C600055739 /* SportsTalk247 */ = {
 			isa = PBXGroup;
 			children = (
-				80D415D123B607C600055739 /* SportsTalk_iOS_SDK.h */,
+				80D415D123B607C600055739 /* SportsTalk247.h */,
 				80D415D223B607C600055739 /* Info.plist */,
 				A855D7A924714DB300206560 /* Clients */,
 				8023405423BA245700A43C20 /* Constants */,
@@ -179,7 +179,7 @@
 				80428D0323B635B900A6CFBF /* Services */,
 				A8C61F922464D18900D3FD94 /* Models */,
 			);
-			path = SportsTalk_iOS_SDK;
+			path = SportsTalk247;
 			sourceTree = "<group>";
 		};
 		A855D76C24714D4000206560 /* Chat */ = {
@@ -247,16 +247,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80D415D323B607C600055739 /* SportsTalk_iOS_SDK.h in Headers */,
+				80D415D323B607C600055739 /* SportsTalk247.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		806D710223BB0A2700FBDA8E /* SportsTalk_iOS_SDKTests */ = {
+		806D710223BB0A2700FBDA8E /* SportsTalk247Tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 806D710D23BB0A2700FBDA8E /* Build configuration list for PBXNativeTarget "SportsTalk_iOS_SDKTests" */;
+			buildConfigurationList = 806D710D23BB0A2700FBDA8E /* Build configuration list for PBXNativeTarget "SportsTalk247Tests" */;
 			buildPhases = (
 				806D70FF23BB0A2700FBDA8E /* Sources */,
 				806D710023BB0A2700FBDA8E /* Frameworks */,
@@ -267,14 +267,14 @@
 			dependencies = (
 				806D710A23BB0A2700FBDA8E /* PBXTargetDependency */,
 			);
-			name = SportsTalk_iOS_SDKTests;
+			name = SportsTalk247Tests;
 			productName = SportsTalk_iOS_SDKTests;
-			productReference = 806D710323BB0A2700FBDA8E /* SportsTalk_iOS_SDKTests.xctest */;
+			productReference = 806D710323BB0A2700FBDA8E /* SportsTalk247Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		80D415CD23B607C600055739 /* SportsTalk_iOS_SDK */ = {
+		80D415CD23B607C600055739 /* SportsTalk247 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 80D415D623B607C600055739 /* Build configuration list for PBXNativeTarget "SportsTalk_iOS_SDK" */;
+			buildConfigurationList = 80D415D623B607C600055739 /* Build configuration list for PBXNativeTarget "SportsTalk247" */;
 			buildPhases = (
 				80D415C923B607C600055739 /* Headers */,
 				80D415CA23B607C600055739 /* Sources */,
@@ -285,9 +285,9 @@
 			);
 			dependencies = (
 			);
-			name = SportsTalk_iOS_SDK;
+			name = SportsTalk247;
 			productName = SportsTalk_iOS_SDK;
-			productReference = 80D415CE23B607C600055739 /* SportsTalk_iOS_SDK.framework */;
+			productReference = 80D415CE23B607C600055739 /* SportsTalk247.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -309,7 +309,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 80D415C823B607C600055739 /* Build configuration list for PBXProject "SportsTalk_iOS_SDK" */;
+			buildConfigurationList = 80D415C823B607C600055739 /* Build configuration list for PBXProject "SportsTalk247" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -322,8 +322,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				80D415CD23B607C600055739 /* SportsTalk_iOS_SDK */,
-				806D710223BB0A2700FBDA8E /* SportsTalk_iOS_SDKTests */,
+				80D415CD23B607C600055739 /* SportsTalk247 */,
+				806D710223BB0A2700FBDA8E /* SportsTalk247Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -363,27 +363,27 @@
 				A855D79E24714D4000206560 /* DeleteChatRoomResponse.swift in Sources */,
 				A855D7AB24714DC000206560 /* ChatClient.swift in Sources */,
 				A855D7A324714D4000206560 /* ApiResponse.swift in Sources */,
-				8448316D2444479000C29381 /* CommentsService.swift in Sources */,
+				8448316D2444479000C29381 /* CommentRequest.swift in Sources */,
 				A855D7A624714D4D00206560 /* SportsTalkSDK.swift in Sources */,
 				A855D79D24714D4000206560 /* ExecuteChatCommandResponse.swift in Sources */,
 				A85E7CFF24732BCC00A26D54 /* User.swift in Sources */,
 				A855D79024714D4000206560 /* ListChatRoomParticipantsResponse.swift in Sources */,
-				80A1B72423BDA167009F6004 /* ModerationServices.swift in Sources */,
+				80A1B72423BDA167009F6004 /* ModerationRequest.swift in Sources */,
 				8023405623BA247000A43C20 /* AppConstants.swift in Sources */,
-				80A1B72623BDBD48009F6004 /* ChatRoomsServices.swift in Sources */,
+				80A1B72623BDBD48009F6004 /* ChatRequest.swift in Sources */,
 				A855D79324714D4000206560 /* Event.swift in Sources */,
 				A855D79424714D4000206560 /* ListMessagesByUser.swift in Sources */,
 				A85E7D0124732BCC00A26D54 /* ListUsersResponse.swift in Sources */,
 				A855D7B124716F0200206560 /* UserClient.swift in Sources */,
 				A855D7A024714D4000206560 /* ListMessagesNeedingModerationResponse.swift in Sources */,
-				806D710F23BB284E00FBDA8E /* WebhooksServices.swift in Sources */,
+				806D710F23BB284E00FBDA8E /* WebhookRequest.swift in Sources */,
 				A85E7CF824732AB000A26D54 /* NetworkService.swift in Sources */,
 				A855D79224714D4000206560 /* GetUpdatesResponse.swift in Sources */,
 				A855D7A124714D4000206560 /* ApproveMessageRequest.swift in Sources */,
 				A855D79A24714D4000206560 /* ChatRoom.swift in Sources */,
 				A85E7D0224732BCC00A26D54 /* UserList.swift in Sources */,
 				A855D79B24714D4000206560 /* ListRoomsResponse.swift in Sources */,
-				80428D0523B635CC00A6CFBF /* UsersServices.swift in Sources */,
+				80428D0523B635CC00A6CFBF /* UserRequest.swift in Sources */,
 				A85E7D0024732BCC00A26D54 /* DeleteUserResponse.swift in Sources */,
 				A855D79924714D4000206560 /* ExitChatRoomResponse.swift in Sources */,
 				A855D79624714D4000206560 /* JoinChatRoomResponse.swift in Sources */,
@@ -396,7 +396,7 @@
 /* Begin PBXTargetDependency section */
 		806D710A23BB0A2700FBDA8E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 80D415CD23B607C600055739 /* SportsTalk_iOS_SDK */;
+			target = 80D415CD23B607C600055739 /* SportsTalk247 */;
 			targetProxy = 806D710923BB0A2700FBDA8E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -406,7 +406,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = SportsTalk_iOS_SDKTests/Info.plist;
+				INFOPLIST_FILE = SportsTalk247Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -423,7 +423,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = SportsTalk_iOS_SDKTests/Info.plist;
+				INFOPLIST_FILE = SportsTalk247Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -565,7 +565,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SportsTalk_iOS_SDK/Info.plist;
+				INFOPLIST_FILE = SportsTalk247/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -592,7 +592,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SportsTalk_iOS_SDK/Info.plist;
+				INFOPLIST_FILE = SportsTalk247/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -612,7 +612,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		806D710D23BB0A2700FBDA8E /* Build configuration list for PBXNativeTarget "SportsTalk_iOS_SDKTests" */ = {
+		806D710D23BB0A2700FBDA8E /* Build configuration list for PBXNativeTarget "SportsTalk247Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				806D710B23BB0A2700FBDA8E /* Debug */,
@@ -621,7 +621,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		80D415C823B607C600055739 /* Build configuration list for PBXProject "SportsTalk_iOS_SDK" */ = {
+		80D415C823B607C600055739 /* Build configuration list for PBXProject "SportsTalk247" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				80D415D423B607C600055739 /* Debug */,
@@ -630,7 +630,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		80D415D623B607C600055739 /* Build configuration list for PBXNativeTarget "SportsTalk_iOS_SDK" */ = {
+		80D415D623B607C600055739 /* Build configuration list for PBXNativeTarget "SportsTalk247" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				80D415D723B607C600055739 /* Debug */,

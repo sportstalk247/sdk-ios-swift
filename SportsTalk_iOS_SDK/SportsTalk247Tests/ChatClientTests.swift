@@ -1,5 +1,5 @@
 import XCTest
-import SportsTalk_iOS_SDK
+import SportsTalk247
 
 class ChatClientTests: XCTestCase {
     let client = ChatClient(config: ClientConfig(appId: Config.appId, authToken: Config.authToken, endpoint: Config.url))
@@ -27,7 +27,7 @@ class ChatClientTests: XCTestCase {
 
 extension ChatClientTests {
     func test_ChatRoomsServices_CreateRoom() {
-        let request = ChatRoomsServices.CreateRoom()
+        let request = ChatRequest.CreateRoom()
         request.name = "Test Room Post Moderated 3"
         request.customid = "some-custom-id"
         request.description = "Chat Room Newly Created"
@@ -54,7 +54,7 @@ extension ChatClientTests {
     }
     
     func test_ChatRoomsServices_CreateRoomPostmoderated() {
-        let request = ChatRoomsServices.CreateRoom()
+        let request = ChatRequest.CreateRoom()
         request.name = "Test Room Post Moderated 3"
         request.customid = "some-custom-id"
         request.description = "Chat Room Newly Created"
@@ -81,7 +81,7 @@ extension ChatClientTests {
     }
 
     func test_ChatRoomsServices_CreateRoomPremoderated() {
-        let request = ChatRoomsServices.CreateRoom()
+        let request = ChatRequest.CreateRoom()
         request.name = "Test Room Pre Moderated 1"
         request.description = "Chat Room Newly Created (Premoderated)"
         request.enableactions = true
@@ -109,7 +109,7 @@ extension ChatClientTests {
 
     func test_ChatRoomsServices_GetRoomDetails() {
         test_ChatRoomsServices_CreateRoomPostmoderated()
-        let request = ChatRoomsServices.GetRoomDetails()
+        let request = ChatRequest.GetRoomDetails()
         request.roomid = dummyRoom?.id
 
         let expectation = self.expectation(description: Constants.Expectation_Description)
@@ -131,7 +131,7 @@ extension ChatClientTests {
 
     func test_ChatRoomsServices_DeleteRoom() {
         test_ChatRoomsServices_CreateRoomPostmoderated()
-        let request = ChatRoomsServices.DeleteRoom()
+        let request = ChatRequest.DeleteRoom()
         request.roomid = dummyRoom?.id
 
         let expectation = self.expectation(description: Constants.Expectation_Description)
@@ -150,7 +150,7 @@ extension ChatClientTests {
 
     func test_ChatRoomsServices_UpdateRoom() {
         test_ChatRoomsServices_CreateRoomPostmoderated()
-        let request = ChatRoomsServices.UpdateRoom()
+        let request = ChatRequest.UpdateRoom()
         request.name = "Updated Room"
         request.description = "This room has recently been updated"
         request.roomisopen = true
@@ -176,7 +176,7 @@ extension ChatClientTests {
 
     func test_ChatRoomsServices_UpdateRoomCloseARoom() {
         test_ChatRoomsServices_CreateRoomPostmoderated()
-        let request = ChatRoomsServices.UpdateRoomCloseARoom()
+        let request = ChatRequest.UpdateRoomCloseARoom()
         request.roomisopen = false
         request.roomid = dummyRoom?.id
 
@@ -199,7 +199,7 @@ extension ChatClientTests {
     }
 
     func test_ChatRoomsServices_ListRooms() {
-        let request = ChatRoomsServices.ListRooms()
+        let request = ChatRequest.ListRooms()
 
         let expectation = self.expectation(description: Constants.Expectation_Description)
         var receivedCode: Int?
@@ -221,7 +221,7 @@ extension ChatClientTests {
     func test_ChatRoomsServices_ListRoomParticipants()
     {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
-        let request = ChatRoomsServices.ListRoomParticipants()
+        let request = ChatRequest.ListRoomParticipants()
         request.roomid = dummyRoom?.id
 
         let expectation = self.expectation(description: Constants.Expectation_Description)
@@ -247,7 +247,7 @@ extension ChatClientTests {
             test_ChatRoomsServices_CreateRoomPostmoderated()
         }
         
-        let request = ChatRoomsServices.JoinRoom()
+        let request = ChatRequest.JoinRoom()
         request.userid = dummyUser?.userid
         request.displayname = dummyUser?.displayname
         request.roomid = dummyRoom?.id
@@ -278,7 +278,7 @@ extension ChatClientTests {
             test_ChatRoomsServices_CreateRoomPostmoderated()
         }
         
-        let request = ChatRoomsServices.JoinRoom()
+        let request = ChatRequest.JoinRoom()
         request.userid = dummyUser?.userid
         request.displayname = dummyUser?.displayname
         request.roomid = dummyRoom?.id
@@ -309,7 +309,7 @@ extension ChatClientTests {
             test_ChatRoomsServices_CreateRoomPostmoderated()
         }
         
-        let request = ChatRoomsServices.JoinRoomByCustomId()
+        let request = ChatRequest.JoinRoomByCustomId()
         request.userid = dummyUser?.userid
         request.displayname = dummyUser?.displayname
         request.customid = dummyRoom?.customid
@@ -334,7 +334,7 @@ extension ChatClientTests {
 
     func test_ChatRoomsServices_JoinRoomAnonymousUser() {
         test_ChatRoomsServices_CreateRoomPostmoderated()
-        let request = ChatRoomsServices.JoinRoom()
+        let request = ChatRequest.JoinRoom()
         request.roomid = dummyRoom?.id
 
         let expectation = self.expectation(description: Constants.Expectation_Description)
@@ -357,7 +357,7 @@ extension ChatClientTests {
         }
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
 
-        let request = ChatRoomsServices.ExitRoom()
+        let request = ChatRequest.ExitRoom()
         request.roomid = dummyRoom?.id
         request.userid = dummyUser?.userid
 
@@ -376,7 +376,7 @@ extension ChatClientTests {
 
     func test_ChatRoomsServices_GetUpdates() {
         test_ChatRoomsServices_ExecuteChatCommand()
-        let request = ChatRoomsServices.GetUpdates()
+        let request = ChatRequest.GetUpdates()
         request.roomid = dummyRoom?.id
 
         let expectation = self.expectation(description: Constants.Expectation_Description)
@@ -395,7 +395,7 @@ extension ChatClientTests {
 
      func test_ChatRoomsServices_ExecuteChatCommand() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
-        let request = ChatRoomsServices.ExecuteChatCommand()
+        let request = ChatRequest.ExecuteChatCommand()
         request.roomid = dummyRoom?.id
         request.command = "Hello New Command"
         request.userid = dummyUser?.userid
@@ -416,7 +416,7 @@ extension ChatClientTests {
     
     func test_ChatRoomsServices_SendQuotedReply() {
         test_ChatRoomsServices_ListMessagesByUsers()
-        let request = ChatRoomsServices.SendQuotedReply()
+        let request = ChatRequest.SendQuotedReply()
         request.roomid = dummyRoom?.id
         request.command = "SAY Hello SPORTSTALKSDK World!"
         request.userid = dummyUser?.userid
@@ -440,7 +440,7 @@ extension ChatClientTests {
     
     func test_ChatRoomsServices_SendThreadedReply() {
         test_ChatRoomsServices_ListMessagesByUsers()
-        let request = ChatRoomsServices.SendThreadedReply()
+        let request = ChatRequest.SendThreadedReply()
         request.roomid = dummyRoom?.id
         request.command = "SAY Hello SPORTSTALKSDK World!"
         request.userid = dummyUser?.userid
@@ -484,7 +484,7 @@ extension ChatClientTests {
 
     func test_ChatRoomsServices_ListMessagesByUsers() {
         test_ChatRoomsServices_ExecuteChatCommand()
-        let request = ChatRoomsServices.ListMessagesByUser()
+        let request = ChatRequest.ListMessagesByUser()
         request.limit = "4"
         request.roomid = dummyRoom?.id
         request.userId = dummyUser?.userid
@@ -506,7 +506,7 @@ extension ChatClientTests {
     func test_ChatRoomsServices_ReportMessage() {
         test_ChatRoomsServices_CreateRoomPremoderated()
         test_ChatRoomsServices_ExecuteChatCommand()
-        let request = ChatRoomsServices.ReportMessage()
+        let request = ChatRequest.ReportMessage()
         request.chat_room_newest_speech_id = dummyEvent?.id
         request.chatRoomId = dummyRoom?.id
         request.userid = dummyUser?.userid
@@ -526,7 +526,7 @@ extension ChatClientTests {
 
     func test_ChatRoomsServices_ReactToAMessage() {
         test_ChatRoomsServices_ExecuteChatCommand()
-        let request = ChatRoomsServices.ReactToEvent()
+        let request = ChatRequest.ReactToEvent()
         request.roomid = dummyRoom?.id
         request.eventid = dummyEvent?.id
         request.userid = dummyUser?.userid
@@ -550,7 +550,7 @@ extension ChatClientTests {
 extension ChatClientTests {
     func test_ModerationServices_ApproveEvent() {
         test_ModerationServices_ListMessagesInModerationQueue()
-        let request = ModerationServices.ApproveEvent()
+        let request = ModerationRequest.ApproveEvent()
         request.chatMessageId = dummyEventNeedingModeration?.id
         request.chatRoomId = dummyRoom?.id
 
@@ -569,7 +569,7 @@ extension ChatClientTests {
     
     func test_ModerationServices_RejectEvent() {
         test_ModerationServices_ListMessagesInModerationQueue()
-        let request = ModerationServices.RejectEvent()
+        let request = ModerationRequest.RejectEvent()
         request.chatMessageId = dummyEventNeedingModeration?.id
         request.chatRoomId = dummyRoom?.id
 
@@ -589,7 +589,7 @@ extension ChatClientTests {
     
     func test_ModerationServices_ListMessagesInModerationQueue() {
         test_ChatRoomsServices_ReportMessage()
-        let request = ModerationServices.listMessagesInModerationQueue()
+        let request = ModerationRequest.listMessagesInModerationQueue()
         
         let expectation = self.expectation(description: Constants.Expectation_Description)
         var receivedCode: Int?
@@ -644,7 +644,7 @@ extension ChatClientTests {
 extension ChatClientTests {
     private func createUpdateUser() {
         let client = UserClient(config: self.client.config)
-        let request = UsersServices.CreateUpdateUser()
+        let request = UserRequest.CreateUpdateUser()
         request.userid = UUID().uuidString
         request.handle = "Sam"
         request.displayname = "Sam"

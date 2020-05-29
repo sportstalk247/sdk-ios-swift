@@ -1,6 +1,6 @@
 import Foundation
-public class ModerationServices
-{
+
+public class ModerationRequest {
     /// APPROVES a message in the moderation queue
     ///
     /// If PRE-MODERATION is enabled for a room, then all messages go to the queue before they can appear in the event stream. For each incomming message, a webhook will be fired, if one is configured.
@@ -8,10 +8,8 @@ public class ModerationServices
     /// If the room is set to use POST-MODERATION, messages will only be sent to the moderation queue if they are reported.
     ///
     /// - Warning: Requires Authentication
-    public class ApproveEvent: ParametersBase<ApproveEvent.Fields, ApproveEvent>
-    {
-        public enum Fields
-        {
+    public class ApproveEvent: ParametersBase<ApproveEvent.Fields, ApproveEvent> {
+        public enum Fields {
             case chatRoomId
             case chatMessageId
             case approve
@@ -20,8 +18,7 @@ public class ModerationServices
         public var chatRoomId: String?
         public var chatMessageId: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ApproveEvent
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ApproveEvent {
             set(dictionary: dictionary)
             let ret = ApproveEvent()
             
@@ -30,8 +27,7 @@ public class ModerationServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .approve, value: true)
             addRequired(key: .chatRoomId, value: chatRoomId)
@@ -41,10 +37,8 @@ public class ModerationServices
         }
     }
     
-    public class RejectEvent: ParametersBase<RejectEvent.Fields, RejectEvent>
-    {
-        public enum Fields
-        {
+    public class RejectEvent: ParametersBase<RejectEvent.Fields, RejectEvent> {
+        public enum Fields {
             case chatRoomId
             case chatMessageId
             case approve
@@ -53,8 +47,7 @@ public class ModerationServices
         public var chatRoomId: String?
         public var chatMessageId: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> RejectEvent
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> RejectEvent {
             set(dictionary: dictionary)
             let ret = RejectEvent()
             
@@ -63,8 +56,7 @@ public class ModerationServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .approve, value: false)
             addRequired(key: .chatRoomId, value: chatRoomId)
@@ -82,39 +74,35 @@ public class ModerationServices
     /// roomId: (optional) Provide the ID for a room to filter for only the queued events for a specific room
     /// cursor: (optional) Provide cursor value to get the next page of results.
     /// - Warning: Requires Authentication
-    public class listMessagesInModerationQueue: ParametersBase<listMessagesInModerationQueue.Fields, listMessagesInModerationQueue>
-       {
-            public enum Fields
-            {
-                case limit
-                case roomId
-                case cursor
-            }
+    public class listMessagesInModerationQueue: ParametersBase<listMessagesInModerationQueue.Fields, listMessagesInModerationQueue> {
+        public enum Fields {
+            case limit
+            case roomId
+            case cursor
+        }
+       
+       public var limit: Int? = 200
+       public var roomId: String?
+       public var cursor: String?
+       
+       override public func from(dictionary: [AnyHashable: Any]) -> listMessagesInModerationQueue {
+           set(dictionary: dictionary)
+           let ret = listMessagesInModerationQueue()
            
-           public var limit: Int? = 200
-           public var roomId: String?
-           public var cursor: String?
-           
-           override public func from(dictionary: [AnyHashable: Any]) -> listMessagesInModerationQueue
-           {
-               set(dictionary: dictionary)
-               let ret = listMessagesInModerationQueue()
-               
-               ret.limit = value(forKey: .limit)
-               ret.roomId = value(forKey: .roomId)
-               ret.cursor = value(forKey: .cursor)
-               return ret
-           }
-           
-           public func toDictionary() -> [AnyHashable: Any]
-           {
-               toDictionary = [AnyHashable: Any]()
-               add(key: .limit, value: limit)
-               add(key: .roomId, value: roomId)
-               add(key: .cursor, value: cursor)
-               return toDictionary
-           }
+           ret.limit = value(forKey: .limit)
+           ret.roomId = value(forKey: .roomId)
+           ret.cursor = value(forKey: .cursor)
+           return ret
        }
+       
+       public func toDictionary() -> [AnyHashable: Any] {
+           toDictionary = [AnyHashable: Any]()
+           add(key: .limit, value: limit)
+           add(key: .roomId, value: roomId)
+           add(key: .cursor, value: cursor)
+           return toDictionary
+       }
+    }
     
     /// APPROVES a message in the moderation queue
     ///
@@ -124,10 +112,8 @@ public class ModerationServices
     ///
     ///
     /// - Warning: Requires Authentication
-    public class ApproveCommentInQueue: ParametersBase<ApproveCommentInQueue.Fields, ApproveCommentInQueue>
-    {
-        public enum Fields
-        {
+    public class ApproveCommentInQueue: ParametersBase<ApproveCommentInQueue.Fields, ApproveCommentInQueue> {
+        public enum Fields {
             case commentid
             case approve
         }
@@ -135,8 +121,7 @@ public class ModerationServices
         public var commentid: String?
         public var approve: Bool?  = true
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ApproveCommentInQueue
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ApproveCommentInQueue {
             set(dictionary: dictionary)
             let ret = ApproveCommentInQueue()
             
@@ -145,8 +130,7 @@ public class ModerationServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .approve, value: approve)
             addRequired(key: .commentid, value: commentid)
@@ -163,10 +147,8 @@ public class ModerationServices
     ///
     ///
     /// - Warning: Requires Authentication
-    public class RejectCommentInQueue: ParametersBase<RejectCommentInQueue.Fields, RejectCommentInQueue>
-    {
-        public enum Fields
-        {
+    public class RejectCommentInQueue: ParametersBase<RejectCommentInQueue.Fields, RejectCommentInQueue> {
+        public enum Fields {
             case commentid
             case approve
         }
@@ -174,8 +156,7 @@ public class ModerationServices
         public var commentid: String?
         public var approve: Bool?  = true
         
-        override public func from(dictionary: [AnyHashable: Any]) -> RejectCommentInQueue
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> RejectCommentInQueue {
             set(dictionary: dictionary)
             let ret = RejectCommentInQueue()
             
@@ -184,8 +165,7 @@ public class ModerationServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .approve, value: approve)
             addRequired(key: .commentid, value: commentid)
@@ -208,10 +188,8 @@ public class ModerationServices
     ///  * pending: A new comment was posted to a premoderation room, and is pending review, but was never reported as abuse
     ///  * flagged: Enough users reported the comment that it is in the flagged state and sent to moderation queue
     /// - Warning: Requires Authentication
-    public class ListCommentsInModerationQueue: ParametersBase<ListCommentsInModerationQueue.Fields, ListCommentsInModerationQueue>
-    {
-        public enum Fields
-        {
+    public class ListCommentsInModerationQueue: ParametersBase<ListCommentsInModerationQueue.Fields, ListCommentsInModerationQueue> {
+        public enum Fields {
             case limit
             case roomId
             case cursor
@@ -227,8 +205,7 @@ public class ModerationServices
         public var filterKeyword: String?
         public var filterModerationState: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> ListCommentsInModerationQueue
-        {
+        override public func from(dictionary: [AnyHashable: Any]) -> ListCommentsInModerationQueue {
             set(dictionary: dictionary)
             let ret = ListCommentsInModerationQueue()
             
@@ -241,8 +218,7 @@ public class ModerationServices
             return ret
         }
         
-        public func toDictionary() -> [AnyHashable: Any]
-        {
+        public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             add(key: .limit, value: limit)
             add(key: .roomId, value: roomId)
