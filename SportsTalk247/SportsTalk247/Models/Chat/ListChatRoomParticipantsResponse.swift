@@ -17,12 +17,11 @@ public struct ListChatRoomParticipantsResponse: Codable {
         self.cursor = try container.decodeIfPresent(String.self, forKey: .cursor)
         self.participants = try container.decodeIfPresent(Array<ChatRoomParticipant>.self, forKey: .participants) ?? []
     }
-    
 }
 
 public struct ChatRoomParticipant: Codable {
-    var kind: String?
-    var user: User?
+    public var kind: String?
+    public var user: User?
     
     private enum CodingKeys: String, CodingKey {
         case kind

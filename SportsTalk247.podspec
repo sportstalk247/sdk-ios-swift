@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
 
-  spec.name         = "SportsTalk_iOS_SDK"
+  spec.name         = "SportsTalk247"
   spec.version      = "0.0.1"
   spec.summary      = "The Sportstalk SDK is a helpful wrapper around the Sportstalk API"
 
@@ -13,11 +13,11 @@ Pod::Spec.new do |spec|
 
   spec.author       = { "Brenn Hill" => "help@sportstalk247.com" }
 
-  spec.platform     = :ios, "12.0"
+  spec.platform     = :ios, "10.0"
 
-  spec.source       = { :git => "https://gitlab.com/sportstalk247/sdk-ios-swift.git", :branch => "podspec", :tag => "1.0" }
+  spec.source       = { :git => "https://gitlab.com/sportstalk247/sdk-ios-swift.git" }
 
-  spec.source_files  = "SportsTalk_iOS_SDK/SportsTalk_iOS_SDK/**/*.{swift}"
+  spec.source_files  = "SportsTalk247/SportsTalk247/**/*.{swift}"
   #spec.exclude_files = "Classes/Exclude"
 
 end
