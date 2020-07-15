@@ -1,15 +1,19 @@
 import Foundation
 
-public class Event: Codable, Equatable {
+open class Event: Codable, Equatable {
     public var kind: String?
     public var id: String?
     public var roomid: String?
     public var body: String?
-    var addedString: String?
+    public var originalbody: String?
+    var addedstring: String?
     public var added: Date?
-    var tsString: String?
+    var modifiedstring: String?
+    public var modified: Date?
+    var tsdouble: Double?
     public var ts: Date?
-    public var eventtype: String? // EventType
+    var eventtypestring: String?
+    public var eventtype: EventType?
     public var userid: String?
     public var user: User?
     public var customtype: String?
@@ -20,10 +24,16 @@ public class Event: Codable, Equatable {
     public var customfield2: String?
     public var replyto: Event?
     public var parentid: String?
+//    public var hierarchy: [String]?
+//    public var depth: Int?
     public var edited: Bool?
+    public var editedbymoderator: Bool?
+    public var censored: Bool?
     public var deleted: Bool?
     public var active: Bool?
+//    public var mutedby: [String]?
     public var shadowban: Bool?
+//    public var hashtags: [String]?
     public var likecount: Int64?
     public var replycount: Int64?
     public var reactions: [ChatEventReaction]
@@ -35,9 +45,11 @@ public class Event: Codable, Equatable {
         case id
         case roomid
         case body
-        case addedString
-        case tsString
-        case eventtype
+        case originalbody
+        case addedstring = "added"
+        case modifiedstring = "modified"
+        case tsdouble = "ts"
+        case eventtypestring = "eventtype"
         case userid
         case user
         case customtype
@@ -46,10 +58,16 @@ public class Event: Codable, Equatable {
         case customtags
         case replyto
         case parentid
+//        case hierarchy
+//        case depth
         case edited
+        case editedbymoderator
+        case censored
         case deleted
         case active
+//        case mutedby
         case shadowban
+//        case hashtags
         case likecount
         case replycount
         case reactions
@@ -62,9 +80,11 @@ public class Event: Codable, Equatable {
         self.id = nil
         self.roomid = nil
         self.body = nil
-        self.addedString = nil
-        self.tsString = nil
-        self.eventtype = nil
+        self.originalbody = nil
+        self.addedstring = nil
+        self.modifiedstring = nil
+        self.tsdouble = nil
+        self.eventtypestring = nil
         self.userid = nil
         self.user = nil
         self.customtype = nil
@@ -73,10 +93,16 @@ public class Event: Codable, Equatable {
         self.customtags = []
         self.replyto = nil
         self.parentid = nil
+//        self.hierarchy = nil
+//        self.depth = nil
         self.edited = nil
+        self.editedbymoderator = nil
+        self.censored = nil
         self.deleted = nil
         self.active = nil
+//        self.mutedby = nil
         self.shadowban = nil
+//        self.hashtags = nil
         self.likecount = nil
         self.replycount = nil
         self.reactions = []
@@ -91,13 +117,20 @@ public class Event: Codable, Equatable {
         self.id = try container.decodeIfPresent(String.self, forKey: .id)
         self.roomid = try container.decodeIfPresent(String.self, forKey: .roomid)
         self.body = try container.decodeIfPresent(String.self, forKey: .body)
-        if let added = try container.decodeIfPresent(String.self, forKey: .addedString) {
+        self.originalbody = try container.decodeIfPresent(String.self, forKey: .originalbody)
+        if let added = try container.decodeIfPresent(String.self, forKey: .addedstring) {
             self.added = ISODateFormat(added)
         }
-        if let ts = try container.decodeIfPresent(String.self, forKey: .tsString) {
-            self.ts = ISODateFormat(ts)
+        if let modified = try container.decodeIfPresent(String.self, forKey: .modifiedstring) {
+            self.modified = ISODateFormat(modified)
         }
-        self.eventtype = try container.decodeIfPresent(String.self, forKey: .eventtype)
+        if let ts = try container.decodeIfPresent(Double.self, forKey: .tsdouble) {
+            self.ts = Date(timeIntervalSince1970: ts)
+        }
+        
+        if let type = try container.decodeIfPresent(String.self, forKey: .eventtypestring) {
+            self.eventtype = EventType(rawValue: type)
+        }
         self.userid = try container.decodeIfPresent(String.self, forKey: .userid)
         self.user = try container.decodeIfPresent(User.self, forKey: .user)
         self.customtype = try container.decodeIfPresent(String.self, forKey: .customtype)
@@ -106,10 +139,16 @@ public class Event: Codable, Equatable {
         self.customtags = try container.decodeIfPresent([String].self, forKey: .customtags)
         self.replyto = try container.decodeIfPresent(Event.self, forKey: .replyto)
         self.parentid = try container.decodeIfPresent(String.self, forKey: .parentid)
+//        self.hierarchy = try container.decodeIfPresent([String],self, forKey: .hierarchy)
+//        self.depth = try container.decodeIfPresent(Int.self, forKey: .depth)
         self.edited = try container.decodeIfPresent(Bool.self, forKey: .edited)
+        self.editedbymoderator = try container.decodeIfPresent(Bool.self, forKey: .editedbymoderator)
+        self.censored = try container.decodeIfPresent(Bool.self, forKey: .censored)
         self.deleted = try container.decodeIfPresent(Bool.self, forKey: .deleted)
         self.active = try container.decodeIfPresent(Bool.self, forKey: .active)
+//        self.mutedby = try continer.decodeIfPresent([String].self, forKey: .mutedby)
         self.shadowban = try container.decodeIfPresent(Bool.self, forKey: .shadowban)
+//        self.hashtags = try continer.decodeIfPresent([String].self, forKey: .hashtags)
         self.likecount = try container.decodeIfPresent(Int64.self, forKey: .likecount)
         self.replycount = try container.decodeIfPresent(Int64.self, forKey: .replycount)
         self.reactions = try container.decodeIfPresent(Array<ChatEventReaction>.self, forKey: .reactions) ?? []
@@ -123,9 +162,9 @@ public class Event: Codable, Equatable {
 }
 
 public struct ChatEventReaction: Codable {
-    var type: String?
-    var count: Int64?
-    var users: [User]
+    public var type: String?
+    public var count: Int64?
+    public var users: [User]
     
     private enum CodingKeys: String, CodingKey {
         case type
@@ -138,6 +177,12 @@ public struct ChatEventReaction: Codable {
         self.type = try container.decodeIfPresent(String.self, forKey: .type)
         self.count = try container.decodeIfPresent(Int64.self, forKey: .count)
         self.users = try container.decodeIfPresent(Array<User>.self, forKey: .users) ?? []
+    }
+    
+    public init(type: String, count: Int64, users: [User]) {
+        self.type = type
+        self.count = count
+        self.users = users
     }
 }
 
@@ -157,16 +202,17 @@ public struct ChatEventReport: Codable {
     }
 }
 
-public struct EventType {
-    static let SPEECH = "speech"
-    static let PURGE = "purge"
-    static let REACTION = "reaction"
-    static let ROOM_CLOSED = "roomClosed"
-    static let ROOM_OPEN = "roomopen"
-    static let ACTION = "action"
-    static let REPLY = "reply"
-    static let GOAL = "goal"
-    static let ADVERTISMENT = "advertisement"
+public enum EventType: String {
+    case speech
+    case purge
+    case reaction
+    case roomClosed = "roomClosed"
+    case roomOpen = "roomopen"
+    case action
+    case reply
+    case goal
+    case advertisement
+    case announcement
 }
 
 internal func ISODateFormat(_ string: String) -> Date? {

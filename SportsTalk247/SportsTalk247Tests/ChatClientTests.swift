@@ -36,7 +36,7 @@ extension ChatClientTests {
         request.enableenterandexit = false
         request.roomisopen = true
         
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         var receivedRoom: ChatRoom?
         
@@ -63,7 +63,7 @@ extension ChatClientTests {
         request.enableenterandexit = false
         request.roomisopen = true
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         var receivedRoom: ChatRoom?
         
@@ -90,7 +90,7 @@ extension ChatClientTests {
         request.roomisopen = true
         request.maxreports = 0
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         var receivedRoom: ChatRoom?
         
@@ -112,7 +112,7 @@ extension ChatClientTests {
         let request = ChatRequest.GetRoomDetails()
         request.roomid = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         var receivedRoom: ChatRoom?
 
@@ -134,7 +134,7 @@ extension ChatClientTests {
         let request = ChatRequest.DeleteRoom()
         request.roomid = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
 
         client.deleteRoom(request) { (code, message, _, response) in
@@ -156,7 +156,7 @@ extension ChatClientTests {
         request.roomisopen = true
         request.roomid = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         var receivedRoom: ChatRoom?
 
@@ -180,7 +180,7 @@ extension ChatClientTests {
         request.roomisopen = false
         request.roomid = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         var receivedRoom: ChatRoom?
 
@@ -201,13 +201,16 @@ extension ChatClientTests {
     func test_ChatRoomsServices_ListRooms() {
         let request = ChatRequest.ListRooms()
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         var receivedRoom: [ChatRoom]?
         
         client.listRooms(request) { (code, message, _, response) in
             print(message ?? "")
             print("found \(String(describing: response?.rooms.count)) rooms")
+            if response?.rooms.count ?? 0 > 0 {
+                self.dummyRoom = response?.rooms.first
+            }
             receivedCode = code
             receivedRoom = response?.rooms
             expectation.fulfill()
@@ -224,12 +227,15 @@ extension ChatClientTests {
         let request = ChatRequest.ListRoomParticipants()
         request.roomid = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
 
         client.listRoomParticipants(request) { (code, message, kind, response) in
             print(message ?? "")
-            print("found \(String(describing: response?.rooms.count)) rooms")
+            print("found \(String(describing: response?.participants.count)) participant")
+            
+            print(response!.participants.first?.user?.displayname ?? "")
+            
             receivedCode = code
             expectation.fulfill()
         }
@@ -244,7 +250,7 @@ extension ChatClientTests {
         }
         
         if dummyRoom == nil {
-            test_ChatRoomsServices_CreateRoomPostmoderated()
+            test_ChatRoomsServices_ListRooms()
         }
         
         let request = ChatRequest.JoinRoom()
@@ -252,7 +258,7 @@ extension ChatClientTests {
         request.displayname = dummyUser?.displayname
         request.roomid = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         var receivedUser: User?
         
@@ -260,6 +266,7 @@ extension ChatClientTests {
             print(message ?? "")
             receivedCode = code
             receivedUser = response?.user
+            self.dummyRoom = response?.room
             expectation.fulfill()
         }
 
@@ -283,7 +290,7 @@ extension ChatClientTests {
         request.displayname = dummyUser?.displayname
         request.roomid = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         var receivedUser: User?
         
@@ -291,6 +298,7 @@ extension ChatClientTests {
             print(message ?? "")
             receivedCode = code
             receivedUser = response?.user
+            self.dummyRoom = response?.room
             expectation.fulfill()
         }
 
@@ -314,7 +322,7 @@ extension ChatClientTests {
         request.displayname = dummyUser?.displayname
         request.customid = dummyRoom?.customid
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         var receivedUser: User?
         
@@ -322,6 +330,7 @@ extension ChatClientTests {
             print(message ?? "")
             receivedCode = code
             receivedUser = response?.user
+            self.dummyRoom = response?.room
             expectation.fulfill()
         }
 
@@ -337,7 +346,7 @@ extension ChatClientTests {
         let request = ChatRequest.JoinRoom()
         request.roomid = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         
         client.joinRoom(request) { (code, message, _, response) in
@@ -361,11 +370,12 @@ extension ChatClientTests {
         request.roomid = dummyRoom?.id
         request.userid = dummyUser?.userid
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
 
         client.exitRoom(request) { (code, message, _, response) in
             print(message ?? "")
+            self.dummyRoom = nil
             receivedCode = code
             expectation.fulfill()
         }
@@ -379,7 +389,7 @@ extension ChatClientTests {
         let request = ChatRequest.GetUpdates()
         request.roomid = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         
         client.getUpdates(request) { (code, message, _, response) in
@@ -400,7 +410,7 @@ extension ChatClientTests {
         request.command = "Hello New Command"
         request.userid = dummyUser?.userid
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
     
         client.executeChatCommand(request) { (code, message, _, response) in
@@ -422,7 +432,7 @@ extension ChatClientTests {
         request.userid = dummyUser?.userid
         request.replyto = dummyEventList?.first?.id
         
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
     
         client.sendQuotedReply(request) { (code, message, _, response) in
@@ -446,7 +456,7 @@ extension ChatClientTests {
         request.userid = dummyUser?.userid
         request.replyto = dummyEventList?.first?.id
         
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
     
         client.sendThreadedReply(request) { (code, message, _, response) in
@@ -469,7 +479,7 @@ extension ChatClientTests {
 //        request.eventid = dummyEventList?.first?.id
 //        request.userid = dummyUser?.userid
 //            
-//            let expectation = self.expectation(description: Constants.Expectation_Description)
+//            let expectation = self.expectation(description: Constants.expectation_description(#function))
 //            var receivedCode: Int?
 //        
 //            client.permanentlyDeleteEvent(request) { (code, message, _, response) in
@@ -489,12 +499,13 @@ extension ChatClientTests {
         request.roomid = dummyRoom?.id
         request.userId = dummyUser?.userid
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
 
         client.listMessagesByUser(request) { (code, message, _, response) in
             print(message ?? "")
             self.dummyEventList = response?.events
+            print(response?.events.first)
             receivedCode = code
             expectation.fulfill()
         }
@@ -511,7 +522,7 @@ extension ChatClientTests {
         request.chatRoomId = dummyRoom?.id
         request.userid = dummyUser?.userid
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
 
         client.reportMessage(request) { (code, message, _, event) in
@@ -533,7 +544,7 @@ extension ChatClientTests {
         request.reaction = "like"
         request.reacted = "true"
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         
         client.reactToEvent(request) { (code, message, _, event) in
@@ -554,7 +565,7 @@ extension ChatClientTests {
         request.chatMessageId = dummyEventNeedingModeration?.id
         request.chatRoomId = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         
         client.approveEvent(request) { (code, message, _, event) in
@@ -573,7 +584,7 @@ extension ChatClientTests {
         request.chatMessageId = dummyEventNeedingModeration?.id
         request.chatRoomId = dummyRoom?.id
 
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         
         client.rejectEvent(request) { (code, message, _, event) in
@@ -591,7 +602,7 @@ extension ChatClientTests {
         test_ChatRoomsServices_ReportMessage()
         let request = ModerationRequest.listMessagesInModerationQueue()
         
-        let expectation = self.expectation(description: Constants.Expectation_Description)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         
         client.listMessagesInModerationQueue(request) { (code, message, _, response) in
@@ -610,18 +621,23 @@ extension ChatClientTests {
 // MARK: - EventSubscription
 extension ChatClientTests {
     func test_EventSubscription() {
-        test_ChatRoomsServices_CreateRoomPostmoderated()
         
-        let expectation = self.expectation(description: Constants.Expectation_Description)
-        var receivedCode: Int?
-        
-        guard let roomid = dummyRoom?.id else {
-            expectation.fulfill()
-            return
+        var selectedRoom: ChatRoom?
+        listRooms { rooms in
+            selectedRoom = rooms?.first
         }
         
+        if selectedRoom == nil {
+            createRoom()
+        }
+        
+        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
         SportsTalkSDK.shared.debugMode = false
-        client.startListeningToChatUpdates(from: roomid) { (code, message, _, event) in
+        client.startListeningToChatUpdates() { (code, message, _, event) in
             print("------------")
             print(code == 200 ? "pulse success" : "pulse failed")
             print((event?.count ?? 0) > 0 ? "received \(String(describing: event?.count)) event" : "No new events")
@@ -629,13 +645,13 @@ extension ChatClientTests {
             receivedCode = code
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(Int(Config.TIMEOUT) - 1)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
             self.client.stopListeningToChatUpdates()
             SportsTalkSDK.shared.debugMode = true
             expectation.fulfill()
         }
         
-        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT + 50, handler: nil)
         XCTAssertTrue(receivedCode == 200)
     }
 }
@@ -653,6 +669,28 @@ extension ChatClientTests {
         
         client.createOrUpdateUser(request) { (code, message, kind, user) in
             self.dummyUser = user
+        }
+    }
+    
+    private func listRooms(completion: @escaping (_ rooms: [ChatRoom]?) -> Void) {
+        let request = ChatRequest.ListRooms()
+        client.listRooms(request) { (code, message, _, response) in
+            completion(response?.rooms)
+        }
+    }
+    
+    private func createRoom(completion: ((_ success: Bool) -> Void)? = nil) {
+        let request = ChatRequest.CreateRoom()
+        request.name = "Test Room Post Moderated 3"
+        request.customid = "some-custom-id"
+        request.description = "Chat Room Newly Created"
+        request.enableactions = true
+        request.moderation = "post"
+        request.enableenterandexit = false
+        request.roomisopen = true
+        
+        client.createRoom(request) { (code, message, _, room) in
+            completion?(code == 200)
         }
     }
     

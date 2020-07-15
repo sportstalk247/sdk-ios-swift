@@ -1,6 +1,6 @@
 import Foundation
 
-public class User: NSObject, Codable {
+open class User: NSObject, Codable {
     public var userid: String?
     public var handle: String?
     public var profileurl: String?

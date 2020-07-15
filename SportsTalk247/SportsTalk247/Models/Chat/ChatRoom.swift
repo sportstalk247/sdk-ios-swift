@@ -1,26 +1,24 @@
 import Foundation
 
-public class ChatRoom: Codable {
+open class ChatRoom: Codable {
     public var kind: String?
     public var id: String?
     public var appid: String?
     public var ownerid: String?
     public var name: String?
     public var description: String?
-    public var iframeurl: String?
     public var customtype: String?
     public var customid: String?
     public var custompayload: String?
     public var customtags: [String]?
     public var customfield1: String?
     public var customfield2: String?
-    public var slug: String?
     public var enableactions: Bool?
     public var enableenterandexit: Bool?
     public var open: Bool?
     public var inroom: Int?
-    var addedString: String?
-    var whenmodifiedString: String?
+    var addedstring: String?
+    var whenmodifiedstring: String?
     public var moderation: String?
     public var maxreports: Int64?
     public var enableprofanityfilter: Bool?
@@ -36,20 +34,18 @@ public class ChatRoom: Codable {
         case ownerid
         case name
         case description
-        case iframeurl
         case customtype
         case customid
         case custompayload
         case customtags
         case customfield1
         case customfield2
-        case slug
         case enableactions
         case enableenterandexit
         case open
         case inroom
-        case addedString = "added"
-        case whenmodifiedString = "whenmodified"
+        case addedstring = "added"
+        case whenmodifiedstring = "whenmodified"
         case moderation
         case maxreports
         case enableprofanityfilter
@@ -65,14 +61,12 @@ public class ChatRoom: Codable {
         self.ownerid = try container.decodeIfPresent(String.self, forKey: .ownerid)
         self.name = try container.decodeIfPresent(String.self, forKey: .name)
         self.description = try container.decodeIfPresent(String.self, forKey: .description)
-        self.iframeurl = try container.decodeIfPresent(String.self, forKey: .iframeurl)
         self.customtype = try container.decodeIfPresent(String.self, forKey: .customtype)
         self.customid = try container.decodeIfPresent(String.self, forKey: .customid)
         self.custompayload = try container.decodeIfPresent(String.self, forKey: .custompayload)
         self.customtags = try container.decodeIfPresent(Array<String>.self, forKey: .customtags)
         self.customfield1 = try container.decodeIfPresent(String.self, forKey: .customfield1)
         self.customfield2 = try container.decodeIfPresent(String.self, forKey: .customfield2)
-        self.slug = try container.decodeIfPresent(String.self, forKey: .slug)
         self.enableactions = try container.decodeIfPresent(Bool.self, forKey: .enableactions)
         self.enableenterandexit = try container.decodeIfPresent(Bool.self, forKey: .enableenterandexit)
         self.open = try container.decodeIfPresent(Bool.self, forKey: .open)
@@ -82,11 +76,11 @@ public class ChatRoom: Codable {
         self.enableprofanityfilter = try container.decodeIfPresent(Bool.self, forKey: .enableprofanityfilter)
         self.delaymessageseconds = try container.decodeIfPresent(Int64.self, forKey: .delaymessageseconds)
         
-        if let added = try container.decodeIfPresent(String.self, forKey: .addedString) {
+        if let added = try container.decodeIfPresent(String.self, forKey: .addedstring) {
             self.added = ISODateFormat(added)
         }
         
-        if let modified = try container.decodeIfPresent(String.self, forKey: .whenmodifiedString) {
+        if let modified = try container.decodeIfPresent(String.self, forKey: .whenmodifiedstring) {
             self.whenmodified = ISODateFormat(modified)
         }
     }
