@@ -409,6 +409,7 @@ extension ChatClientTests {
         request.roomid = dummyRoom?.id
         request.command = "Hello New Command"
         request.userid = dummyUser?.userid
+        request.eventtype = .speech
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
