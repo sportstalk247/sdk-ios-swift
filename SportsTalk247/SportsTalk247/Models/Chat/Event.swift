@@ -155,10 +155,6 @@ open class Event: Codable, Equatable {
         self.reactions = try container.decodeIfPresent(Array<ChatEventReaction>.self, forKey: .reactions) ?? []
         self.moderation = try container.decodeIfPresent(String.self, forKey: .moderation)
         self.reports = try container.decodeIfPresent(Array<ChatEventReport>.self, forKey: .reports) ?? []
-        
-        if customtype != nil {
-            self.eventtype = .custom
-        }
     }
     
     public static func == (lhs: Event, rhs: Event) -> Bool {

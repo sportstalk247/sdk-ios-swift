@@ -425,6 +425,29 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
+    func test_ChatRoomsServices_ExecuteChatCommandWithCustomId() {
+        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        let request = ChatRequest.ExecuteChatCommand()
+        request.roomid = dummyRoom?.id
+        request.command = "Hello New Command"
+        request.userid = dummyUser?.userid
+        request.eventtype = .custom
+        request.customtype = "test something"
+
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+    
+        client.executeChatCommand(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            self.dummyEvent = response?.speech
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
     func test_ChatRoomsServices_SendQuotedReply() {
         test_ChatRoomsServices_ListMessagesByUsers()
         let request = ChatRequest.SendQuotedReply()
