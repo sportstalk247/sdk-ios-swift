@@ -128,6 +128,10 @@ open class Event: Codable, Equatable {
             self.ts = Date(timeIntervalSince1970: ts)
         }
         
+        if let type = try container.decodeIfPresent(String.self, forKey: .eventtypestring) {
+            self.eventtype = EventType(rawValue: type)
+        }
+        
         self.userid = try container.decodeIfPresent(String.self, forKey: .userid)
         self.user = try container.decodeIfPresent(User.self, forKey: .user)
         self.customtype = try container.decodeIfPresent(String.self, forKey: .customtype)
@@ -152,12 +156,8 @@ open class Event: Codable, Equatable {
         self.moderation = try container.decodeIfPresent(String.self, forKey: .moderation)
         self.reports = try container.decodeIfPresent(Array<ChatEventReport>.self, forKey: .reports) ?? []
         
-        if let type = try container.decodeIfPresent(String.self, forKey: .eventtypestring) {
-            if self.customtype == nil {
-                self.eventtype = EventType(rawValue: type)
-            } else {
-                self.eventtype = .custom
-            }
+        if customtype != nil {
+            self.eventtype = .custom
         }
     }
     
