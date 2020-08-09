@@ -211,6 +211,7 @@ public enum EventType: String {
     case roomOpen = "roomopen"
     case action
     case reply
+    case quoted
     case goal
     case advertisement
     case announcement
