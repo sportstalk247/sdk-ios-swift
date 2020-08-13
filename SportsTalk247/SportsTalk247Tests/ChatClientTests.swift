@@ -153,6 +153,7 @@ extension ChatClientTests {
         let request = ChatRequest.UpdateRoom()
         request.name = "Updated Room"
         request.description = "This room has recently been updated"
+        request.customId = "customId"
         request.roomisopen = true
         request.roomid = dummyRoom?.id
 
