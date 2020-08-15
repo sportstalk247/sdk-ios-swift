@@ -153,7 +153,7 @@ extension ChatClientTests {
         let request = ChatRequest.UpdateRoom()
         request.name = "Updated Room"
         request.description = "This room has recently been updated"
-        request.customId = "customId"
+        request.customid = "new-custom-id-" + String(Int.random(in: 0..<1995))
         request.roomisopen = true
         request.roomid = dummyRoom?.id
 
@@ -164,6 +164,7 @@ extension ChatClientTests {
         client.updateRoom(request) { (code, message, _, room) in
             print(message ?? "")
             print(String(describing: room?.description))
+            print(room?.customid)
             receivedCode = code
             receivedRoom = room
             self.dummyRoom = room

@@ -178,7 +178,7 @@ public class ChatRequest {
             case slug
             case name
             case description
-            case customId
+            case customid
             case moderation
             case enableactions
             case enableenterandexit
@@ -193,7 +193,7 @@ public class ChatRequest {
         public var slug: URL?
         public var name: String?
         public var description: String?
-        public var customId: String?
+        public var customid: String?
         public var moderation: String?
         public var enableactions: Bool?
         public var enableenterandexit: Bool?
@@ -211,7 +211,7 @@ public class ChatRequest {
             ret.slug = value(forKey: .slug)
             ret.name = value(forKey: .name)
             ret.description = value(forKey: .description)
-            ret.customId = value(forKey: .customId)
+            ret.customid = value(forKey: .customid)
             ret.moderation = value(forKey: .moderation)
             ret.enableactions = value(forKey: .enableactions)
             ret.enableenterandexit = value(forKey: .enableenterandexit)
@@ -232,7 +232,7 @@ public class ChatRequest {
             add(key: .slug, value: slug?.absoluteString)
             add(key: .name, value: name)
             add(key: .description, value: description)
-            add(key: .customId, value: description)
+            add(key: .customid, value: customid)
             add(key: .moderation, value: moderation)
             add(key: .enableactions, value: enableactions)
             add(key: .enableenterandexit, value: enableenterandexit)
