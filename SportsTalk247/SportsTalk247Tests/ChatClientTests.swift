@@ -222,7 +222,7 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
         XCTAssertTrue(receivedRoom != nil)
     }
-    
+        
     func test_ChatRoomsServices_ListRoomParticipants()
     {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
@@ -498,25 +498,65 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
-//    func test_ChatRoomsServices_permanentlyDeleteEvent() {
-//        test_ChatRoomsServices_ListMessagesByUsers()
-//        let request = ChatRoomsServices.PermanentlyDeleteEvent()
-//        request.roomid = dummyRoom?.id
-//        request.eventid = dummyEventList?.first?.id
-//        request.userid = dummyUser?.userid
-//            
-//            let expectation = self.expectation(description: Constants.expectation_description(#function))
-//            var receivedCode: Int?
-//        
-//            client.permanentlyDeleteEvent(request) { (code, message, _, response) in
-//                print(message ?? "")
-//                receivedCode = code
-//                expectation.fulfill()
-//            }
-//
-//            waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-//            XCTAssertTrue(receivedCode == 200)
-//    }
+    func test_ChatRoomsServices_PurgeMessages() {
+        let request = ChatRequest.PurgeUserMessages()
+        request.password = "admin"
+        request.handle = dummyUser?.handle
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.purgeMessage(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 10, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_DeleteEvent() {
+        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        test_ChatRoomsServices_ExecuteChatCommand()
+        let request = ChatRequest.DeleteEvent()
+        request.eventid = dummyEvent?.id
+        request.roomid = dummyRoom?.id
+
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.deleteEvent(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 10, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_DeleteAllEvents() {
+        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        test_ChatRoomsServices_ExecuteChatCommand()
+        let request = ChatRequest.DeleteAllEvents()
+        request.password = "admin"
+        request.userid = dummyUser?.userid
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.deleteAllEvents(request) { (code, message, _, response) in
+            print(message ?? "")
+            print(response)
+            receivedCode = code
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: 10, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+
 
     func test_ChatRoomsServices_ListMessagesByUsers() {
         test_ChatRoomsServices_ExecuteChatCommand()
