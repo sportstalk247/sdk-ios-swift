@@ -1,7 +1,7 @@
 import Foundation
 
 public class ChatRequest {
-    /// Creates a new chat room (Postmoderated)
+    /// Creates a new chat room
     ///
     /// name: (required) The name of the room
     ///
@@ -1079,33 +1079,37 @@ public class ChatRequest {
     ///
     ///  Arguments:
     ///
-    ///  chatRoomId:  Room id, in which you want to remove the message
+    ///  roomId:  the room id in which you want to remove the message
     ///
-    ///  chatMessageId:  the message you want to remove
+    ///  eventId:  the message you want to remove
+    ///
+    ///  userId: (Optional)  the id to whom the message belongs to
+    ///  If provided, a check will be made to enforce this userid (the one deleting the event) is the owner of the event or has elevated permissions. If null, it assumes your business service made the determination to delete the event.
+    ///
+    ///  permanent: (Optional) remove permanently if no reply. Defaults to true
     ///
     /// - Warning: This method requires authentication.
-    public class PermanentlyDeleteEvent: ParametersBase<PermanentlyDeleteEvent.Fields, PermanentlyDeleteEvent> {
+    public class DeleteEvent: ParametersBase<DeleteEvent.Fields, DeleteEvent> {
         public enum Fields {
             case roomid
             case eventid
             case userid
+            case permanent
         }
         
         public var roomid: String!
         public var eventid: String!
-        public var userid: String!
-        public var deleted: Bool = true
-        public var permanent: Bool = true
+        public var userid: String?
+        public var permanent: Bool? = true
         
-        override public func from(dictionary: [AnyHashable: Any]) -> PermanentlyDeleteEvent {
+        override public func from(dictionary: [AnyHashable: Any]) -> DeleteEvent {
             set(dictionary: dictionary)
-            let ret = PermanentlyDeleteEvent()
+            let ret = DeleteEvent()
             
             ret.roomid = value(forKey: .roomid)
             ret.eventid = value(forKey: .eventid)
             ret.userid = value(forKey: .userid)
-            ret.deleted = true
-            ret.permanent = true
+            ret.permanent = value(forKey: .permanent)
             
             return ret
         }
@@ -1115,12 +1119,51 @@ public class ChatRequest {
             
             addRequired(key: .roomid, value: roomid)
             addRequired(key: .eventid, value: eventid)
-            addRequired(key: .userid, value: userid)
+            add(key: .userid, value: userid)
+            add(key: .permanent, value: permanent)
             
             return toDictionary
         }
     }
     
+    /// Removes all messages in a room.
+    ///
+    ///  Arguments:
+    ///
+    ///  password: a valid admin password
+    ///
+    public class DeleteAllEvents: ParametersBase<DeleteAllEvents.Fields, DeleteAllEvents> {
+        public enum Fields {
+            case command
+            case userid
+            case password
+        }
+        
+        private var command: String!
+        public var password: String!
+        public var userid: String!
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> DeleteAllEvents {
+            set(dictionary: dictionary)
+            let ret = DeleteAllEvents()
+            
+            ret.command = value(forKey: .command)
+            ret.password = value(forKey: .password)
+            ret.userid = value(forKey: .userid)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .command, value: "*deleteallevents" + " " + password)
+            addRequired(key: .password, value: password)
+            addRequired(key: .userid, value: userid)
+            
+            return toDictionary
+        }
+    }
     
     /// Executes a command in a chat room to purge all messages for a user
     ///
@@ -1128,30 +1171,28 @@ public class ChatRequest {
     ///
     ///  Arguments:
     ///
-    ///  command: The command to execute. In this case, "*purge "
+    ///  handle: the handle of the owner of the messages
     ///
-    ///  userid:  user id specific to app
-    ///
-    ///  chatroomid: room id, against which you want to purge the messages
+    ///  password: a valid admin password
     ///
     /// - Warning: This method requires authentication.
     public class PurgeUserMessages: ParametersBase<PurgeUserMessages.Fields, PurgeUserMessages> {
         public enum Fields {
             case command
-            case chatroomid
-            case userid
+            case password
+            case handle
         }
         
-        public var userid: String?
-        public var chatroomid: String?
-        public var command: String?
+        public var handle: String!
+        public var password: String!
+        private var command: String!
         
         override public func from(dictionary: [AnyHashable: Any]) -> PurgeUserMessages {
             set(dictionary: dictionary)
             let ret = PurgeUserMessages()
             
-            ret.userid = value(forKey: .userid)
-            ret.chatroomid = value(forKey: .chatroomid)
+            ret.handle = value(forKey: .handle)
+            ret.password = value(forKey: .password)
             ret.command = value(forKey: .command)
             
             return ret
@@ -1160,9 +1201,9 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .chatroomid, value: chatroomid)
-            add(key: .userid, value: userid)
-            add(key: .command, value: command)
+            addRequired(key: .password, value: password)
+            addRequired(key: .handle, value: handle)
+            addRequired(key: .command, value: "*purge" + " " + password + " " + handle)
             
             return toDictionary
         }
@@ -1371,91 +1412,6 @@ public class ChatRequest {
             add(key: .customtype, value: customtype)
             add(key: .customid, value: customid)
             add(key: .custompayload, value: custompayload)
-            
-            return toDictionary
-        }
-    }
-    
-    /// Executes a command in a chat room
-    ///
-    /// SENDING A MESSAGE:
-    ///
-    ///  * Send any text that doesn't start with a reserved symbol to perform a SAY command.
-    ///  * Use this API call to REPLY to existing messages
-    ///
-    ///  example:
-    ///  These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World Hello, World
-    ///
-    ///  ACTION COMMANDS:
-    ///
-    ///  * Action commands start with the / character
-    ///
-    /// example:
-    ///
-    /// /dance nicole User sees:
-    /// You dance with Nicole
-    /// Nicole sees: (user's handle) dances with you
-    /// Everyone else sees: (user's handle) dances with Nicoel
-    ///
-    /// This requires that the action command dance is on the approved list of commands and Nicole is the handle of a participant in the room, and that actions are allowed in the room.
-    ///
-    /// ADMIN COMMANDS:
-    ///
-    ///  * These commands start with the * character
-    /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
-    ///
-    /// example:
-    ///
-    ///  * ban : This bans the user from the entire chat experience (all rooms).
-    ///  * restore : This restores the user to the chat experience (all rooms).
-    ///  * purge : This deletes all messages from the specified user.
-    ///  * deleteallevents : This deletes all messages in this room.
-    ///
-    ///  SENDING A REPLY::
-    ///
-    ///   * replyto:  Use this field to provide the EventID of an event you want to reply to. Replies have a different event type and contain a copy of the original event.
-    ///
-    ///  Arguments:
-    ///
-    ///  command:  command that you want to pass
-    ///
-    ///  userid: user id specific to App
-    ///
-    ///  customtype: any type you want to save
-    ///
-    ///  customid: any custom id you want to pass
-    ///
-    ///  custompayload: any payload.
-    ///
-    /// - Warning: This method requires authentication.
-    public class DeleteAllEventsInRoom: ParametersBase<DeleteAllEventsInRoom.Fields, DeleteAllEventsInRoom> {
-        public enum Fields {
-            case command
-            case chatroomid
-            case userid
-        }
-        
-        public var userid: String?
-        public var chatroomid: String?
-        public var command: String?
-        
-        override public func from(dictionary: [AnyHashable: Any]) -> DeleteAllEventsInRoom {
-            set(dictionary: dictionary)
-            let ret = DeleteAllEventsInRoom()
-            
-            ret.userid = value(forKey: .userid)
-            ret.chatroomid = value(forKey: .chatroomid)
-            ret.command = value(forKey: .command)
-            
-            return ret
-        }
-        
-        public func toDictionary() -> [AnyHashable: Any] {
-            toDictionary = [AnyHashable: Any]()
-            
-            addRequired(key: .chatroomid, value: chatroomid)
-            add(key: .userid, value: userid)
-            add(key: .command, value: command)
             
             return toDictionary
         }

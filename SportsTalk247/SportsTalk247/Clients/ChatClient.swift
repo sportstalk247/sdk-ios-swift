@@ -15,8 +15,9 @@ public protocol ChatClientProtocol {
     func executeChatCommand(_ request: ChatRequest.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
-//    func permanentlyDeleteEvent(_ request: ChatRoomsServices.PermanentlyDeleteEvent, completionHandler: @escaping Completion<Event>)
-//    func flagEventLogicallyDeleted(_ request: ChatRoomsServices.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
+    func purgeMessage(_ request: ChatRequest.PurgeUserMessages, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
+    func deleteEvent(_ request: ChatRequest.DeleteEvent, completionHandler: @escaping Completion<DeleteEventResponse>)
+    func deleteAllEvents(_ request: ChatRequest.DeleteAllEvents, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func listMessagesByUser(_ request: ChatRequest.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>)
     func reportMessage(_ request: ChatRequest.ReportMessage, completionHandler: @escaping Completion<Event>)
     func reactToEvent(_ request: ChatRequest.ReactToEvent, completionHandler: @escaping Completion<Event>)
@@ -131,6 +132,25 @@ extension ChatClient {
     
     public func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
         makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    
+    public func purgeMessage(_ request: ChatRequest.PurgeUserMessages, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
+        makeRequest("\(ServiceKeys.chat)", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+
+    public func deleteEvent(_ request: ChatRequest.DeleteEvent, completionHandler: @escaping Completion<DeleteEventResponse>) {
+        makeRequest("\(ServiceKeys.chat)/events", withData: request.toDictionary(), requestType: .DELETE, expectation: DeleteEventResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func deleteAllEvents(_ request: ChatRequest.DeleteAllEvents, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
+        makeRequest("\(ServiceKeys.chat)", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
