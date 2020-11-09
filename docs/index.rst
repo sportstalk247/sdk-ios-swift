@@ -1,10 +1,14 @@
-.. SportsTalkSDK-iOS documentation master file, created by
-   sphinx-quickstart on Mon Nov  9 18:35:55 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+SportsTalk 247 iOS SDK Documentation
+====================================
 
-Welcome to SportsTalkSDK-iOS's documentation!
-=============================================
+Status: BETA
+============
+This SDK is under active development and improvement. We are also very open to feedback if you experience pain points while using the SDK.
+
+
+USAGE
+=====
+
 
 .. toctree::
    :maxdepth: 2
