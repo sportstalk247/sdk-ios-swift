@@ -90,7 +90,7 @@ public class ChatRequest {
     /// - Warning: This method requires authentication.
     public class GetRoomDetails: ParametersBase<GetRoomDetails.Fields, GetRoomDetails> {
         public enum Fields {
-            case roomIdOrSlug
+            case roomid
         }
         
         public var roomid: String?
@@ -99,7 +99,7 @@ public class ChatRequest {
             set(dictionary: dictionary)
             let ret = GetRoomDetails()
             
-            ret.roomid = value(forKey: .roomIdOrSlug)
+            ret.roomid = value(forKey: .roomid)
             
             return ret
         }
@@ -107,7 +107,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomIdOrSlug, value: roomid)
+            addRequired(key: .roomid, value: roomid)
             
             return toDictionary
         }
@@ -1167,20 +1167,82 @@ public class ChatRequest {
         }
     }
     
+    /// Set deleted (LOGICAL DELETE)
+    ///
+    /// Everything in a chat room is an event. Each event has a type. Events of type "speech, reply, quote" are considered "messages".
+    ///
+    /// Use logical delete if you want to flag something as deleted without actually deleting the message so you still have the data. When you use this method:
+    ///
+    /// The message is not actually deleted. The comment is flagged as deleted, and can no longer be read, but replies are not deleted.
+    /// If flag "permanentifnoreplies" is true, then it will be a permanent delete instead of logical delete for this comment if it has no children.
+    /// If you use "permanentifnoreplies" = true, and this comment has a parent that has been logically deleted, and this is the only child, then the parent will also be permanently deleted (and so on up the hierarchy of events).
+    ///
+    /// Arguments:
+    ///
+    /// roomid: (required) The ID of the room containing the event
+    ///
+    /// eventid: (required) The unique ID of the chat event to delete. The user posting the delete request must be the owner of the event or have moderator permission
+    ///
+    /// userId: (required) This is the application specific user ID of the user deleting the comment. Must be the owner of the message event or authorized moderator.
+    ///
+    /// deleted: (required) Set to true or false to flag the comment as deleted. If a comment is deleted, then it will have the deleted field set to true, in which case the contents of the event message should not be shown and the body of the message will not be returned by the API by default. If a previously deleted message is undeleted, the flag for deleted is set to false and the original comment body is returned
+    ///
+    /// permanentifnoreplies: (optional) If this optional parameter is set to "true", then if this event has no replies it will be permanently deleted instead of logically deleted. If a permanent delete is performed, the result will include the field "permanentdelete=true"
+    ///
+    /// If you want to mark a comment as deleted, and replies are still visible, use "true" for the logical delete value. If you want to permanently delete the message and all of its replies, pass false
+    public class FlagEventLogicallyDeleted: ParametersBase<FlagEventLogicallyDeleted.Fields, FlagEventLogicallyDeleted> {
+        public enum Fields {
+            case roomid
+            case eventid
+            case userid
+            case deleted
+            case permanentifnoreplies
+        }
+        
+        public var roomid: String!
+        public var eventid: String!
+        public var userid: String!
+        public var deleted: Bool!
+        public var permanentifnoreplies: Bool?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> FlagEventLogicallyDeleted {
+            set(dictionary: dictionary)
+            let ret = FlagEventLogicallyDeleted()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.eventid = value(forKey: .eventid)
+            ret.userid = value(forKey: .userid)
+            ret.deleted = value(forKey: .deleted)
+            ret.permanentifnoreplies = value(forKey: .permanentifnoreplies)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .deleted, value: deleted)
+            add(key: .permanentifnoreplies, value: permanentifnoreplies)
+            
+            return toDictionary
+        }
+    }
+    
     /// Removes a message from a room.
     ///
     /// This does not DELETE the message. It flags the message as moderator removed.
     ///
-    ///  Arguments:
+    /// Arguments:
     ///
-    ///  roomId:  the room id in which you want to remove the message
+    /// roomId:  the room id in which you want to remove the message
     ///
-    ///  eventId:  the message you want to remove
+    /// eventId:  the message you want to remove
     ///
-    ///  userId: (Optional)  the id to whom the message belongs to
-    ///  If provided, a check will be made to enforce this userid (the one deleting the event) is the owner of the event or has elevated permissions. If null, it assumes your business service made the determination to delete the event.
+    /// userId: (Optional)  the id to whom the message belongs to
+    /// If provided, a check will be made to enforce this userid (the one deleting the event) is the owner of the event or has elevated permissions. If null, it assumes your business service made the determination to delete the event.
     ///
-    ///  permanent: (Optional) remove permanently if no reply. Defaults to true
+    /// permanent: (Optional) remove permanently if no reply. Defaults to true
     ///
     /// - Warning: This method requires authentication.
     public class DeleteEvent: ParametersBase<DeleteEvent.Fields, DeleteEvent> {
@@ -1188,13 +1250,11 @@ public class ChatRequest {
             case roomid
             case eventid
             case userid
-            case permanent
         }
         
         public var roomid: String!
         public var eventid: String!
         public var userid: String?
-        public var permanent: Bool? = true
         
         override public func from(dictionary: [AnyHashable: Any]) -> DeleteEvent {
             set(dictionary: dictionary)
@@ -1203,7 +1263,6 @@ public class ChatRequest {
             ret.roomid = value(forKey: .roomid)
             ret.eventid = value(forKey: .eventid)
             ret.userid = value(forKey: .userid)
-            ret.permanent = value(forKey: .permanent)
             
             return ret
         }
@@ -1211,10 +1270,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomid, value: roomid)
-            addRequired(key: .eventid, value: eventid)
             add(key: .userid, value: userid)
-            add(key: .permanent, value: permanent)
             
             return toDictionary
         }
@@ -1228,11 +1284,13 @@ public class ChatRequest {
     ///
     public class DeleteAllEvents: ParametersBase<DeleteAllEvents.Fields, DeleteAllEvents> {
         public enum Fields {
+            case roomid
             case command
             case userid
             case password
         }
         
+        public var roomid: String!
         private var command: String!
         public var password: String!
         public var userid: String!
@@ -1241,6 +1299,7 @@ public class ChatRequest {
             set(dictionary: dictionary)
             let ret = DeleteAllEvents()
             
+            ret.roomid = value(forKey: .roomid)
             ret.command = value(forKey: .command)
             ret.password = value(forKey: .password)
             ret.userid = value(forKey: .userid)
@@ -1252,7 +1311,6 @@ public class ChatRequest {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .command, value: "*deleteallevents" + " " + password)
-            addRequired(key: .password, value: password)
             addRequired(key: .userid, value: userid)
             
             return toDictionary
@@ -1272,11 +1330,15 @@ public class ChatRequest {
     /// - Warning: This method requires authentication.
     public class PurgeUserMessages: ParametersBase<PurgeUserMessages.Fields, PurgeUserMessages> {
         public enum Fields {
+            case roomid
+            case userid
             case command
             case password
             case handle
         }
         
+        public var roomid: String!
+        public var userid: String!
         public var handle: String!
         public var password: String!
         private var command: String!
@@ -1285,6 +1347,8 @@ public class ChatRequest {
             set(dictionary: dictionary)
             let ret = PurgeUserMessages()
             
+            ret.roomid = value(forKey: .roomid)
+            ret.userid = value(forKey: .userid)
             ret.handle = value(forKey: .handle)
             ret.password = value(forKey: .password)
             ret.command = value(forKey: .command)
@@ -1295,9 +1359,8 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .password, value: password)
-            addRequired(key: .handle, value: handle)
-            addRequired(key: .command, value: "*purge \(password) \(handle)")
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .command, value: String("*purge \(password!) \(handle!)"))
             
             return toDictionary
         }
@@ -1414,6 +1477,61 @@ public class ChatRequest {
             add(key: .reaction, value: reaction)
             add(key: .reacted, value: reacted)
             
+            return toDictionary
+        }
+    }
+    
+    /// Bounce User
+    ///
+    /// Remove the user from the room and prevent the user from reentering.
+    ///
+    /// Optionally display a message to people in the room indicating this person was bounced.
+    /// When you bounce a user from the room, the user is removed from the room and blocked from reentering.
+    /// Past events generated by that user are not modified (past messages from the user are not removed)
+    ///
+    ///  Arguments:
+    ///
+    ///  userid: (required)  user id specific to app
+    ///
+    ///  bounce: (required) True if the user is being bounced from the room. False if user is debounced, allowing the user to reenter the room.
+    ///
+    ///  roomid: (required) The ID of the chat room from which to bounce this user
+    ///
+    ///  announcement: (optional) If provided, this announcement is displayed to the people who are in the room, as the body of a BOUNCE event.
+    ///
+    public class BounceUser: ParametersBase<BounceUser.Fields, BounceUser> {
+        public enum Fields {
+            case userid
+            case bounce
+            case roomid
+            case announcement
+        }
+        
+        public var userid: String?
+        public var bounce: Bool?
+        public var roomid: String?
+        public var announcement: String?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> BounceUser {
+            set(dictionary: dictionary)
+            let ret = BounceUser()
+            
+            ret.userid = value(forKey: .userid)
+            ret.bounce = value(forKey: .bounce)
+            ret.roomid = value(forKey: .roomid)
+            ret.announcement = value(forKey: .announcement)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .bounce, value: bounce)
+            addRequired(key: .roomid, value: roomid)
+            add(key: .announcement, value: announcement)
+
             return toDictionary
         }
     }

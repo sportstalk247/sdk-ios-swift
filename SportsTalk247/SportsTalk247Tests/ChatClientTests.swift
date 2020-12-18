@@ -23,6 +23,7 @@ class ChatClientTests: XCTestCase {
     override func setUpWithError() throws {
         SportsTalkSDK.shared.debugMode = true
     }
+    
 }
 
 extension ChatClientTests {
@@ -164,7 +165,7 @@ extension ChatClientTests {
         client.updateRoom(request) { (code, message, _, room) in
             print(message ?? "")
             print(String(describing: room?.description))
-            print(room?.customid)
+            print(String(describing: room?.customid))
             receivedCode = code
             receivedRoom = room
             self.dummyRoom = room
@@ -290,7 +291,7 @@ extension ChatClientTests {
         }
         
         if dummyRoom == nil {
-            test_ChatRoomsServices_ListRooms()
+            test_ChatRoomsServices_CreateRoomPostmoderated()
         }
         
         let request = ChatRequest.JoinRoom()
@@ -537,8 +538,12 @@ extension ChatClientTests {
     }
     
     func test_ChatRoomsServices_PurgeMessages() {
+        test_ChatRoomsServices_JoinRoom()
+        
         let request = ChatRequest.PurgeUserMessages()
-        request.password = "admin"
+        request.password = "zola"
+        request.roomid = dummyRoom?.id
+        request.userid = dummyUser?.userid
         request.handle = dummyUser?.handle
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -554,9 +559,35 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
+    func test_ChatRoomsServices_FlagEventLogicallyDeleted() {
+        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        test_ChatRoomsServices_ExecuteChatCommand()
+        
+        let request = ChatRequest.FlagEventLogicallyDeleted()
+        request.roomid = dummyRoom?.id
+        request.eventid = dummyEvent?.id
+        request.userid = dummyUser?.userid
+        request.deleted = true
+        request.permanentifnoreplies = true
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.flagEventLogicallyDeleted(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 10, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+
+    }
+    
     func test_ChatRoomsServices_DeleteEvent() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         test_ChatRoomsServices_ExecuteChatCommand()
+        
         let request = ChatRequest.DeleteEvent()
         request.eventid = dummyEvent?.id
         request.roomid = dummyRoom?.id
@@ -575,26 +606,25 @@ extension ChatClientTests {
     }
     
     func test_ChatRoomsServices_DeleteAllEvents() {
-        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
-        test_ChatRoomsServices_ExecuteChatCommand()
-        let request = ChatRequest.DeleteAllEvents()
-        request.password = "admin"
-        request.userid = dummyUser?.userid
+        test_ChatRoomsServices_JoinRoom()
         
+        let request = ChatRequest.DeleteAllEvents()
+        request.password = "zola"
+        request.userid = dummyUser?.userid
+        request.roomid = dummyRoom?.id
+
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
-        
+
         client.deleteAllEvents(request) { (code, message, _, response) in
             print(message ?? "")
-            print(response)
             receivedCode = code
             expectation.fulfill()
         }
-        
+
         waitForExpectations(timeout: 10, handler: nil)
         XCTAssertTrue(receivedCode == 200)
     }
-
 
     func test_ChatRoomsServices_ListMessagesByUsers() {
         test_ChatRoomsServices_ExecuteChatCommand()
@@ -660,6 +690,26 @@ extension ChatClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertTrue(receivedCode == 200)
     }
+    
+//    func test_ChatRoomsServices_Bounce() {
+//        
+//        let request = ChatRequest.BounceUser()
+//        request.roomid = dummyRoom?.id
+//        request.userid = dummyUser?.userid
+//        request.bounce = true
+//        
+//        let expectation = self.expectation(description: Constants.expectation_description(#function))
+//        var receivedCode: Int?
+//        
+//        client.bounceUser(request) { (code, message, _, response) in
+//            print(message ?? "")
+//            receivedCode = code
+//            expectation.fulfill()
+//        }
+//        
+//        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+//        XCTAssertTrue(receivedCode == 200)
+//    }
 }
 // MARK: - Moderation
 extension ChatClientTests {
@@ -794,6 +844,7 @@ extension ChatClientTests {
         request.roomisopen = true
         
         client.createRoom(request) { (code, message, _, room) in
+            self.dummyRoom = room
             completion?(code == 200)
         }
     }
