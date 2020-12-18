@@ -550,6 +550,100 @@ public class ChatRequest {
             return toDictionary
         }
     }
+
+    /// List Event History
+    ///
+    /// - This method enables you to download all of the events from a room in large batches. It should only be used if doing a data export.
+    ///
+    /// - This method returns a list of events sorted from oldest to newest.
+    ///
+    /// - This method returns all events, even those in the inactive state
+    ///
+    ///  Arguments:
+    ///
+    ///  cursor: (Optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///
+    ///  limit: (Optional) default is 100, maximum 2000
+    public class ListEventHistory: ParametersBase<ListEventHistory.Fields, ListEventHistory> {
+        public enum Fields {
+            case roomid
+            case cursor
+            case limit
+        }
+        
+        public var roomid: String?
+        public var cursor: String? = ""
+        public var limit: Int? = 100
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ListEventHistory {
+            set(dictionary: dictionary)
+            let ret = ListEventHistory()
+            ret.roomid = value(forKey: .roomid)
+            ret.cursor = value(forKey: .cursor)
+            ret.limit = value(forKey: .limit)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .cursor, value: cursor)
+            add(key: .limit, value: limit)
+            
+            return toDictionary
+        }
+    }
+
+    /// List Previous Events
+    ///
+    /// - This method allows you to go back in time to "scroll" in reverse through past messages. The typical use case for this method is to power the scroll-back feature of a chat window allowing the user to look at recent messages that have scrolled out of view. It's intended use is to retrieve small batches of historical events as the user is scrolling up.
+    ///
+    /// - This method returns a list of events sorted from newest to oldest.
+    ///
+    /// - This method excludes events that are not in the active state (for example if they are removed by a moderator)
+    ///
+    /// - This method excludes non-displayable events (reaction, replace, remove, purge)
+    ///
+    /// - This method will not return events that were emitted and then deleted before this method was called
+    ///
+    ///  Arguments:
+    ///
+    ///  cursor: (Optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///
+    ///  limit: (Optional) default is 100, maximum 500
+    
+    public class ListPreviousEvents: ParametersBase<ListPreviousEvents.Fields, ListPreviousEvents> {
+        public enum Fields {
+            case roomid
+            case cursor
+            case limit
+        }
+        
+        public var roomid: String?
+        public var cursor: String? = ""
+        public var limit: Int? = 100
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ListPreviousEvents {
+            set(dictionary: dictionary)
+            let ret = ListPreviousEvents()
+            ret.roomid = value(forKey: .roomid)
+            ret.cursor = value(forKey: .cursor)
+            ret.limit = value(forKey: .limit)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .cursor, value: cursor)
+            add(key: .limit, value: limit)
+            
+            return toDictionary
+        }
+    }
+
     
     /// Exit a Room
     ///
@@ -1203,7 +1297,7 @@ public class ChatRequest {
             
             addRequired(key: .password, value: password)
             addRequired(key: .handle, value: handle)
-            addRequired(key: .command, value: "*purge" + " " + password + " " + handle)
+            addRequired(key: .command, value: "*purge \(password) \(handle)")
             
             return toDictionary
         }
