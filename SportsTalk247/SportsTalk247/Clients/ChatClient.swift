@@ -18,11 +18,13 @@ public protocol ChatClientProtocol {
     func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func purgeMessage(_ request: ChatRequest.PurgeUserMessages, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
+    func flagEventLogicallyDeleted(_ request: ChatRequest.FlagEventLogicallyDeleted, completionHandler: @escaping Completion<DeleteEventResponse>)
     func deleteEvent(_ request: ChatRequest.DeleteEvent, completionHandler: @escaping Completion<DeleteEventResponse>)
     func deleteAllEvents(_ request: ChatRequest.DeleteAllEvents, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func listMessagesByUser(_ request: ChatRequest.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>)
     func reportMessage(_ request: ChatRequest.ReportMessage, completionHandler: @escaping Completion<Event>)
     func reactToEvent(_ request: ChatRequest.ReactToEvent, completionHandler: @escaping Completion<Event>)
+    func bounceUser(_ request: ChatRequest.BounceUser, completionHandler: @escaping Completion<BounceUserRequest>)
     func startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>)
     func stopListeningToChatUpdates()
     
@@ -47,62 +49,61 @@ public class ChatClient: NetworkService, ChatClientProtocol {
 
 extension ChatClient {
     public func createRoom(_ request: ChatRequest.CreateRoom, completionHandler: @escaping Completion<ChatRoom>) {
-        makeRequest(ServiceKeys.chat, withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
+        makeRequest(URLPath.Room.Create(), withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func getRoomDetails(_ request: ChatRequest.GetRoomDetails, completionHandler: @escaping Completion<ChatRoom>) {
-        makeRequest(ServiceKeys.chat, withData: request.toDictionary(), requestType: .GET, expectation: ChatRoom.self) { (response) in
+        makeRequest(URLPath.Room.Details(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ChatRoom.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func deleteRoom(_ request: ChatRequest.DeleteRoom, completionHandler: @escaping Completion<DeleteChatRoomResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? "")", withData: request.toDictionary(), requestType: .DELETE, expectation: DeleteChatRoomResponse.self) { (response) in
+        makeRequest(URLPath.Room.Delete(roomid: request.roomid), withData: request.toDictionary(), requestType: .DELETE, expectation: DeleteChatRoomResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func updateRoom(_ request: ChatRequest.UpdateRoom, completionHandler: @escaping Completion<ChatRoom>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? "")", withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
+        makeRequest(URLPath.Room.Update(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func updateCloseRoom(_ request: ChatRequest.UpdateRoomCloseARoom, completionHandler: @escaping Completion<ChatRoom>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)", withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
+        makeRequest(URLPath.Room.Close(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func listRooms(_ request: ChatRequest.ListRooms, completionHandler: @escaping Completion<ListRoomsResponse>) {
-        makeRequest(ServiceKeys.chat, withData: request.toDictionary(), requestType: .GET, expectation: ListRoomsResponse.self, append: false) { (response) in
+        makeRequest(URLPath.Room.List(), withData: request.toDictionary(), requestType: .GET, expectation: ListRoomsResponse.self, append: false) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
-
     }
 
     public func listRoomParticipants(_ request: ChatRequest.ListRoomParticipants, completionHandler: @escaping Completion<ListChatRoomParticipantsResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/participants", withData: request.toDictionary(), requestType: .GET, expectation: ListChatRoomParticipantsResponse.self, append: false) { (response) in
+        makeRequest(URLPath.Room.Participants(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListChatRoomParticipantsResponse.self, append: false) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func listEventHistory(_ request: ChatRequest.ListEventHistory, completionHandler: @escaping Completion<ListEventsResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/listeventshistory", withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: false) { (response) in
+        makeRequest(URLPath.Room.EventHistory(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: false) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents,completionHandler: @escaping Completion<ListEventsResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/listpreviousevents", withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: false) { (response) in
+        makeRequest(URLPath.Room.PreviousEvent(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: false) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func joinRoom(_ request: ChatRequest.JoinRoom, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/join", withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
+        makeRequest(URLPath.Room.Join(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
             self.lastRoomId = request.roomid
             self.lastCursor = ""
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
@@ -110,7 +111,7 @@ extension ChatClient {
     }
     
     public func joinRoomByCustomId(_ request: ChatRequest.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
-        makeRequest("\(ServiceKeys.chatCustom)\(request.customid ?? emptyString)/join", withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
+        makeRequest(URLPath.Room.Join(customid: request.customid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
             self.lastRoomId = request.customid
             self.lastCursor = ""
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
@@ -118,7 +119,7 @@ extension ChatClient {
     }
 
     public func exitRoom(_ request: ChatRequest.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/exit", withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { (response) in
+        makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { (response) in
             self.stopListeningToChatUpdates()
             self.lastRoomId = nil
             self.lastCursor = ""
@@ -127,88 +128,96 @@ extension ChatClient {
     }
 
     public func getUpdates(_ request: ChatRequest.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/updates", withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self) { (response) in
+        makeRequest(URLPath.Room.Update(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func executeChatCommand(_ request: ChatRequest.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+        makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+        makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/command", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+        makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     
     public func purgeMessage(_ request: ChatRequest.PurgeUserMessages, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
-        makeRequest("\(ServiceKeys.chat)", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+        makeRequest(URLPath.Event.Purge(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func flagEventLogicallyDeleted(_ request: ChatRequest.FlagEventLogicallyDeleted, completionHandler: @escaping Completion<DeleteEventResponse>) {
+        makeRequest(URLPath.Event.FlagLogicallyDeleted(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .DELETE, expectation: DeleteEventResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func deleteEvent(_ request: ChatRequest.DeleteEvent, completionHandler: @escaping Completion<DeleteEventResponse>) {
-        makeRequest("\(ServiceKeys.chat)/events", withData: request.toDictionary(), requestType: .DELETE, expectation: DeleteEventResponse.self) { (response) in
+        makeRequest(URLPath.Event.Delete(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .DELETE, expectation: DeleteEventResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func deleteAllEvents(_ request: ChatRequest.DeleteAllEvents, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
-        makeRequest("\(ServiceKeys.chat)", withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+        makeRequest(URLPath.Event.DeleteAll(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func listMessagesByUser(_ request: ChatRequest.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>) {
-        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/messagesbyuser/\(request.userId ?? emptyString)", withData: request.toDictionary(), requestType: .GET, expectation: ListMessagesByUser.self) { (response) in
+        makeRequest(URLPath.Event.ListByUser(roomid: request.roomid, userid: request.userId), withData: request.toDictionary(), requestType: .GET, expectation: ListMessagesByUser.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func reportMessage(_ request: ChatRequest.ReportMessage, completionHandler: @escaping Completion<Event>) {
-        makeRequest("\(ServiceKeys.chat)\(request.chatRoomId ?? emptyString)/events/\(request.chat_room_newest_speech_id ?? emptyString)/report", withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
+        makeRequest(URLPath.Event.Report(roomid: request.chatRoomId, eventid: request.chat_room_newest_speech_id), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func reactToEvent(_ request: ChatRequest.ReactToEvent, completionHandler: @escaping Completion<Event>) {
-        let url = "\(ServiceKeys.chat)\(request.roomid ?? emptyString)/events/\(request.eventid ?? emptyString)/react"
-        makeRequest(url, withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
+        makeRequest(URLPath.Event.React(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func bounceUser(_ request: ChatRequest.BounceUser, completionHandler: @escaping Completion<BounceUserRequest>) {
+        makeRequest(URLPath.Room.Bounce(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: BounceUserRequest.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 }
 
 
-//MARK: - Moderation
+// MARK: - Moderation
 extension ChatClient {
     public func approveEvent(_ request: ModerationRequest.ApproveEvent, completionHandler: @escaping Completion<Event>) {
-        let url = "\(ServiceKeys.chatModeration)\(request.chatMessageId ?? emptyString)/applydecision"
-        makeRequest(url, withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
+        makeRequest(URLPath.Mod.Approve(eventid: request.chatMessageId), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func rejectEvent(_ request: ModerationRequest.RejectEvent, completionHandler: @escaping Completion<Event>) {
-        let url = "\(ServiceKeys.chatModeration)\(request.chatMessageId ?? emptyString)/applydecision"
-        makeRequest(url, withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
+        makeRequest(URLPath.Mod.Reject(eventid: request.chatMessageId), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func listMessagesInModerationQueue(_ request: ModerationRequest.listMessagesInModerationQueue, completionHandler: @escaping Completion<ListMessagesNeedingModerationResponse>) {
-        let url = "chat/moderation/queues/events"
-        makeRequest(url, withData: request.toDictionary(), requestType: .GET, expectation: ListMessagesNeedingModerationResponse.self) { (response) in
+        makeRequest(URLPath.Mod.List(), withData: request.toDictionary(), requestType: .GET, expectation: ListMessagesNeedingModerationResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
