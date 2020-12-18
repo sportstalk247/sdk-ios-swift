@@ -41,6 +41,7 @@
 		A86EC091247484310025A5FA /* ParametersBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EC090247484310025A5FA /* ParametersBase.swift */; };
 		A8B45222250D3E5100592F9B /* DeleteEventResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */; };
 		A8C1868624738B8D00C744DC /* ChatClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C1868524738B8D00C744DC /* ChatClientTests.swift */; };
+		A8EEE85E258D0FF90094D0D3 /* ListEventsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8EEE85D258D0FF90094D0D3 /* ListEventsResponse.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +92,7 @@
 		A86EC090247484310025A5FA /* ParametersBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParametersBase.swift; sourceTree = "<group>"; };
 		A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteEventResponse.swift; sourceTree = "<group>"; };
 		A8C1868524738B8D00C744DC /* ChatClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatClientTests.swift; sourceTree = "<group>"; };
+		A8EEE85D258D0FF90094D0D3 /* ListEventsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEventsResponse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +197,7 @@
 				A855D77724714D4000206560 /* ExitChatRoomResponse.swift */,
 				A855D77824714D4000206560 /* ChatRoom.swift */,
 				A855D77924714D4000206560 /* ListRoomsResponse.swift */,
+				A8EEE85D258D0FF90094D0D3 /* ListEventsResponse.swift */,
 				A855D77B24714D4000206560 /* ExecuteChatCommandResponse.swift */,
 				A855D77C24714D4000206560 /* DeleteChatRoomResponse.swift */,
 				A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */,
@@ -377,6 +380,7 @@
 				80A1B72623BDBD48009F6004 /* ChatRequest.swift in Sources */,
 				A855D79324714D4000206560 /* Event.swift in Sources */,
 				A855D79424714D4000206560 /* ListMessagesByUser.swift in Sources */,
+				A8EEE85E258D0FF90094D0D3 /* ListEventsResponse.swift in Sources */,
 				A85E7D0124732BCC00A26D54 /* ListUsersResponse.swift in Sources */,
 				A855D7B124716F0200206560 /* UserClient.swift in Sources */,
 				A855D7A024714D4000206560 /* ListMessagesNeedingModerationResponse.swift in Sources */,
