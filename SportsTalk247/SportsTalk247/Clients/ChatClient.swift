@@ -35,6 +35,7 @@ public protocol ChatClientProtocol {
 
 public class ChatClient: NetworkService, ChatClientProtocol {
     var timer: Timer?
+    var firstCursor: String = ""
     var lastCursor: String = ""
     var lastRoomId: String?
     
@@ -97,7 +98,8 @@ extension ChatClient {
     }
     
     public func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents,completionHandler: @escaping Completion<ListEventsResponse>) {
-        makeRequest(URLPath.Room.PreviousEvent(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: false) { (response) in
+        makeRequest("\(ServiceKeys.chat)\(request.roomid ?? emptyString)/listpreviousevents", withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: false) { (response) in
+            request.cursor = self.firstCursor
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -123,6 +125,7 @@ extension ChatClient {
             self.stopListeningToChatUpdates()
             self.lastRoomId = nil
             self.lastCursor = ""
+            self.firstCursor = ""
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -230,6 +233,11 @@ extension ChatClient {
             let request = ChatRequest.GetUpdates()
             request.roomid = self.lastRoomId
             request.cursor = self.lastCursor
+            
+            // Save first valid cursor for listPreviousEvents; on exit, remove firstCursor.
+            if let cursor = request.cursor, !cursor.isEmpty, self.firstCursor.isEmpty {
+                self.firstCursor = cursor
+            }
             
             self.getUpdates(request) { [weak self] (code, message, kind, response) in
                 // Invalid timer should disregard further update results
