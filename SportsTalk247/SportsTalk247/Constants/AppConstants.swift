@@ -47,6 +47,8 @@ struct URLPath {
         static func Exit(roomid: String?) -> String                 { return r + (roomid ?? "") + "/exit" }
         static func GetUpdates(roomid: String?) -> String           { return r + (roomid ?? "") + "/updates" }
         static func ExecuteCommand(roomid: String?) -> String       { return r + (roomid ?? "") + "/command" }
+        static func QuotedReply(roomid: String?) -> String          { return r + (roomid ?? "") + "/command" }
+        static func ThreadedReply(roomid: String?) -> String        { return r + (roomid ?? "") + "/command" }
         static func Bounce(roomid: String?) -> String               { return r + (roomid ?? "") + "/bounce" }
     }
     
@@ -58,8 +60,6 @@ struct URLPath {
         static func ListByUser(roomid: String?, userid: String?) -> String              { return "\(r)\(roomid ?? "")/messagesbyuser/\(userid ?? "")" }
         static func Report(roomid: String?, eventid: String?) -> String                 { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/report" }
         static func React(roomid: String?, eventid: String?) -> String                  { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/react" }
-        static func QuotedReply(roomid: String?, eventid: String?) -> String            { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/quote" }
-        static func ThreadedReply(roomid: String?, eventid: String?) -> String          { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/reply" }
     }
     
     struct Mod {
