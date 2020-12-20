@@ -33,21 +33,21 @@ struct URLPath {
     }
     
     struct Room {
-        static func Create() -> String                          { return r }
-        static func Details(roomid: String?) -> String          { return r + (roomid ?? "") }
-        static func Delete(roomid: String?) -> String           { return r + (roomid ?? "") }
-        static func Update(roomid: String?) -> String           { return r + (roomid ?? "") + "/updates"}
-        static func Close(roomid: String?) -> String            { return r + (roomid ?? "") }
-        static func List() -> String                            { return r }
-        static func Participants(roomid: String?) -> String     { return r + (roomid ?? "") + "/participants" }
-        static func EventHistory(roomid: String?) -> String     { return r + (roomid ?? "") + "/listeventshistory" }
-        static func PreviousEvent(roomid: String?) -> String     { return r + (roomid ?? "") + "/listpreviousevents" }
-        static func Join(roomid: String?) -> String             { return r + (roomid ?? "") + "/join" }
-        static func Join(customid: String?) -> String           { return r + (customid ?? "") + "/join" }
-        static func Exit(roomid: String?) -> String             { return r + (roomid ?? "") + "/exit" }
-        static func GetUpdates(roomid: String?) -> String       { return r + (roomid ?? "") + "/updates" }
-        static func ExecuteCommand(roomid: String?) -> String   { return r + (roomid ?? "") + "/command" }
-        static func Bounce(roomid: String?) -> String           { return r + (roomid ?? "") + "/bounce" }
+        static func Create() -> String                              { return r }
+        static func Details(roomid: String?) -> String              { return r + (roomid ?? "") }
+        static func Delete(roomid: String?) -> String               { return r + (roomid ?? "") }
+        static func Update(roomid: String?) -> String               { return r + (roomid ?? "") + "/updates"}
+        static func Close(roomid: String?) -> String                { return r + (roomid ?? "") }
+        static func List() -> String                                { return r }
+        static func Participants(roomid: String?) -> String         { return r + (roomid ?? "") + "/participants" }
+        static func EventHistory(roomid: String?) -> String         { return r + (roomid ?? "") + "/listeventshistory" }
+        static func PreviousEvent(roomid: String?) -> String        { return r + (roomid ?? "") + "/listpreviousevents" }
+        static func Join(roomid: String?) -> String                 { return r + (roomid ?? "") + "/join" }
+        static func Join(customid: String?) -> String               { return r + (customid ?? "") + "/join" }
+        static func Exit(roomid: String?) -> String                 { return r + (roomid ?? "") + "/exit" }
+        static func GetUpdates(roomid: String?) -> String           { return r + (roomid ?? "") + "/updates" }
+        static func ExecuteCommand(roomid: String?) -> String       { return r + (roomid ?? "") + "/command" }
+        static func Bounce(roomid: String?) -> String               { return r + (roomid ?? "") + "/bounce" }
     }
     
     struct Event {
@@ -58,6 +58,8 @@ struct URLPath {
         static func ListByUser(roomid: String?, userid: String?) -> String              { return "\(r)\(roomid ?? "")/messagesbyuser/\(userid ?? "")" }
         static func Report(roomid: String?, eventid: String?) -> String                 { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/report" }
         static func React(roomid: String?, eventid: String?) -> String                  { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/react" }
+        static func QuotedReply(roomid: String?, eventid: String?) -> String            { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/quote" }
+        static func ThreadedReply(roomid: String?, eventid: String?) -> String          { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/reply" }
     }
     
     struct Mod {
