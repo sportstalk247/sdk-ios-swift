@@ -35,8 +35,8 @@ public protocol ChatClientProtocol {
 
 public class ChatClient: NetworkService, ChatClientProtocol {
     var timer: Timer?
-    var firstCursor: String = "" { didSet { print("first: \(firstCursor)") } }
-    var lastCursor: String = "" { didSet { print("last: \(lastCursor)") } }
+    var firstCursor: String = ""
+    var lastCursor: String = ""
     var lastRoomId: String?
     
     public override init(config: ClientConfig) {
