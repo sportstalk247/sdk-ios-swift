@@ -206,14 +206,17 @@ public struct ChatEventReport: Codable {
 public enum EventType: String {
     case speech
     case purge
+    case bounce
     case reaction
-    case roomClosed = "roomClosed"
-    case roomOpen = "roomopen"
+    case replace
+    case remove
+    case roomclosed
+    case roomopen
     case action
     case reply
-    case quoted = "quote"
+    case quote
     case goal
-    case advertisement
+    case ad
     case announcement
     case custom
 }
