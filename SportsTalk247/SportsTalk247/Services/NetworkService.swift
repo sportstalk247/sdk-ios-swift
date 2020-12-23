@@ -18,10 +18,6 @@ open class NetworkService {
     
     func makeRequest<T: Decodable>(_ serviceName: String?, useDefaultUrl:Bool = true, withData data: [AnyHashable: Any]?, requestType: RequestType, expectation: T.Type, append: Bool = true, completionHandler: @escaping (_ response: ApiResponse<T>?) -> Void) {
         
-        if checkRequiredParameters(data) != nil {
-            completionHandler(nil)
-        }
-        
         // Create the request
         if let request = makeURLRequest(serviceName, useDefaultUrl: useDefaultUrl, withData: data, requestType: requestType, appendData: append) {
             URLSession.shared.dataTask(with: request, completionHandler: {data, response, error -> Void in
@@ -50,14 +46,6 @@ open class NetworkService {
                 }
             }).resume()
         }
-    }
-
-    func checkRequiredParameters(_ dataDictionary: [AnyHashable: Any]?) -> [AnyHashable: Any]? {
-        if let dataDictionary = dataDictionary, let errorMessage = dataDictionary[errorMessageTitle] {
-            return [messageTitle: errorMessage]
-        }
-
-        return nil
     }
     
     func makeURLRequest(_ serviceName: String?, useDefaultUrl: Bool, withData data: [AnyHashable: Any]?, requestType: RequestType, appendData: Bool) -> URLRequest? {
