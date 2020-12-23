@@ -21,6 +21,7 @@ struct URLPath {
     private static let u = "user/users/"
     private static let s = "user/search/"
     private static let r = "chat/rooms/"
+    private static let c = "chat/roomsbycustomid/"
     private static let m = "chat/moderation/queues/events/"
     
     struct User {
@@ -43,7 +44,7 @@ struct URLPath {
         static func EventHistory(roomid: String?) -> String         { return r + (roomid ?? "") + "/listeventshistory" }
         static func PreviousEvent(roomid: String?) -> String        { return r + (roomid ?? "") + "/listpreviousevents" }
         static func Join(roomid: String?) -> String                 { return r + (roomid ?? "") + "/join" }
-        static func Join(customid: String?) -> String               { return r + (customid ?? "") + "/join" }
+        static func Join(customid: String?) -> String               { return c + (customid ?? "") + "/join" }
         static func Exit(roomid: String?) -> String                 { return r + (roomid ?? "") + "/exit" }
         static func GetUpdates(roomid: String?) -> String           { return r + (roomid ?? "") + "/updates" }
         static func ExecuteCommand(roomid: String?) -> String       { return r + (roomid ?? "") + "/command" }
