@@ -381,26 +381,6 @@ extension ChatClientTests {
         XCTAssertTrue(receivedUser != nil)
     }
 
-
-    func test_ChatRoomsServices_JoinRoomAnonymousUser() {
-        test_ChatRoomsServices_CreateRoomPostmoderated()
-        let request = ChatRequest.JoinRoom()
-        request.roomid = dummyRoom?.id
-
-        let expectation = self.expectation(description: Constants.expectation_description(#function))
-        var receivedCode: Int?
-        
-        client.joinRoom(request) { (code, message, _, response) in
-            print(message ?? "")
-            receivedCode = code
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-        XCTAssertTrue(receivedCode == 200)
-    }
-
-
     func test_ChatRoomsServices_ExitRoom() {
         if dummyUser == nil {
             self.createUpdateUser()

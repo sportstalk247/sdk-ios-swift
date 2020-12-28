@@ -34,18 +34,24 @@ open class ParametersBase<T,S> {
     func addRequired(key: T, value: String?) {
         if let value = value, value != emptyString {
             toDictionary[toString(key: key)] = value
+        } else {
+            toDictionary[errorMessageTitle] = returnError(parameterString: toString(key: key))
         }
     }
     
     func addRequired(key: T, value: Bool?) {
         if let value = value {
             add(key: key, value: value)
+        } else {
+            toDictionary[errorMessageTitle] = returnError(parameterString: toString(key: key))
         }
     }
     
     func addRequired(key: T, value: [String]?) {
         if let value = value, value.count > 0 {
             toDictionary[toString(key: key)] = value
+        } else {
+            toDictionary[errorMessageTitle] = returnError(parameterString: toString(key: key))
         }
     }
 
