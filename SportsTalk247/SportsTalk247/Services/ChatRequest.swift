@@ -418,7 +418,7 @@ public class ChatRequest {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
-            add(key: .userid, value: userid)
+            addRequired(key: .userid, value: userid)
             add(key: .handle, value: handle)
             add(key: .displayname, value: displayname)
             add(key: .pictureurl, value: pictureurl?.absoluteString)

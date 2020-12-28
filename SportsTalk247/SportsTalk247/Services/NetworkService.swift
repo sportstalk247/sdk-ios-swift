@@ -17,6 +17,15 @@ open class NetworkService {
     }
     
     func makeRequest<T: Decodable>(_ serviceName: String?, useDefaultUrl:Bool = true, withData data: [AnyHashable: Any]?, requestType: RequestType, expectation: T.Type, append: Bool = true, completionHandler: @escaping (_ response: ApiResponse<T>?) -> Void) {
+
+        guard didSucceedValidationParameters(data) else {
+            if SportsTalkSDK.shared.debugMode {
+                print("Failed to satisfy request requirement. Please check your request model and try again.")
+            }
+            
+            completionHandler(nil)
+            return
+        }
         
         // Create the request
         if let request = makeURLRequest(serviceName, useDefaultUrl: useDefaultUrl, withData: data, requestType: requestType, appendData: append) {
@@ -103,6 +112,14 @@ open class NetworkService {
         }
         
         return request
+    }
+    
+    private func didSucceedValidationParameters(_ dataDictionary: [AnyHashable: Any]?) -> Bool {
+        if let dataDictionary = dataDictionary, let errorMessage = dataDictionary[errorMessageTitle] {
+            return false
+        }
+        
+        return true
     }
 }
 
