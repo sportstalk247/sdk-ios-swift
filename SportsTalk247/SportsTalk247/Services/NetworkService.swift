@@ -115,7 +115,7 @@ open class NetworkService {
     }
     
     private func didSucceedValidationParameters(_ dataDictionary: [AnyHashable: Any]?) -> Bool {
-        if let dataDictionary = dataDictionary, let errorMessage = dataDictionary[errorMessageTitle] {
+        if let dataDictionary = dataDictionary, dataDictionary[errorMessageTitle] != nil  {
             return false
         }
         
