@@ -23,7 +23,6 @@ class ChatClientTests: XCTestCase {
     override func setUpWithError() throws {
         SportsTalkSDK.shared.debugMode = true
     }
-    
 }
 
 extension ChatClientTests {
@@ -118,6 +117,28 @@ extension ChatClientTests {
         var receivedRoom: ChatRoom?
 
         client.getRoomDetails(request) { (code, message, _, room) in
+            print(message ?? "")
+            print("found \(String(describing: room?.name))")
+            receivedCode = code
+            receivedRoom = room
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+        XCTAssertTrue(receivedRoom != nil)
+    }
+    
+    func test_ChatRoomsServices_GetRoomDetailsByCustomId() {
+        test_ChatRoomsServices_CreateRoomPostmoderated()
+        let request = ChatRequest.GetRoomDetailsByCustomId()
+        request.customid = dummyRoom?.customid
+
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        var receivedRoom: ChatRoom?
+
+        client.getRoomDetailsByCustomId(request) { (code, message, _, room) in
             print(message ?? "")
             print("found \(String(describing: room?.name))")
             receivedCode = code
@@ -619,7 +640,7 @@ extension ChatClientTests {
         client.listMessagesByUser(request) { (code, message, _, response) in
             print(message ?? "")
             self.dummyEventList = response?.events
-            print(response?.events.first)
+            print(response?.events.first ?? "No events found")
             receivedCode = code
             expectation.fulfill()
         }
@@ -629,11 +650,17 @@ extension ChatClientTests {
     }
 
     func test_ChatRoomsServices_ReportMessage() {
-        test_ChatRoomsServices_CreateRoomPremoderated()
-        test_ChatRoomsServices_ExecuteChatCommand()
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPremoderated()
+        }
+        
+        if dummyEvent == nil {
+            test_ChatRoomsServices_ExecuteChatCommand()
+        }
+        
         let request = ChatRequest.ReportMessage()
-        request.chat_room_newest_speech_id = dummyEvent?.id
-        request.chatRoomId = dummyRoom?.id
+        request.eventid = dummyEvent?.id
+        request.roomid = dummyRoom?.id
         request.userid = dummyUser?.userid
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))

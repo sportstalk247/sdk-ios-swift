@@ -35,10 +35,11 @@ struct URLPath {
     
     struct Room {
         static func Create() -> String                              { return r }
-        static func Details(roomid: String?) -> String              { return r + (roomid ?? "") }
-        static func Delete(roomid: String?) -> String               { return r + (roomid ?? "") }
-        static func Update(roomid: String?) -> String               { return r + (roomid ?? "") }
-        static func Close(roomid: String?) -> String                { return r + (roomid ?? "") }
+        static func Details(roomid: String?) -> String              { return r + (roomid ?? "")     }
+        static func DetailsByCustomId(customid: String?) -> String  { return c + (customid ?? "")   }
+        static func Delete(roomid: String?) -> String               { return r + (roomid ?? "")     }
+        static func Update(roomid: String?) -> String               { return r + (roomid ?? "")     }
+        static func Close(roomid: String?) -> String                { return r + (roomid ?? "")     }
         static func List() -> String                                { return r }
         static func Participants(roomid: String?) -> String         { return r + (roomid ?? "") + "/participants" }
         static func EventHistory(roomid: String?) -> String         { return r + (roomid ?? "") + "/listeventshistory" }
