@@ -201,6 +201,11 @@ public struct ChatEventReport: Codable {
         self.userid = try container.decodeIfPresent(String.self, forKey: .userid)
         self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
     }
+    
+    public init(userId: String?, reason: String?) {
+        self.userid = userId
+        self.reason = reason
+    }
 }
 
 public enum EventType: String {
