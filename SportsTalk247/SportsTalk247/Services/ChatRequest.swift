@@ -1404,9 +1404,9 @@ public class ChatRequest {
     ///
     ///  userid:  user id specific to app
     ///
-    ///  chatRoomId: Room Id, in which you want to report the message
+    ///  roomid: the id of the room in which you want to report the event
     ///
-    ///  chatMessageId: message id, that you want to report.
+    ///  eventid: the id of the event that you want to report.
     ///
     /// - Warning: This method requires authentication.
     public class ReportMessage: ParametersBase<ReportMessage.Fields, ReportMessage> {
@@ -1418,7 +1418,6 @@ public class ChatRequest {
         }
         
         public var roomid: String?
-        public var messageid: String?
         public var eventid: String?
         public var userid: String?
         public var reporttype = "abuse"
@@ -1438,6 +1437,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
+            addRequired(key: .roomid, value: roomid)
             addRequired(key: .userid, value: userid)
             addRequired(key: .eventid, value: eventid)
             add(key: .reporttype, value: reporttype)
@@ -1651,30 +1651,6 @@ public class ChatRequest {
             add(key: .customid, value: customid)
             add(key: .custompayload, value: custompayload)
             
-            return toDictionary
-        }
-    }
-}
-
-// MARK: - Event Subscription
-extension ChatRequest {
-    public class StartEventUpdates: ParametersBase<StartEventUpdates.Fields, StartEventUpdates> {
-        public enum Fields {
-            case roomid
-        }
-        
-        public var roomid: String?
-
-        override public func from(dictionary: [AnyHashable: Any]) -> StartEventUpdates {
-            set(dictionary: dictionary)
-            let ret = StartEventUpdates()
-            ret.roomid = value(forKey: .roomid)
-            return ret
-        }
-        
-        public func toDictionary() -> [AnyHashable: Any] {
-            toDictionary = [AnyHashable: Any]()
-            addRequired(key: .roomid, value: roomid)
             return toDictionary
         }
     }
