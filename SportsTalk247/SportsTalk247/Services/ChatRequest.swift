@@ -648,7 +648,7 @@ public class ChatRequest {
         }
         
         public var roomid: String?
-        public var cursor: String? = ""
+        public var cursor: String?
         public var limit: Int? = 100
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListPreviousEvents {

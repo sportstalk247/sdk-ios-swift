@@ -105,7 +105,7 @@ extension ChatClient {
     }
     
     public func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents,completionHandler: @escaping Completion<ListEventsResponse>) {
-        request.cursor = self.firstCursor
+        request.cursor = request.cursor ?? self.firstCursor
         makeRequest(URLPath.Room.PreviousEvent(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
             self.firstCursor = response?.data?.cursor ?? ""
