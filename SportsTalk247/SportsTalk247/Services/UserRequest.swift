@@ -164,7 +164,7 @@ public class UserRequest {
     /// banned: (required) set true to ban a user; set false to restore a user
     ///
     /// - Warning: This method requires authentication.
-    public class setBanStatus: ParametersBase<setBanStatus.Fields, setBanStatus> {
+    public class SetBanStatus: ParametersBase<SetBanStatus.Fields, SetBanStatus> {
         public enum Fields {
             case userid
             case banned
@@ -173,9 +173,9 @@ public class UserRequest {
         public var userid: String?
         public var banned: Bool?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> setBanStatus {
+        override public func from(dictionary: [AnyHashable: Any]) -> SetBanStatus {
             set(dictionary: dictionary)
-            let ret = setBanStatus()
+            let ret = SetBanStatus()
 
             ret.userid = value(forKey: .userid)
             ret.banned = value(forKey: .banned)
@@ -188,6 +188,35 @@ public class UserRequest {
 
             add(key: .userid, value: userid)
             add(key: .banned, value: banned)
+            
+            addRequired(key: .userid, value: userid)
+            
+            return toDictionary
+        }
+    }
+    
+    /// Will purge all chat content published by the specified user
+    ///
+    /// userid: (required) The application provided userid of the user to ban
+    ///
+    public class GlobalPurge: ParametersBase<GlobalPurge.Fields, GlobalPurge> {
+        public enum Fields {
+            case userid
+        }
+
+        public var userid: String?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> GlobalPurge {
+            set(dictionary: dictionary)
+            let ret = GlobalPurge()
+
+            ret.userid = value(forKey: .userid)
+         
+            return ret
+        }
+
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .userid, value: userid)
             
@@ -250,6 +279,94 @@ public class UserRequest {
             add(key: .name, value: name)
             add(key: .userid, value: userid)
             add(key: .handle, value: handle)
+            return toDictionary
+        }
+    }
+    
+    /// REPORTS a USER to the moderation team.
+    ///
+    ///
+    /// Arguments:
+    ///
+    /// userid : (required) This is the application specific user ID of the user reporting the first user.
+    ///
+    /// reporttype : (required) Possible values: "abuse", "spam". SPAM is unsolicited commercial messages and abuse is hate speach or other unacceptable behavior.
+    ///
+    /// Response:
+    ///
+    /// Code    Meaning     Description
+    /// 200     OK          Request completed successfully
+    /// 404     Not Found   The specified user or application could not be found
+    /// 409     Conflict    The request was rejected because user reporting is not enabled for the application
+    ///
+    public class ReportUser: ParametersBase<ReportUser.Fields, ReportUser> {
+        public enum Fields {
+            case userid
+            case reporttype
+        }
+        
+        public var userid: String?
+        public var reporttype = "abuse"
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ReportUser {
+            set(dictionary: dictionary)
+            let ret = ReportUser()
+            
+            ret.userid = value(forKey: .userid)
+            ret.reporttype = value(forKey: .reporttype) ?? "abuse"
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .userid, value: userid)
+            add(key: .reporttype, value: reporttype)
+            
+            return toDictionary
+        }
+    }
+    
+    /// Will toggle the user's shadow banned flag
+    ///
+    /// Arguements
+    ///
+    /// userid: (required) The applicaiton provided userid of the user to ban
+    ///
+    /// shadowban: (required) true or false. If true, user will be set to banned state. If false, will be set to non-banned state.
+    ///
+    /// expireseconds: (optional) Duration of shadowban value in seconds. If specified, the shadow ban will be lifted when this time is reached. If not specified, shadowban remains until explicitly lifted. Maximum seconds is a double byte value.
+    ///
+    public class Shadowban: ParametersBase<Shadowban.Fields, Shadowban> {
+        public enum Fields {
+            case userid
+            case shadowban
+            case expireseconds
+        }
+        
+        public var userid: String?
+        public var shadowban: Bool?
+        public var expireseconds: Int?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> Shadowban {
+            set(dictionary: dictionary)
+            let ret = Shadowban()
+            
+            ret.userid = value(forKey: .userid)
+            ret.shadowban = value(forKey: .shadowban)
+            ret.expireseconds = value(forKey: .expireseconds)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .shadowban, value: shadowban)
+            add(key: .expireseconds, value: expireseconds)
+            
             return toDictionary
         }
     }
