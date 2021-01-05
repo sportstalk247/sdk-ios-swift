@@ -64,7 +64,10 @@ extension UserClientTests {
     }
         
     func test_UserServices_DeleteUser() {
-        test_UserServices_UpdateUser()
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
         let request = UserRequest.DeleteUser()
         request.userid = dummyUser?.userid
         print("user id \(String(describing: dummyUser?.userid))")
@@ -86,7 +89,10 @@ extension UserClientTests {
     }
 
     func test_UserServices_GetUserDetails() {
-        test_UserServices_UpdateUser()
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
         let request = UserRequest.GetUserDetails()
         request.userid = dummyUser?.userid
 
@@ -132,8 +138,11 @@ extension UserClientTests {
     }
 
     func test_UserServices_BanUser() {
-        test_UserServices_UpdateUser()
-        let request = UserRequest.setBanStatus()
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        let request = UserRequest.SetBanStatus()
         request.userid = dummyUser?.userid
         request.banned = true
         
@@ -149,11 +158,34 @@ extension UserClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertTrue(banned == true)
     }
+    
+    func test_UserServices_GlobalPurge() {
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        let request = UserRequest.GlobalPurge()
+        request.userid = dummyUser?.userid
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
 
-    func test_UserServices_RestoreUser()
-    {
-        test_UserServices_UpdateUser()
-        let request = UserRequest.setBanStatus()
+        client.globalPurge(request) { (code, message, _, user) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+
+    func test_UserServices_RestoreUser() {
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        let request = UserRequest.SetBanStatus()
         request.userid = dummyUser?.userid
         request.banned = false
         
@@ -171,7 +203,10 @@ extension UserClientTests {
     }
     
     func test_UsersServices_SearchUser() {
-        test_UserServices_UpdateUser()
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
         let request = UserRequest.SearchUser()
         request.handle = dummyUser?.handle ?? "Sam"
         request.limit = 5
@@ -193,5 +228,54 @@ extension UserClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssert((receivedUsers?.count ?? 0) > 0)
         XCTAssert(receivedCode == 200)
+    }
+    
+    func test_UserServices_ReportUser() {
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        let request = UserRequest.ReportUser()
+        request.userid = dummyUser?.userid
+        request.reporttype = "abuse"
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.reportUser(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(receivedCode == 200)
+    }
+    
+    func test_UserServices_Shadowban() {
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        let request = UserRequest.Shadowban()
+        request.userid = dummyUser!.userid
+        request.shadowban = !(dummyUser?.shadowbanned ?? false)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var shadowbanned: Bool?
+        var receivedCode: Int?
+        
+        
+        
+        client.shadowBan(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            shadowbanned = response?.shadowbanned
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(receivedCode == 200)
+        XCTAssert(shadowbanned == !(dummyUser?.shadowbanned ?? false))
     }
 }

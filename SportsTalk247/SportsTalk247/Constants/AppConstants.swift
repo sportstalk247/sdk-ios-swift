@@ -30,7 +30,10 @@ struct URLPath {
         static func GetDetails(userid: String?) -> String   { return u + (userid ?? "") }
         static func List() -> String                        { return u }
         static func Ban(userid: String?) -> String          { return u + (userid ?? "") + "/ban" }
+        static func GlobalPurge(userid: String?) -> String  { return u + (userid ?? "") + "/globalpurge"}
         static func Search() -> String                      { return s }
+        static func Report(userid: String?) -> String       { return u + (userid ?? "") + "/report" }
+        static func ShadowBan(userid: String?) -> String    { return u + (userid ?? "") + "/shadowban" }
     }
     
     struct Room {

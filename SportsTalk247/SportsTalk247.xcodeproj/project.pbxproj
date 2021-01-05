@@ -43,6 +43,8 @@
 		A8B7D04E2522569200CF406C /* BounceUserRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B7D04D2522569200CF406C /* BounceUserRequest.swift */; };
 		A8C1868624738B8D00C744DC /* ChatClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C1868524738B8D00C744DC /* ChatClientTests.swift */; };
 		A8EEE85E258D0FF90094D0D3 /* ListEventsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8EEE85D258D0FF90094D0D3 /* ListEventsResponse.swift */; };
+		A8F8C35725A4BBBC0021ADF7 /* UserReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8F8C35625A4BBBC0021ADF7 /* UserReport.swift */; };
+		A8F8C35F25A4C3B40021ADF7 /* GlobalPurgeReponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8F8C35E25A4C3B40021ADF7 /* GlobalPurgeReponse.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +97,8 @@
 		A8B7D04D2522569200CF406C /* BounceUserRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BounceUserRequest.swift; sourceTree = "<group>"; };
 		A8C1868524738B8D00C744DC /* ChatClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatClientTests.swift; sourceTree = "<group>"; };
 		A8EEE85D258D0FF90094D0D3 /* ListEventsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEventsResponse.swift; sourceTree = "<group>"; };
+		A8F8C35625A4BBBC0021ADF7 /* UserReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserReport.swift; sourceTree = "<group>"; };
+		A8F8C35E25A4C3B40021ADF7 /* GlobalPurgeReponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalPurgeReponse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -233,7 +237,9 @@
 				A85E7CFC24732BCB00A26D54 /* DeleteUserResponse.swift */,
 				A85E7CFD24732BCB00A26D54 /* ListUsersResponse.swift */,
 				A85E7CFB24732BCB00A26D54 /* User.swift */,
+				A8F8C35625A4BBBC0021ADF7 /* UserReport.swift */,
 				A85E7CFE24732BCB00A26D54 /* UserList.swift */,
+				A8F8C35E25A4C3B40021ADF7 /* GlobalPurgeReponse.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -391,9 +397,11 @@
 				806D710F23BB284E00FBDA8E /* WebhookRequest.swift in Sources */,
 				A85E7CF824732AB000A26D54 /* NetworkService.swift in Sources */,
 				A855D79224714D4000206560 /* GetUpdatesResponse.swift in Sources */,
+				A8F8C35725A4BBBC0021ADF7 /* UserReport.swift in Sources */,
 				A855D7A124714D4000206560 /* ApproveMessageRequest.swift in Sources */,
 				A855D79A24714D4000206560 /* ChatRoom.swift in Sources */,
 				A85E7D0224732BCC00A26D54 /* UserList.swift in Sources */,
+				A8F8C35F25A4C3B40021ADF7 /* GlobalPurgeReponse.swift in Sources */,
 				A855D79B24714D4000206560 /* ListRoomsResponse.swift in Sources */,
 				80428D0523B635CC00A6CFBF /* UserRequest.swift in Sources */,
 				A85E7D0024732BCC00A26D54 /* DeleteUserResponse.swift in Sources */,
