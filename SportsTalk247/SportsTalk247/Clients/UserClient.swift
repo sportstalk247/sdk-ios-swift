@@ -6,10 +6,10 @@ public protocol UserClientProtocol {
     func getUserDetails(_ request: UserRequest.GetUserDetails, completionHandler: @escaping Completion<User>)
     func listUsers(_ request: UserRequest.ListUsers, completionHandler: @escaping Completion<ListUsersResponse>)
     func setBanStatus(_ request: UserRequest.SetBanStatus, completionHandler: @escaping Completion<User>)
-    func globalPurge(_ request: UserRequest.GlobalPurge, completionHandler: @escaping Completion<GlobalPurgeReponse>)
+    func globallyPurgeUserContent(_ request: UserRequest.GloballyPurgeUserContent, completionHandler: @escaping Completion<GlobalPurgeReponse>)
     func searchUser(_ request: UserRequest.SearchUser, completionHandler: @escaping Completion<ListUsersResponse>)
     func reportUser(_ request: UserRequest.ReportUser, completionHandler: @escaping Completion<User>)
-    func shadowBan(_ request: UserRequest.Shadowban, completionHandler: @escaping Completion<User>)
+    func setShadowBanStatus(_ request: UserRequest.SetShadowBanStatus, completionHandler: @escaping Completion<User>)
 }
 
 public class UserClient: NetworkService, UserClientProtocol {
@@ -40,7 +40,7 @@ extension UserClient {
     }
 
     public func listUsers(_ request: UserRequest.ListUsers, completionHandler: @escaping Completion<ListUsersResponse>) {
-        makeRequest(URLPath.User.List(), withData: request.toDictionary(), requestType: .GET, expectation: ListUsersResponse.self) { response in
+        makeRequest(URLPath.User.List(), withData: request.toDictionary(), requestType: .GET, expectation: ListUsersResponse.self, append: true) { response in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -51,7 +51,7 @@ extension UserClient {
         }
     }
     
-    public func globalPurge(_ request: UserRequest.GlobalPurge, completionHandler: @escaping Completion<GlobalPurgeReponse>) {
+    public func globallyPurgeUserContent(_ request: UserRequest.GloballyPurgeUserContent, completionHandler: @escaping Completion<GlobalPurgeReponse>) {
         makeRequest(URLPath.User.GlobalPurge(userid: request.userid), withData: request.toDictionary(), requestType: .POST, expectation: GlobalPurgeReponse.self) { response in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
@@ -69,7 +69,7 @@ extension UserClient {
         }
     }
     
-    public func shadowBan(_ request: UserRequest.Shadowban, completionHandler: @escaping Completion<User>) {
+    public func setShadowBanStatus(_ request: UserRequest.SetShadowBanStatus, completionHandler: @escaping Completion<User>) {
         makeRequest(URLPath.User.ShadowBan(userid: request.userid), withData: request.toDictionary(), requestType: .POST, expectation: User.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }

@@ -51,6 +51,7 @@ struct URLPath {
         static func Join(customid: String?) -> String               { return c + (customid ?? "") + "/join" }
         static func Exit(roomid: String?) -> String                 { return r + (roomid ?? "") + "/exit" }
         static func GetUpdates(roomid: String?) -> String           { return r + (roomid ?? "") + "/updates" }
+        static func GetMoreUpdates(roomid: String?) -> String       { return r + (roomid ?? "") + "/updates" }
         static func ExecuteCommand(roomid: String?) -> String       { return r + (roomid ?? "") + "/command" }
         static func QuotedReply(roomid: String?) -> String          { return r + (roomid ?? "") + "/command" }
         static func ThreadedReply(roomid: String?) -> String        { return r + (roomid ?? "") + "/command" }
@@ -58,7 +59,7 @@ struct URLPath {
     }
     
     struct Event {
-        static func Purge(roomid: String?) -> String                                    { return r + (roomid ?? "") + "/command"}
+        static func Purge(roomid: String?, userid: String?) -> String                   { return r + (roomid ?? "") + "/commands/purge/" + (userid ?? "")}
         static func FlagLogicallyDeleted(roomid: String?, eventid: String?) -> String   { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")" }
         static func Delete(roomid: String?, eventid: String?) -> String                 { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")" }
         static func DeleteAll(roomid: String?) -> String                                { return r + (roomid ?? "") + "/command"}

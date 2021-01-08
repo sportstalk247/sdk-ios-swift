@@ -34,6 +34,17 @@ class UserClientTests: XCTestCase {
         user.profileurl = "http://www.thepresidentshalloffame.com/1-george-washington"
         return user
     }()
+    
+    lazy var otherUser: User? = {
+        let user = User()
+        user.userid = "9940A8C9-2332-4824-B628-48390F367D30"
+        user.handle = "JohnWICK"
+        user.banned = true
+        user.displayname = "John Wick"
+        user.pictureurl = ""
+        user.profileurl = ""
+        return user
+    }()
         
     override func setUpWithError() throws {
         SportsTalkSDK.shared.debugMode = true
@@ -43,18 +54,17 @@ class UserClientTests: XCTestCase {
 extension UserClientTests {
     func test_UserServices_UpdateUser() {
         let request = UserRequest.CreateUpdateUser()
-        request.userid =  UUID().uuidString
-        request.handle = "Sam"
-        request.displayname = "Sam"
-        request.pictureurl = URL(string: dummyUser?.pictureurl ?? "")
-        request.profileurl = URL(string: dummyUser?.profileurl ?? "")
+        request.userid = "9940A8C9-2332-4824-B628-48390F367D29"
+        request.handle = "GeorgeWASHING"
+        request.displayname = "George Washing"
+        request.pictureurl = URL(string: "http://www.thepresidentshalloffame.com/media/reviews/photos/original/a9/c7/a6/44-1-george-washington-18-1549729902.jpg")
+        request.profileurl = URL(string: "http://www.thepresidentshalloffame.com/1-george-washington")
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode = 0
         
         client.createOrUpdateUser(request) { (code, message, kind, user) in
             receivedCode = code ?? 0
-            
             self.dummyUser = user
             expectation.fulfill()
         }
@@ -64,13 +74,10 @@ extension UserClientTests {
     }
         
     func test_UserServices_DeleteUser() {
-        if self.dummyUser == nil {
-            test_UserServices_UpdateUser()
-        }
+        createUpdateOtherUser()
         
         let request = UserRequest.DeleteUser()
-        request.userid = dummyUser?.userid
-        print("user id \(String(describing: dummyUser?.userid))")
+        request.userid = otherUser?.userid
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -90,7 +97,7 @@ extension UserClientTests {
 
     func test_UserServices_GetUserDetails() {
         if self.dummyUser == nil {
-            test_UserServices_UpdateUser()
+            self.createUpdateUser()
         }
         
         let request = UserRequest.GetUserDetails()
@@ -114,11 +121,8 @@ extension UserClientTests {
     }
 
     func test_UserServices_ListUsers() {
-        test_UserServices_UpdateUser()
-        test_UserServices_UpdateUser()
-        test_UserServices_UpdateUser()
-        test_UserServices_UpdateUser()
-        test_UserServices_UpdateUser()
+        createUpdateUser()
+        createUpdateOtherUser()
         let request = UserRequest.ListUsers()
         request.limit = "5"
 
@@ -139,7 +143,7 @@ extension UserClientTests {
 
     func test_UserServices_BanUser() {
         if self.dummyUser == nil {
-            test_UserServices_UpdateUser()
+            createUpdateUser()
         }
         
         let request = UserRequest.SetBanStatus()
@@ -161,16 +165,17 @@ extension UserClientTests {
     
     func test_UserServices_GlobalPurge() {
         if self.dummyUser == nil {
-            test_UserServices_UpdateUser()
+            createUpdateUser()
         }
         
-        let request = UserRequest.GlobalPurge()
+        let request = UserRequest.GloballyPurgeUserContent()
         request.userid = dummyUser?.userid
+        request.banned = true
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
 
-        client.globalPurge(request) { (code, message, _, user) in
+        client.globallyPurgeUserContent(request) { (code, message, _, user) in
             print(message ?? "")
             receivedCode = code
             expectation.fulfill()
@@ -182,7 +187,7 @@ extension UserClientTests {
 
     func test_UserServices_RestoreUser() {
         if self.dummyUser == nil {
-            test_UserServices_UpdateUser()
+            createUpdateUser()
         }
         
         let request = UserRequest.SetBanStatus()
@@ -204,11 +209,13 @@ extension UserClientTests {
     
     func test_UsersServices_SearchUser() {
         if self.dummyUser == nil {
-            test_UserServices_UpdateUser()
+            createUpdateOtherUser()
         }
         
         let request = UserRequest.SearchUser()
-        request.handle = dummyUser?.handle ?? "Sam"
+        request.handle = "George"
+        request.userid = "George"
+        request.name = "George"
         request.limit = 5
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -226,17 +233,17 @@ extension UserClientTests {
         }
 
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-        XCTAssert((receivedUsers?.count ?? 0) > 0)
+        XCTAssert(receivedUsers?.count != nil)
         XCTAssert(receivedCode == 200)
     }
     
     func test_UserServices_ReportUser() {
-        if self.dummyUser == nil {
-            test_UserServices_UpdateUser()
+        if self.otherUser == nil {
+            createUpdateOtherUser()
         }
         
         let request = UserRequest.ReportUser()
-        request.userid = dummyUser?.userid
+        request.userid = otherUser?.userid
         request.reporttype = "abuse"
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -252,22 +259,21 @@ extension UserClientTests {
         XCTAssert(receivedCode == 200)
     }
     
-    func test_UserServices_Shadowban() {
+    func test_UserServices_ShadowBan() {
         if self.dummyUser == nil {
             test_UserServices_UpdateUser()
         }
         
-        let request = UserRequest.Shadowban()
+        let request = UserRequest.SetShadowBanStatus()
         request.userid = dummyUser!.userid
         request.shadowban = !(dummyUser?.shadowbanned ?? false)
+        request.expireseconds = 60
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var shadowbanned: Bool?
         var receivedCode: Int?
         
-        
-        
-        client.shadowBan(request) { (code, message, _, response) in
+        client.setShadowBanStatus(request) { (code, message, _, response) in
             print(message ?? "")
             receivedCode = code
             shadowbanned = response?.shadowbanned
@@ -277,5 +283,42 @@ extension UserClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssert(receivedCode == 200)
         XCTAssert(shadowbanned == !(dummyUser?.shadowbanned ?? false))
+    }
+}
+
+// MARK: - Convenience
+extension UserClientTests {
+    private func createUpdateUser() {
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        
+        let request = UserRequest.CreateUpdateUser()
+        request.userid = "9940A8C9-2332-4824-B628-48390F367D29"
+        request.handle = "GeorgeWASHING"
+        request.displayname = "George Washing"
+        request.pictureurl = URL(string: "http://www.thepresidentshalloffame.com/media/reviews/photos/original/a9/c7/a6/44-1-george-washington-18-1549729902.jpg")
+        request.profileurl = URL(string: "http://www.thepresidentshalloffame.com/1-george-washington")
+        
+        client.createOrUpdateUser(request) { (code, message, kind, user) in
+            self.dummyUser = user
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+    
+    private func createUpdateOtherUser() {
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        
+        let request = UserRequest.CreateUpdateUser()
+        request.userid = "9940A8C9-2332-4824-B628-48390F367D30"
+        request.handle = "JohnWICK"
+        request.displayname = "John Wick"
+        request.pictureurl = nil
+        request.profileurl = nil
+        
+        client.createOrUpdateUser(request) { (code, message, kind, user) in
+            self.otherUser = user
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
     }
 }

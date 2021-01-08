@@ -83,9 +83,6 @@ public class UserRequest {
         
         public func toDictionary() -> [AnyHashable : Any] {
             toDictionary = [AnyHashable: Any]()
-            add(key: .userid, value: userid)
-            addRequired(key: .userid, value: userid)
-            
             return toDictionary
         }
         
@@ -115,9 +112,6 @@ public class UserRequest {
 
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
-
-            addRequired(key: .userid, value: userid)
-
             return toDictionary
         }
     }
@@ -186,10 +180,7 @@ public class UserRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
 
-            add(key: .userid, value: userid)
             add(key: .banned, value: banned)
-            
-            addRequired(key: .userid, value: userid)
             
             return toDictionary
         }
@@ -199,26 +190,29 @@ public class UserRequest {
     ///
     /// userid: (required) The application provided userid of the user to ban
     ///
-    public class GlobalPurge: ParametersBase<GlobalPurge.Fields, GlobalPurge> {
+    public class GloballyPurgeUserContent: ParametersBase<GloballyPurgeUserContent.Fields, GloballyPurgeUserContent> {
         public enum Fields {
             case userid
+            case banned
         }
 
         public var userid: String?
+        public var banned: Bool?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> GlobalPurge {
+        override public func from(dictionary: [AnyHashable: Any]) -> GloballyPurgeUserContent {
             set(dictionary: dictionary)
-            let ret = GlobalPurge()
+            let ret = GloballyPurgeUserContent()
 
             ret.userid = value(forKey: .userid)
-         
+            ret.banned = value(forKey: .banned)
+            
             return ret
         }
 
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .userid, value: userid)
+            addRequired(key: .banned, value: banned)
             
             return toDictionary
         }
@@ -279,6 +273,7 @@ public class UserRequest {
             add(key: .name, value: name)
             add(key: .userid, value: userid)
             add(key: .handle, value: handle)
+            
             return toDictionary
         }
     }
@@ -338,7 +333,7 @@ public class UserRequest {
     ///
     /// expireseconds: (optional) Duration of shadowban value in seconds. If specified, the shadow ban will be lifted when this time is reached. If not specified, shadowban remains until explicitly lifted. Maximum seconds is a double byte value.
     ///
-    public class Shadowban: ParametersBase<Shadowban.Fields, Shadowban> {
+    public class SetShadowBanStatus: ParametersBase<SetShadowBanStatus.Fields, SetShadowBanStatus> {
         public enum Fields {
             case userid
             case shadowban
@@ -349,9 +344,9 @@ public class UserRequest {
         public var shadowban: Bool?
         public var expireseconds: Int?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> Shadowban {
+        override public func from(dictionary: [AnyHashable: Any]) -> SetShadowBanStatus {
             set(dictionary: dictionary)
-            let ret = Shadowban()
+            let ret = SetShadowBanStatus()
             
             ret.userid = value(forKey: .userid)
             ret.shadowban = value(forKey: .shadowban)
@@ -363,7 +358,6 @@ public class UserRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .userid, value: userid)
             addRequired(key: .shadowban, value: shadowban)
             add(key: .expireseconds, value: expireseconds)
             
