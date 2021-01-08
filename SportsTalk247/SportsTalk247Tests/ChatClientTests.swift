@@ -3,7 +3,7 @@ import SportsTalk247
 
 class ChatClientTests: XCTestCase {
     let client = ChatClient(config: ClientConfig(appId: Config.appId, authToken: Config.authToken, endpoint: Config.url))
-    
+
     lazy var dummyUser: User? = {
         let user = User()
         user.userid = "9940A8C9-2332-4824-B628-48390F367D29"
@@ -14,7 +14,7 @@ class ChatClientTests: XCTestCase {
         user.profileurl = "http://www.thepresidentshalloffame.com/1-george-washington"
         return user
     }()
-    
+
     var dummyRoom: ChatRoom? { didSet { print("Room saved: \(String(describing: self.dummyRoom?.id))") }  }
     var dummyEvent: Event? { didSet { print("Event saved: \(String(describing: self.dummyEvent?.id))") }  }
     var dummyEventNeedingModeration: Event? { didSet { print("Event saved: \(String(describing: self.dummyEventNeedingModeration?.id))") }  }
@@ -108,7 +108,10 @@ extension ChatClientTests {
     }
 
     func test_ChatRoomsServices_GetRoomDetails() {
-        test_ChatRoomsServices_CreateRoomPostmoderated()
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPostmoderated()
+        }
+        
         let request = ChatRequest.GetRoomDetails()
         request.roomid = dummyRoom?.id
 
@@ -152,7 +155,10 @@ extension ChatClientTests {
     }
 
     func test_ChatRoomsServices_DeleteRoom() {
-        test_ChatRoomsServices_CreateRoomPostmoderated()
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPostmoderated()
+        }
+        
         let request = ChatRequest.DeleteRoom()
         request.roomid = dummyRoom?.id
 
@@ -245,9 +251,11 @@ extension ChatClientTests {
         XCTAssertTrue(receivedRoom != nil)
     }
         
-    func test_ChatRoomsServices_ListRoomParticipants()
-    {
-        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+    func test_ChatRoomsServices_ListRoomParticipants() {
+        if dummyRoom == nil {
+            test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        }
+        
         let request = ChatRequest.ListRoomParticipants()
         request.roomid = dummyRoom?.id
 
@@ -258,7 +266,7 @@ extension ChatClientTests {
             print(message ?? "")
             print("found \(String(describing: response?.participants.count)) participant")
             
-            print(response!.participants.first?.user?.displayname ?? "")
+            print(response?.participants.first?.user?.displayname ?? "")
             
             receivedCode = code
             expectation.fulfill()
@@ -268,11 +276,11 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
-    func test_ChatRoomsServices_ListEventHistory()
-    {
+    func test_ChatRoomsServices_ListEventHistory() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         let request = ChatRequest.ListEventHistory()
         request.roomid = dummyRoom?.id
+        request.limit = 10
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -287,8 +295,7 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
-    func test_ChatRoomsServices_ListPreviousEvents()
-    {
+    func test_ChatRoomsServices_ListPreviousEvents() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         let request = ChatRequest.ListPreviousEvents()
         request.roomid = dummyRoom?.id
@@ -430,6 +437,7 @@ extension ChatClientTests {
         test_ChatRoomsServices_ExecuteChatCommand()
         let request = ChatRequest.GetUpdates()
         request.roomid = dummyRoom?.id
+        request.limit = 20
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -540,6 +548,7 @@ extension ChatClientTests {
     
     func test_ChatRoomsServices_PurgeMessages() {
         test_ChatRoomsServices_JoinRoom()
+        test_ChatRoomsServices_ExecuteChatCommand()
         
         let request = ChatRequest.PurgeUserMessages()
         request.password = "zola"
@@ -628,9 +637,12 @@ extension ChatClientTests {
     }
 
     func test_ChatRoomsServices_ListMessagesByUsers() {
+        // Error 500 when supplied with an invalid cursor
+        
         test_ChatRoomsServices_ExecuteChatCommand()
         let request = ChatRequest.ListMessagesByUser()
         request.limit = "4"
+//        request.cursor = "samplecursor"
         request.roomid = dummyRoom?.id
         request.userId = dummyUser?.userid
 
@@ -698,33 +710,37 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
-//    func test_ChatRoomsServices_Bounce() {
-//        
-//        let request = ChatRequest.BounceUser()
-//        request.roomid = dummyRoom?.id
-//        request.userid = dummyUser?.userid
-//        request.bounce = true
-//        
-//        let expectation = self.expectation(description: Constants.expectation_description(#function))
-//        var receivedCode: Int?
-//        
-//        client.bounceUser(request) { (code, message, _, response) in
-//            print(message ?? "")
-//            receivedCode = code
-//            expectation.fulfill()
-//        }
-//        
-//        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-//        XCTAssertTrue(receivedCode == 200)
-//    }
+    func test_ChatRoomsServices_Bounce() {
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPremoderated()
+        }
+        
+        let request = ChatRequest.BounceUser()
+        request.roomid = dummyRoom?.id
+        request.userid = dummyUser?.userid
+        request.bounce = true
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.bounceUser(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
 }
+
 // MARK: - Moderation
 extension ChatClientTests {
     func test_ModerationServices_ApproveEvent() {
         test_ModerationServices_ListMessagesInModerationQueue()
         let request = ModerationRequest.ApproveEvent()
-        request.chatMessageId = dummyEventNeedingModeration?.id
-        request.chatRoomId = dummyRoom?.id
+        request.eventid = dummyEventNeedingModeration?.id
+        request.roomid = dummyRoom?.id
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -742,8 +758,8 @@ extension ChatClientTests {
     func test_ModerationServices_RejectEvent() {
         test_ModerationServices_ListMessagesInModerationQueue()
         let request = ModerationRequest.RejectEvent()
-        request.chatMessageId = dummyEventNeedingModeration?.id
-        request.chatRoomId = dummyRoom?.id
+        request.eventid = dummyEventNeedingModeration?.id
+        request.roomid = dummyRoom?.id
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -822,11 +838,11 @@ extension ChatClientTests {
     private func createUpdateUser() {
         let client = UserClient(config: self.client.config)
         let request = UserRequest.CreateUpdateUser()
-        request.userid = UUID().uuidString
-        request.handle = "Sam"
-        request.displayname = "Sam"
-        request.pictureurl = URL(string: dummyUser?.pictureurl ?? "")
-        request.profileurl = URL(string: dummyUser?.profileurl ?? "")
+        request.userid = "9940A8C9-2332-4824-B628-48390F367D29"
+        request.handle = "GeorgeWASHING"
+        request.displayname = "George Washing"
+        request.pictureurl = URL(string: "http://www.thepresidentshalloffame.com/media/reviews/photos/original/a9/c7/a6/44-1-george-washington-18-1549729902.jpg")
+        request.profileurl = URL(string: "http://www.thepresidentshalloffame.com/1-george-washington")
         
         client.createOrUpdateUser(request) { (code, message, kind, user) in
             self.dummyUser = user

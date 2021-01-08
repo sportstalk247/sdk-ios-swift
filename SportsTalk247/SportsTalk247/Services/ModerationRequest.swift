@@ -10,28 +10,27 @@ public class ModerationRequest {
     /// - Warning: Requires Authentication
     public class ApproveEvent: ParametersBase<ApproveEvent.Fields, ApproveEvent> {
         public enum Fields {
-            case chatRoomId
-            case chatMessageId
+            case roomid
+            case eventid
             case approve
         }
         
-        public var chatRoomId: String?
-        public var chatMessageId: String?
+        public var roomid: String?
+        public var eventid: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> ApproveEvent {
             set(dictionary: dictionary)
             let ret = ApproveEvent()
             
-            ret.chatRoomId = value(forKey: .chatRoomId)
-            ret.chatMessageId = value(forKey: .chatMessageId)
+            ret.roomid = value(forKey: .roomid)
+            ret.eventid = value(forKey: .eventid)
             return ret
         }
         
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
+            
             add(key: .approve, value: true)
-            addRequired(key: .chatRoomId, value: chatRoomId)
-            addRequired(key: .chatMessageId, value: chatMessageId)
             
             return toDictionary
         }
@@ -39,28 +38,28 @@ public class ModerationRequest {
     
     public class RejectEvent: ParametersBase<RejectEvent.Fields, RejectEvent> {
         public enum Fields {
-            case chatRoomId
-            case chatMessageId
+            case roomid
+            case eventid
             case approve
         }
         
-        public var chatRoomId: String?
-        public var chatMessageId: String?
+        public var roomid: String?
+        public var eventid: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> RejectEvent {
             set(dictionary: dictionary)
             let ret = RejectEvent()
             
-            ret.chatRoomId = value(forKey: .chatRoomId)
-            ret.chatMessageId = value(forKey: .chatMessageId)
+            ret.roomid = value(forKey: .roomid)
+            ret.eventid = value(forKey: .eventid)
+            
             return ret
         }
         
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
+            
             add(key: .approve, value: false)
-            addRequired(key: .chatRoomId, value: chatRoomId)
-            addRequired(key: .chatMessageId, value: chatMessageId)
             
             return toDictionary
         }

@@ -155,7 +155,6 @@ public class ChatRequest {
         }
         
         public var roomid: String?
-        public var userid: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> DeleteRoom {
             set(dictionary: dictionary)
@@ -167,10 +166,6 @@ public class ChatRequest {
         
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
-            
-            add(key: .roomid, value: roomid)
-            addRequired(key: .roomid, value: roomid)
-            
             return toDictionary
         }
     }
@@ -219,7 +214,6 @@ public class ChatRequest {
         }
         
         public var roomid: String?
-        public var slug: URL?
         public var name: String?
         public var description: String?
         public var customid: String?
@@ -255,7 +249,6 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomid, value: roomid)
             add(key: .roomid, value: roomid)
             add(key: .name, value: name)
             add(key: .description, value: description)
@@ -301,7 +294,6 @@ public class ChatRequest {
     public class UpdateRoomCloseARoom: ParametersBase<UpdateRoomCloseARoom.Fields, UpdateRoomCloseARoom> {
         public enum Fields {
             case roomid
-            case slug
             case name
             case description
             case moderation
@@ -314,7 +306,6 @@ public class ChatRequest {
         }
         
         public var roomid: String?
-        public var slug: URL?
         public var name: String?
         public var description: String?
         public var moderation: String?
@@ -330,7 +321,6 @@ public class ChatRequest {
             let ret = UpdateRoomCloseARoom()
             
             ret.roomid = value(forKey: .roomid)
-            ret.slug = value(forKey: .slug)
             ret.name = value(forKey: .name)
             ret.description = value(forKey: .description)
             ret.moderation = value(forKey: .moderation)
@@ -339,7 +329,6 @@ public class ChatRequest {
             ret.enableprofanityfilter = value(forKey: .enableprofanityfilter)
             ret.roomisopen = value(forKey: .roomisopen)
             ret.delaymessageseconds = value(forKey: .delaymessageseconds)
-            ret.userid = value(forKey: .userid)
             
             return ret
         }
@@ -347,8 +336,6 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            add(key: .roomid, value: roomid)
-            add(key: .slug, value: slug?.absoluteString)
             add(key: .name, value: name)
             add(key: .description, value: description)
             add(key: .moderation, value: moderation)
@@ -357,7 +344,6 @@ public class ChatRequest {
             add(key: .enableprofanityfilter, value: enableprofanityfilter)
             add(key: .roomisopen, value: roomisopen)
             add(key: .delaymessageseconds, value: delaymessageseconds)
-            add(key: .userid, value: userid)
             
             return toDictionary
         }
@@ -368,17 +354,34 @@ public class ChatRequest {
     /// Rooms can be public or private. This method lists all public rooms that everyone can see.
     ///
     /// - Warning: This method requires authentication.
-    public class ListRooms {
-        public init() { }
+    public class ListRooms: ParametersBase<ListRooms.Fields, ListRooms>  {
+        public enum Fields {
+            case cursor
+            case limit
+        }
         
-        public func from(dictionary: [AnyHashable: Any]) -> ListRooms {
+        public var cursor: String?
+        public var limit: Int =  100
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ListRooms {
+            set(dictionary: dictionary)
             let ret = ListRooms()
+            
+            ret.cursor = value(forKey: .cursor)
+            ret.limit = value(forKey: .limit)
+            
             return ret
         }
         
         public func toDictionary() -> [AnyHashable: Any] {
-            return [AnyHashable: Any]()
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .cursor, value: cursor)
+            add(key: .limit, value: limit)
+            
+            return toDictionary
         }
+
     }
     
     /// Join A Room
@@ -444,7 +447,6 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomid, value: roomid)
             addRequired(key: .userid, value: userid)
             add(key: .handle, value: handle)
             add(key: .displayname, value: displayname)
@@ -520,7 +522,6 @@ public class ChatRequest {
        public func toDictionary() -> [AnyHashable: Any] {
            toDictionary = [AnyHashable: Any]()
            
-           addRequired(key: .customid, value: customid)
            addRequired(key: .userid, value: userid)
            add(key: .handle, value: handle)
            add(key: .displayname, value: displayname)
@@ -605,6 +606,7 @@ public class ChatRequest {
         override public func from(dictionary: [AnyHashable: Any]) -> ListEventHistory {
             set(dictionary: dictionary)
             let ret = ListEventHistory()
+            
             ret.roomid = value(forKey: .roomid)
             ret.cursor = value(forKey: .cursor)
             ret.limit = value(forKey: .limit)
@@ -654,6 +656,7 @@ public class ChatRequest {
         override public func from(dictionary: [AnyHashable: Any]) -> ListPreviousEvents {
             set(dictionary: dictionary)
             let ret = ListPreviousEvents()
+            
             ret.roomid = value(forKey: .roomid)
             ret.cursor = value(forKey: .cursor)
             ret.limit = value(forKey: .limit)
@@ -703,8 +706,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomid, value: roomid)
-            add(key: .userid, value: userid)
+            addRequired(key: .userid, value: userid)
             
             return toDictionary
         }
@@ -733,15 +735,62 @@ public class ChatRequest {
     public class GetUpdates: ParametersBase<GetUpdates.Fields, GetUpdates> {
         public enum Fields {
             case roomid
+            case limit
+        }
+        
+        public var roomid: String?
+        public var limit: Int = 100
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> GetUpdates {
+            set(dictionary: dictionary)
+            let ret = GetUpdates()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.limit = value(forKey: .limit)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .limit, value: limit)
+            
+            return toDictionary
+        }
+    }
+    
+    /// Get the Recent Updates to a Room
+    ///
+    /// You can use this function to poll the room to get the recent events in the room. The recommended poll interval is 500ms. Each event has an ID and a timestamp. To detect new messages using polling, call this function and then process items with a newer timestamp than the most recent one you have already processed.
+    ///
+    /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
+    ///
+    /// exit event: A user has exited chat. message: A user has communicated a message. reply: A user sent a message in response to another user. reaction: A user has reacted to a message posted by another user. action: A user is performing an ACTION (emote) alone or with another user.
+    ///
+    /// Enter and Exit Events:
+    ///
+    /// Enter and Exit events may not be sent if the room is expected to have a very large number of users.
+    ///
+    /// Arguments
+    ///
+    /// cursor : If provided will return events that are newer than what the cursor points to.
+    ///
+    /// limit : (optional) Specify the number of events to return.
+    ///
+    
+    public class GetMoreUpdates: ParametersBase<GetMoreUpdates.Fields, GetMoreUpdates> {
+        public enum Fields {
+            case roomid
             case cursor
         }
         
         public var roomid: String?
         public var cursor: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> GetUpdates {
+        override public func from(dictionary: [AnyHashable: Any]) -> GetMoreUpdates {
             set(dictionary: dictionary)
-            let ret = GetUpdates()
+            let ret = GetMoreUpdates()
             
             ret.roomid = value(forKey: .roomid)
             ret.cursor = value(forKey: .cursor)
@@ -752,7 +801,6 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomid, value: roomid)
             add(key: .cursor, value: cursor)
             
             return toDictionary
@@ -853,7 +901,6 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomid, value: roomid)
             add(key: .command, value: command)
             add(key: .userid, value: userid)
             add(key: .moderation, value: moderation)
@@ -1045,7 +1092,6 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomid, value: roomid)
             add(key: .command, value: command)
             add(key: .userid, value: userid)
             add(key: .replyto, value: replyto)
@@ -1187,8 +1233,6 @@ public class ChatRequest {
             
             add(key: .cursor, value: cursor)
             add(key: .limit, value: limit)
-            add(key: .roomid, value: roomid)
-            addRequired(key: .userid, value: userId)
             
             return toDictionary
         }
@@ -1226,10 +1270,10 @@ public class ChatRequest {
             case permanentifnoreplies
         }
         
-        public var roomid: String!
-        public var eventid: String!
-        public var userid: String!
-        public var deleted: Bool!
+        public var roomid: String?
+        public var eventid: String?
+        public var userid: String?
+        public var deleted: Bool?
         public var permanentifnoreplies: Bool?
         
         override public func from(dictionary: [AnyHashable: Any]) -> FlagEventLogicallyDeleted {
@@ -1279,8 +1323,8 @@ public class ChatRequest {
             case userid
         }
         
-        public var roomid: String!
-        public var eventid: String!
+        public var roomid: String?
+        public var eventid: String?
         public var userid: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> DeleteEvent {
@@ -1297,6 +1341,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
+            addRequired(key: .eventid, value: eventid)
             add(key: .userid, value: userid)
             
             return toDictionary
@@ -1317,10 +1362,10 @@ public class ChatRequest {
             case password
         }
         
-        public var roomid: String!
-        private var command: String!
-        public var password: String!
-        public var userid: String!
+        public var roomid: String?
+        private var command: String?
+        public var password: String?
+        public var userid: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> DeleteAllEvents {
             set(dictionary: dictionary)
@@ -1337,8 +1382,9 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .command, value: "*deleteallevents" + " " + password)
+            addRequired(key: .command, value: "*deleteallevents" + " " + password!)
             addRequired(key: .userid, value: userid)
+            add(key: .userid, value: userid)
             
             return toDictionary
         }
@@ -1364,10 +1410,10 @@ public class ChatRequest {
             case handle
         }
         
-        public var roomid: String!
-        public var userid: String!
-        public var handle: String!
-        public var password: String!
+        public var roomid: String?
+        public var userid: String?
+        public var handle: String?
+        public var password: String?
         private var command: String!
         
         override public func from(dictionary: [AnyHashable: Any]) -> PurgeUserMessages {
@@ -1386,8 +1432,8 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .userid, value: userid)
             addRequired(key: .command, value: String("*purge \(password!) \(handle!)"))
+            add(key: .handle, value: handle)
             
             return toDictionary
         }
@@ -1437,9 +1483,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomid, value: roomid)
             addRequired(key: .userid, value: userid)
-            addRequired(key: .eventid, value: eventid)
             add(key: .reporttype, value: reporttype)
             
             return toDictionary
@@ -1497,8 +1541,6 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomid, value: roomid)
-            addRequired(key: .eventid, value: eventid)
             add(key: .userid, value: userid)
             add(key: .reaction, value: reaction)
             add(key: .reacted, value: reacted)
@@ -1555,7 +1597,6 @@ public class ChatRequest {
             
             addRequired(key: .userid, value: userid)
             addRequired(key: .bounce, value: bounce)
-            addRequired(key: .roomid, value: roomid)
             add(key: .announcement, value: announcement)
 
             return toDictionary

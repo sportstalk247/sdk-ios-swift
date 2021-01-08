@@ -15,6 +15,7 @@ public protocol ChatClientProtocol {
     func joinRoomByCustomId(_ request: ChatRequest.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>)
     func exitRoom(_ request: ChatRequest.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>)
     func getUpdates(_ request: ChatRequest.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>)
+    func getMoreUpdates(_ request: ChatRequest.GetMoreUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>)
     func executeChatCommand(_ request: ChatRequest.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
@@ -57,13 +58,13 @@ extension ChatClient {
     }
     
     public func getRoomDetails(_ request: ChatRequest.GetRoomDetails, completionHandler: @escaping Completion<ChatRoom>) {
-        makeRequest(URLPath.Room.Details(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ChatRoom.self) { (response) in
+        makeRequest(URLPath.Room.Details(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ChatRoom.self, append: false) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func getRoomDetailsByCustomId(_ request: ChatRequest.GetRoomDetailsByCustomId, completionHandler: @escaping Completion<ChatRoom>) {
-        makeRequest(URLPath.Room.DetailsByCustomId(customid: request.customid), withData: request.toDictionary(), requestType: .GET, expectation: ChatRoom.self) { (response) in
+        makeRequest(URLPath.Room.DetailsByCustomId(customid: request.customid), withData: request.toDictionary(), requestType: .GET, expectation: ChatRoom.self, append: false) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -87,19 +88,19 @@ extension ChatClient {
     }
 
     public func listRooms(_ request: ChatRequest.ListRooms, completionHandler: @escaping Completion<ListRoomsResponse>) {
-        makeRequest(URLPath.Room.List(), withData: request.toDictionary(), requestType: .GET, expectation: ListRoomsResponse.self, append: false) { (response) in
+        makeRequest(URLPath.Room.List(), withData: request.toDictionary(), requestType: .GET, expectation: ListRoomsResponse.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func listRoomParticipants(_ request: ChatRequest.ListRoomParticipants, completionHandler: @escaping Completion<ListChatRoomParticipantsResponse>) {
-        makeRequest(URLPath.Room.Participants(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListChatRoomParticipantsResponse.self, append: false) { (response) in
+        makeRequest(URLPath.Room.Participants(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListChatRoomParticipantsResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func listEventHistory(_ request: ChatRequest.ListEventHistory, completionHandler: @escaping Completion<ListEventsResponse>) {
-        makeRequest(URLPath.Room.EventHistory(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.EventHistory(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -140,7 +141,13 @@ extension ChatClient {
     }
 
     public func getUpdates(_ request: ChatRequest.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>) {
-        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self) { (response) in
+        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func getMoreUpdates(_ request: ChatRequest.GetMoreUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>) {
+        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -165,13 +172,13 @@ extension ChatClient {
     
     
     public func purgeMessage(_ request: ChatRequest.PurgeUserMessages, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
-        makeRequest(URLPath.Event.Purge(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+        makeRequest(URLPath.Event.Purge(roomid: request.roomid, userid: request.userid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func flagEventLogicallyDeleted(_ request: ChatRequest.FlagEventLogicallyDeleted, completionHandler: @escaping Completion<DeleteEventResponse>) {
-        makeRequest(URLPath.Event.FlagLogicallyDeleted(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .DELETE, expectation: DeleteEventResponse.self) { (response) in
+        makeRequest(URLPath.Event.FlagLogicallyDeleted(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .DELETE, expectation: DeleteEventResponse.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -189,7 +196,7 @@ extension ChatClient {
     }
 
     public func listMessagesByUser(_ request: ChatRequest.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>) {
-        makeRequest(URLPath.Event.ListByUser(roomid: request.roomid, userid: request.userId), withData: request.toDictionary(), requestType: .GET, expectation: ListMessagesByUser.self) { (response) in
+        makeRequest(URLPath.Event.ListByUser(roomid: request.roomid, userid: request.userId), withData: request.toDictionary(), requestType: .GET, expectation: ListMessagesByUser.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -217,13 +224,13 @@ extension ChatClient {
 // MARK: - Moderation
 extension ChatClient {
     public func approveEvent(_ request: ModerationRequest.ApproveEvent, completionHandler: @escaping Completion<Event>) {
-        makeRequest(URLPath.Mod.Approve(eventid: request.chatMessageId), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
+        makeRequest(URLPath.Mod.Approve(eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func rejectEvent(_ request: ModerationRequest.RejectEvent, completionHandler: @escaping Completion<Event>) {
-        makeRequest(URLPath.Mod.Reject(eventid: request.chatMessageId), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
+        makeRequest(URLPath.Mod.Reject(eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -239,11 +246,11 @@ extension ChatClient {
 extension ChatClient {
     public func startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>) {
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { _ in
-            let request = ChatRequest.GetUpdates()
+            let request = ChatRequest.GetMoreUpdates()
             request.roomid = self.lastRoomId
             request.cursor = self.lastCursor
             
-            self.getUpdates(request) { [weak self] (code, message, kind, response) in
+            self.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
                 // Invalid timer should disregard further update results
                 guard
                     let self = self,
