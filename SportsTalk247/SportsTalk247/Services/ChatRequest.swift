@@ -1316,7 +1316,7 @@ public class ChatRequest {
     /// permanent: (Optional) remove permanently if no reply. Defaults to true
     ///
     /// - Warning: This method requires authentication.
-    public class DeleteEvent: ParametersBase<DeleteEvent.Fields, DeleteEvent> {
+    public class PermanentlyDeleteEvent: ParametersBase<PermanentlyDeleteEvent.Fields, PermanentlyDeleteEvent> {
         public enum Fields {
             case roomid
             case eventid
@@ -1327,9 +1327,9 @@ public class ChatRequest {
         public var eventid: String?
         public var userid: String?
         
-        override public func from(dictionary: [AnyHashable: Any]) -> DeleteEvent {
+        override public func from(dictionary: [AnyHashable: Any]) -> PermanentlyDeleteEvent {
             set(dictionary: dictionary)
-            let ret = DeleteEvent()
+            let ret = PermanentlyDeleteEvent()
             
             ret.roomid = value(forKey: .roomid)
             ret.eventid = value(forKey: .eventid)

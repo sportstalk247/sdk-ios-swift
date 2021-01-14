@@ -21,7 +21,7 @@ public protocol ChatClientProtocol {
     func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func purgeMessage(_ request: ChatRequest.PurgeUserMessages, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func flagEventLogicallyDeleted(_ request: ChatRequest.FlagEventLogicallyDeleted, completionHandler: @escaping Completion<DeleteEventResponse>)
-    func deleteEvent(_ request: ChatRequest.DeleteEvent, completionHandler: @escaping Completion<DeleteEventResponse>)
+    func permanentlyDeleteEvent(_ request: ChatRequest.PermanentlyDeleteEvent, completionHandler: @escaping Completion<DeleteEventResponse>)
     func deleteAllEvents(_ request: ChatRequest.DeleteAllEvents, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
     func listMessagesByUser(_ request: ChatRequest.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>)
     func reportMessage(_ request: ChatRequest.ReportMessage, completionHandler: @escaping Completion<Event>)
@@ -189,7 +189,7 @@ extension ChatClient {
         }
     }
 
-    public func deleteEvent(_ request: ChatRequest.DeleteEvent, completionHandler: @escaping Completion<DeleteEventResponse>) {
+    public func permanentlyDeleteEvent(_ request: ChatRequest.PermanentlyDeleteEvent, completionHandler: @escaping Completion<DeleteEventResponse>) {
         makeRequest(URLPath.Event.Delete(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .DELETE, expectation: DeleteEventResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }

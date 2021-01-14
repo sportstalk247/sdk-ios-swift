@@ -595,11 +595,11 @@ extension ChatClientTests {
 
     }
     
-    func test_ChatRoomsServices_DeleteEvent() {
+    func test_ChatRoomsServices_PermanentlyDeleteEvent() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         test_ChatRoomsServices_ExecuteChatCommand()
         
-        let request = ChatRequest.DeleteEvent()
+        let request = ChatRequest.PermanentlyDeleteEvent()
         request.eventid = dummyEvent?.id
         request.roomid = dummyEvent?.roomid
         request.userid = dummyEvent?.userid
@@ -607,7 +607,7 @@ extension ChatClientTests {
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         
-        client.deleteEvent(request) { (code, message, _, response) in
+        client.permanentlyDeleteEvent(request) { (code, message, _, response) in
             print(message ?? "")
             receivedCode = code
             expectation.fulfill()
