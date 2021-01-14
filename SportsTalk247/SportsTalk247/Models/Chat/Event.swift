@@ -208,24 +208,6 @@ public struct ChatEventReport: Codable {
     }
 }
 
-public enum EventType: String {
-    case speech
-    case purge
-    case bounce
-    case reaction
-    case replace
-    case remove
-    case roomclosed
-    case roomopen
-    case action
-    case reply
-    case quote
-    case goal
-    case ad
-    case announcement
-    case custom
-}
-
 internal func ISODateFormat(_ string: String) -> Date? {
     if #available(iOS 11.0, *) {
         let formatter = ISO8601DateFormatter()

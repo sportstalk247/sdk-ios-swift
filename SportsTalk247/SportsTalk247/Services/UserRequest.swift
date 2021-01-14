@@ -364,4 +364,118 @@ public class UserRequest {
             return toDictionary
         }
     }
+    
+    /// Returns a list of user notifications
+    ///
+    /// Arguements
+    ///
+    /// filterNotificationTypes : (optional) Return only events of the specified type. Pass the argument more than once to fetch multiple types of notifications at once.
+    ///     - chatmention
+    ///     - chatquote
+    ///     - chatreply
+    ///     - commentmention
+    ///     - commentquote
+    ///     - commentreply
+    ///
+    /// includeread : (optional | default = false) If true, notifications that have already been read are returned
+    ///
+    /// filterChatRoomId : (optional) If provided, this will only return notifications associated with the specified chat room using the ChatRoom ID (exact match)
+    ///
+    /// filterChatRoomCustomId : (optional) If provided, this will only return notifications associated with the specified chat room using the Custom ID (exact match)
+    ///
+    /// limit : (optional) Default is 50, maximum is 200. Limits how many items are returned.
+    ///
+    /// cursor : (optional) Leave blank to start from the beginning of the result set; provide the value from the previous returned cursor to resume cursoring through the next page of results
+    ///
+    public class ListUserNotifications: ParametersBase<ListUserNotifications.Fields, ListUserNotifications> {
+        public enum Fields {
+            case userid
+            case filternotificationtypes
+            case includeread
+            case filterchatroomid
+            case filterchatroomcustomid
+            case limit
+            case cursor
+        }
+        
+        public var userid: String?
+        public var filternotificationtypes: String?
+        public var includeread: Bool? = false
+        public var filterchatroomid: String?
+        public var filterchatroomcustomid: String?
+        public var limit: Int? = 50
+        public var cursor: String? = ""
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ListUserNotifications {
+            set(dictionary: dictionary)
+            let ret = ListUserNotifications()
+            
+            ret.userid = value(forKey: .userid)
+            ret.filternotificationtypes = value(forKey: .filternotificationtypes)
+            ret.includeread = value(forKey: .includeread)
+            ret.filterchatroomid = value(forKey: .filterchatroomid)
+            ret.filterchatroomcustomid = value(forKey: .filterchatroomcustomid)
+            ret.limit = value(forKey: .limit)
+            ret.cursor = value(forKey: .cursor)
+
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .filternotificationtypes, value: filternotificationtypes)
+            add(key: .includeread, value: includeread)
+            add(key: .filterchatroomid, value: filterchatroomid)
+            add(key: .filterchatroomcustomid, value: filterchatroomcustomid)
+            add(key: .limit, value: limit)
+            add(key: .cursor, value: cursor)
+            
+            return toDictionary
+        }
+    }
+    
+    /// Set User UserNotification as Read
+    ///
+    /// This marks a notification as being in READ status. That will prevent the notification from being returned in a call to List User Notifications unless the default filters are overridden. Notifications that are marked as read will be automatically deleted after some time
+    ///
+    /// Arguments
+    ///
+    /// userid : (required) The ID of the user marking the notification as read.
+    ///
+    /// notificationid : (required) The unique ID of the notification being updated.
+    ///
+    /// read : (required) The read status (true/false) for the notification
+    ///
+    public class SetUserNotificationAsRead: ParametersBase<SetUserNotificationAsRead.Fields, SetUserNotificationAsRead> {
+        public enum Fields {
+            case userid
+            case notificationid
+            case read
+        }
+        
+        public var userid: String?
+        public var notificationid: String?
+        public var read: Bool? = false
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> SetUserNotificationAsRead {
+            set(dictionary: dictionary)
+            let ret = SetUserNotificationAsRead()
+            
+            ret.userid = value(forKey: .userid)
+            ret.notificationid = value(forKey: .notificationid)
+            ret.read = value(forKey: .read)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .read, value: read)
+            
+            return toDictionary
+        }
+    }
 }

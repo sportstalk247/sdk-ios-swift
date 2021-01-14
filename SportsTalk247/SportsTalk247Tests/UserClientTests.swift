@@ -45,9 +45,13 @@ class UserClientTests: XCTestCase {
         user.profileurl = ""
         return user
     }()
+    
+    var dummyNotification: UserNotification? { didSet { print("UserNotification saved: \(dummyNotification?.id)") } }
         
     override func setUpWithError() throws {
         SportsTalkSDK.shared.debugMode = true
+        createUpdateUser()
+        createUpdateOtherUser()
     }
 }
 
@@ -283,6 +287,54 @@ extension UserClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssert(receivedCode == 200)
         XCTAssert(shadowbanned == !(dummyUser?.shadowbanned ?? false))
+    }
+    
+    func test_UserServices_ListUserNotification() {
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        let request = UserRequest.ListUserNotifications()
+        request.userid = dummyUser!.userid
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.listUserNotifications(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            self.dummyNotification = response?.notifications?.filter{ ($0.isread ?? false) == false }.first
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(receivedCode == 200)
+    }
+    
+    func test_UserServices_SetNotificationAsRead() {
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        if self.dummyNotification == nil {
+            test_UserServices_ListUserNotification()
+        }
+        
+        let request = UserRequest.SetUserNotificationAsRead()
+        request.userid = dummyUser!.userid
+        request.notificationid = dummyNotification?.id
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.setUserNotificationAsRead(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(receivedCode == 200)
     }
 }
 

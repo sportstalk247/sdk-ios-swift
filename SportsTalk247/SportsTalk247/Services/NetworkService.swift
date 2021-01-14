@@ -79,11 +79,10 @@ open class NetworkService {
         var request = URLRequest(url: requestUrl, timeoutInterval: Double.infinity)
         request.httpMethod = requestType.rawValue
         
-        if (requestType == .POST && appendData) || requestType == .PUT || requestType == .DELETE {
+        if (requestType == .POST && appendData) || (requestType == .PUT && appendData == false) || requestType == .DELETE {
             let httpData = try? JSONSerialization.data(withJSONObject: parameters, options: [])
             request.httpBody = httpData
-            
-        } else if requestType == .GET && appendData {
+        } else if (requestType == .GET && appendData) || (requestType == .PUT && appendData) {
             var components = URLComponents(string: requestUrl.absoluteString)!
             components.queryItems = [URLQueryItem]()
 

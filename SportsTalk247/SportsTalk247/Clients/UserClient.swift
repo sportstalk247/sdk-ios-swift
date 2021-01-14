@@ -10,6 +10,8 @@ public protocol UserClientProtocol {
     func searchUser(_ request: UserRequest.SearchUser, completionHandler: @escaping Completion<ListUsersResponse>)
     func reportUser(_ request: UserRequest.ReportUser, completionHandler: @escaping Completion<User>)
     func setShadowBanStatus(_ request: UserRequest.SetShadowBanStatus, completionHandler: @escaping Completion<User>)
+    func listUserNotifications(_ request: UserRequest.ListUserNotifications, completionHandler: @escaping Completion<ListNotificationResponse>)
+    func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
 }
 
 public class UserClient: NetworkService, UserClientProtocol {
@@ -71,6 +73,18 @@ extension UserClient {
     
     public func setShadowBanStatus(_ request: UserRequest.SetShadowBanStatus, completionHandler: @escaping Completion<User>) {
         makeRequest(URLPath.User.ShadowBan(userid: request.userid), withData: request.toDictionary(), requestType: .POST, expectation: User.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func listUserNotifications(_ request: UserRequest.ListUserNotifications, completionHandler: @escaping Completion<ListNotificationResponse>) {
+        makeRequest(URLPath.User.ListNotifications(userid: request.userid), withData: request.toDictionary(), requestType: .GET, expectation: ListNotificationResponse.self, append: true) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>) {
+        makeRequest(URLPath.User.SetNotifAsRead(userid: request.userid, noteid: request.notificationid), withData: request.toDictionary(), requestType: .PUT, expectation: UserNotification.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
