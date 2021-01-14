@@ -22,6 +22,7 @@ class ChatClientTests: XCTestCase {
     
     override func setUpWithError() throws {
         SportsTalkSDK.shared.debugMode = true
+        createUpdateUser()
     }
 }
 
@@ -600,7 +601,8 @@ extension ChatClientTests {
         
         let request = ChatRequest.DeleteEvent()
         request.eventid = dummyEvent?.id
-        request.roomid = dummyRoom?.id
+        request.roomid = dummyEvent?.roomid
+        request.userid = dummyEvent?.userid
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -681,6 +683,7 @@ extension ChatClientTests {
         client.reportMessage(request) { (code, message, _, event) in
             print(message ?? "")
             receivedCode = code
+            self.dummyEvent = event
             expectation.fulfill()
         }
 
@@ -703,6 +706,7 @@ extension ChatClientTests {
         client.reactToEvent(request) { (code, message, _, event) in
             print(message ?? "")
             receivedCode = code
+            self.dummyEvent = event
             expectation.fulfill()
         }
 
@@ -731,6 +735,104 @@ extension ChatClientTests {
         
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_SearchEvent() {
+        test_ChatRoomsServices_ExecuteChatCommand()
+        
+        let request = ChatRequest.SearchEvent()
+        request.fromhandle = "GeorgeWASHING"
+        request.types = [.action, .reply, .speech]
+        request.direction = .forward
+        request.limit = 10
+
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.searchEventHistory(request) { (code, message, _, event) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_UpdateChatEvent() {
+        if dummyUser == nil {
+            createUpdateUser()
+        }
+        
+        test_ChatRoomsServices_JoinRoom()
+        test_ChatRoomsServices_ExecuteChatCommand()
+        
+        let request = ChatRequest.UpdateChatEvent()
+        request.roomid = dummyEvent?.roomid
+        request.eventid = dummyEvent?.id
+        request.userid = dummyEvent?.userid
+        request.body = "New message editted by ChatRequest.UpdateChatEvent api"
+        
+        print("************")
+        print("*  BEFORE  *")
+        print("************")
+        print("\"\(String(describing: dummyEvent?.body))\"")
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.updateChatEvent(request) { (code, message, _, event) in
+            print("************")
+            print("*  AFTER   *")
+            print("************")
+            print("\"\(String(describing: event?.body))\"")
+            self.dummyEvent = event
+            
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_MessageReactedTo() {
+        test_ChatRoomsServices_ReactToAMessage()
+                
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        
+        guard let userid = dummyUser?.userid, let event = dummyEvent else {
+            expectation.fulfill()
+            XCTAssertTrue(false)
+            return
+        }
+        
+        let reacted = client.messageIsReactedTo(userid, event: event)
+        
+        expectation.fulfill()
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(reacted)
+    }
+    
+    func test_ChatRoomsServices_MessageReported() {
+        test_ChatRoomsServices_ReportMessage()
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        
+        guard let userid = dummyUser?.userid, let event = dummyEvent else {
+            expectation.fulfill()
+            XCTAssertTrue(false)
+            return
+        }
+        
+        let reported = client.messageIsReported(userid, event: event)
+        
+        expectation.fulfill()
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(reported)
     }
 }
 

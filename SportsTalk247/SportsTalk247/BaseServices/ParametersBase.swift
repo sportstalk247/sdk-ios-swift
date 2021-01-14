@@ -94,6 +94,34 @@ open class ParametersBase<T,S> {
         
         return event
     }
+    
+    func value(forKey key: T) -> [EventType]? {
+        guard let id = dictionary[toString(key: key)] as? [String] else { return nil }
+        
+        var events: [EventType]?
+        
+        id.forEach { item in
+            if let event = EventType.init(rawValue: item) {
+                if events == nil {
+                    events = [EventType]()
+                }
+                events!.append(event)
+            }
+        }
+        return events
+    }
+
+    
+    func value(forKey key: T) -> Ordering? {
+        guard
+            let id = dictionary[toString(key: key)] as? String,
+            let event = Ordering.init(rawValue: id)
+        else {
+            return nil
+        }
+        
+        return event
+    }
  
     func toString(key: T) -> String {
         return "\(key)"

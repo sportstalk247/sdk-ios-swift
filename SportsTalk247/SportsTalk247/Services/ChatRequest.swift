@@ -1341,7 +1341,6 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .eventid, value: eventid)
             add(key: .userid, value: userid)
             
             return toDictionary
@@ -1549,6 +1548,82 @@ public class ChatRequest {
         }
     }
     
+    /// SEARCHES the message history applying the specified filters.
+    ///
+    /// This returns displayable messages (for example speech, quote, threadedreply) that are in the active state (not flagged by moderator or logically deleted).
+    ///
+    /// Arguments:
+    ///
+    /// fromuserid : (optional) Return ony events from the specified user
+    ///
+    /// fromhandle : (optional) Return only events from a user with the specified handle. Exact match, case insensitive.
+    ///
+    /// roomid : (optional) Return only events in the specified room.
+    ///
+    /// body : (optional) Returns only messages which contain the specified body substring.
+    ///
+    /// limit : (optional) Default is 50, maximum is 200. Limits how many items are returned.
+    ///
+    /// cursor : (optional) Leave blank to start from the beginning of the result set; provide the value from the previous returned cursor to resume cursoring through the next page of results.
+    ///
+    /// direction : (optional) Defaults to Backward. Pass forward or backward. Backward is newest to oldest order, forward is oldest to newest order.
+    ///
+    /// types : (optional) Default = all. Use this to filter for specific event types.
+    ///
+    
+    public class SearchEvent: ParametersBase<SearchEvent.Fields, SearchEvent> {
+        public enum Fields {
+            case fromuserid
+            case fromhandle
+            case roomid
+            case body
+            case limit
+            case cursor
+            case direction
+            case types
+        }
+        
+        public var fromuserid: String?
+        public var fromhandle: String?
+        public var roomid: String?
+        public var body: String?
+        public var limit: Int? = 50
+        public var cursor: String?
+        public var direction: Ordering?
+        public var types: [EventType]?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> SearchEvent {
+            set(dictionary: dictionary)
+            let ret = SearchEvent()
+            
+            ret.fromuserid = value(forKey: .fromuserid)
+            ret.fromhandle = value(forKey: .fromhandle)
+            ret.roomid = value(forKey: .roomid)
+            ret.body = value(forKey: .body)
+            ret.limit = value(forKey: .limit)
+            ret.cursor = value(forKey: .cursor)
+            ret.direction = value(forKey: .direction)
+            ret.types = value(forKey: .types)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .fromuserid, value: fromuserid)
+            add(key: .fromhandle, value: fromhandle)
+            add(key: .roomid, value: roomid)
+            add(key: .body, value: body)
+            add(key: .limit, value: limit)
+            add(key: .cursor, value: cursor)
+            add(key: .direction, value: direction?.rawValue)
+            add(key: .types, value: types?.map { $0.rawValue } )
+
+            return toDictionary
+        }
+    }
+    
     /// Bounce User
     ///
     /// Remove the user from the room and prevent the user from reentering.
@@ -1598,6 +1673,85 @@ public class ChatRequest {
             addRequired(key: .userid, value: userid)
             addRequired(key: .bounce, value: bounce)
             add(key: .announcement, value: announcement)
+
+            return toDictionary
+        }
+    }
+    
+    /// UPDATES the contents of an existing chat event
+    ///
+    /// This API may be used to update the body of an existing Chat Event. It is used to enable the user to edit the message after it is published. This may only be used with MESSAGE event types (speech, quote, reply). When the chat event is updated another event of type "replace" will be emitted with the updated event contents, and the original event will be replaced in future calls to List Event History, Join and List Previous Events. The event will also be flagged as edited by user.
+    ///
+    ///  Arguments:
+    ///
+    ///  roomid : (required) The ID of the chat room conversation
+    ///
+    ///  eventid : (required) The unique ID of the chat event to be edited. This must be a messsage type event (speech, quote or reply).
+    ///
+    ///  userid : (required) The application specific user ID updating the chat event. This must be the owner of the comment or moderator / admin.
+    ///
+    ///  body : (required) The new body contents of the event.
+    ///
+    ///  customid : (optional) Optionally replace the customid.
+    ///
+    ///  custompayload : (optional) Optionally replace the payload of the event.
+    ///
+    ///  customfield1 : (optional) Optionally replace the customfield1 value.
+    ///
+    ///  customfield2 : (optional) Optionally replace the customfield2 value.
+    ///
+    ///  customtags : (optional) Optionaly replace the custom tags.
+    ///
+    public class UpdateChatEvent: ParametersBase<UpdateChatEvent.Fields, UpdateChatEvent> {
+        public enum Fields {
+            case roomid
+            case eventid
+            case userid
+            case body
+            case customid
+            case custompayload
+            case customfield1
+            case customfield2
+            case customtags
+        }
+        
+        public var roomid: String?
+        public var eventid: String?
+        public var userid: String?
+        public var body: String?
+        public var customid: String?
+        public var custompayload: String?
+        public var customfield1: String?
+        public var customfield2: String?
+        public var customtags: String?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> UpdateChatEvent {
+            set(dictionary: dictionary)
+            let ret = UpdateChatEvent()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.eventid = value(forKey: .eventid)
+            ret.userid = value(forKey: .userid)
+            ret.body = value(forKey: .body)
+            ret.customid = value(forKey: .customid)
+            ret.custompayload = value(forKey: .custompayload)
+            ret.customfield1 = value(forKey: .customfield1)
+            ret.customfield2 = value(forKey: .customfield2)
+            ret.customtags = value(forKey: .customtags)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .body, value: body)
+            add(key: .customid, value: customid)
+            add(key: .custompayload, value: custompayload)
+            add(key: .customfield1, value: customfield1)
+            add(key: .customfield2, value: customfield2)
+            add(key: .customtags, value: customtags)
 
             return toDictionary
         }

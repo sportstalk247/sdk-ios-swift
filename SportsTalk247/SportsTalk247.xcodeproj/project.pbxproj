@@ -38,6 +38,8 @@
 		A85E7D0124732BCC00A26D54 /* ListUsersResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85E7CFD24732BCB00A26D54 /* ListUsersResponse.swift */; };
 		A85E7D0224732BCC00A26D54 /* UserList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85E7CFE24732BCB00A26D54 /* UserList.swift */; };
 		A85E7D042473343A00A26D54 /* UserClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85E7D032473343A00A26D54 /* UserClientTests.swift */; };
+		A86EA03F25AC8A25002B9B3F /* ListNotificationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EA03E25AC8A25002B9B3F /* ListNotificationResponse.swift */; };
+		A86EA04325AC8A6A002B9B3F /* UserNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EA04225AC8A6A002B9B3F /* UserNotification.swift */; };
 		A86EC091247484310025A5FA /* ParametersBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EC090247484310025A5FA /* ParametersBase.swift */; };
 		A8B45222250D3E5100592F9B /* DeleteEventResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */; };
 		A8B7D04E2522569200CF406C /* BounceUserRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B7D04D2522569200CF406C /* BounceUserRequest.swift */; };
@@ -92,6 +94,8 @@
 		A85E7CFD24732BCB00A26D54 /* ListUsersResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListUsersResponse.swift; sourceTree = "<group>"; };
 		A85E7CFE24732BCB00A26D54 /* UserList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserList.swift; sourceTree = "<group>"; };
 		A85E7D032473343A00A26D54 /* UserClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserClientTests.swift; sourceTree = "<group>"; };
+		A86EA03E25AC8A25002B9B3F /* ListNotificationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListNotificationResponse.swift; sourceTree = "<group>"; };
+		A86EA04225AC8A6A002B9B3F /* UserNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNotification.swift; sourceTree = "<group>"; };
 		A86EC090247484310025A5FA /* ParametersBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParametersBase.swift; sourceTree = "<group>"; };
 		A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteEventResponse.swift; sourceTree = "<group>"; };
 		A8B7D04D2522569200CF406C /* BounceUserRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BounceUserRequest.swift; sourceTree = "<group>"; };
@@ -240,6 +244,8 @@
 				A8F8C35625A4BBBC0021ADF7 /* UserReport.swift */,
 				A85E7CFE24732BCB00A26D54 /* UserList.swift */,
 				A8F8C35E25A4C3B40021ADF7 /* GlobalPurgeReponse.swift */,
+				A86EA03E25AC8A25002B9B3F /* ListNotificationResponse.swift */,
+				A86EA04225AC8A6A002B9B3F /* UserNotification.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -379,6 +385,7 @@
 				A8B45222250D3E5100592F9B /* DeleteEventResponse.swift in Sources */,
 				A855D7AB24714DC000206560 /* ChatClient.swift in Sources */,
 				A855D7A324714D4000206560 /* ApiResponse.swift in Sources */,
+				A86EA03F25AC8A25002B9B3F /* ListNotificationResponse.swift in Sources */,
 				8448316D2444479000C29381 /* CommentRequest.swift in Sources */,
 				A855D7A624714D4D00206560 /* SportsTalkSDK.swift in Sources */,
 				A855D79D24714D4000206560 /* ExecuteChatCommandResponse.swift in Sources */,
@@ -393,6 +400,7 @@
 				A8B7D04E2522569200CF406C /* BounceUserRequest.swift in Sources */,
 				A85E7D0124732BCC00A26D54 /* ListUsersResponse.swift in Sources */,
 				A855D7B124716F0200206560 /* UserClient.swift in Sources */,
+				A86EA04325AC8A6A002B9B3F /* UserNotification.swift in Sources */,
 				A855D7A024714D4000206560 /* ListMessagesNeedingModerationResponse.swift in Sources */,
 				806D710F23BB284E00FBDA8E /* WebhookRequest.swift in Sources */,
 				A85E7CF824732AB000A26D54 /* NetworkService.swift in Sources */,
@@ -593,7 +601,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.2;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -620,7 +628,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.2;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;

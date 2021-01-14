@@ -27,12 +27,18 @@ public protocol ChatClientProtocol {
     func reportMessage(_ request: ChatRequest.ReportMessage, completionHandler: @escaping Completion<Event>)
     func reactToEvent(_ request: ChatRequest.ReactToEvent, completionHandler: @escaping Completion<Event>)
     func bounceUser(_ request: ChatRequest.BounceUser, completionHandler: @escaping Completion<BounceUserRequest>)
+    func searchEventHistory(_ request: ChatRequest.SearchEvent, completionHandler: @escaping Completion<ListEventsResponse>)
+    func updateChatEvent(_ request: ChatRequest.UpdateChatEvent, completionHandler: @escaping Completion<Event>)
+    
     func startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>)
     func stopListeningToChatUpdates()
     
     func approveEvent(_ request: ModerationRequest.ApproveEvent, completionHandler: @escaping Completion<Event>)
     func rejectEvent(_ request: ModerationRequest.RejectEvent, completionHandler: @escaping Completion<Event>)
     func listMessagesInModerationQueue(_ request: ModerationRequest.listMessagesInModerationQueue, completionHandler: @escaping Completion<ListMessagesNeedingModerationResponse>)
+    
+    func messageIsReactedTo(_ userid: String, event: Event?) -> Bool
+    func messageIsReported(_ userid: String, event: Event?) -> Bool
 }
 
 public class ChatClient: NetworkService, ChatClientProtocol {
@@ -178,7 +184,7 @@ extension ChatClient {
     }
     
     public func flagEventLogicallyDeleted(_ request: ChatRequest.FlagEventLogicallyDeleted, completionHandler: @escaping Completion<DeleteEventResponse>) {
-        makeRequest(URLPath.Event.FlagLogicallyDeleted(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .DELETE, expectation: DeleteEventResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Event.FlagLogicallyDeleted(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .PUT, expectation: DeleteEventResponse.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -217,6 +223,37 @@ extension ChatClient {
         makeRequest(URLPath.Room.Bounce(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: BounceUserRequest.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
+    }
+    
+    public func searchEventHistory(_ request: ChatRequest.SearchEvent, completionHandler: @escaping Completion<ListEventsResponse>) {
+        makeRequest(URLPath.Room.SearchEvent(), withData: request.toDictionary(), requestType: .POST, expectation: ListEventsResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func updateChatEvent(_ request: ChatRequest.UpdateChatEvent, completionHandler: @escaping Completion<Event>) {
+        makeRequest(URLPath.Room.UpdateChatEvent(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .PUT, expectation: Event.self, append: false) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func messageIsReactedTo(_ userid: String, event: Event?) -> Bool {
+        guard event != nil else { return false }
+        
+        if let event = event {
+            if !event.reactions.isEmpty {
+                if event.reactions.contains(where: { $0.users.contains(where: { $0.userid == userid }) }) {
+                    return true
+                }
+            }
+        }
+        
+        return false
+    }
+    
+    public func messageIsReported(_ userid: String, event: Event?) -> Bool {
+        guard let reports = event?.reports else { return false }
+        return reports.contains(where: { $0.userid == userid })
     }
 }
 
