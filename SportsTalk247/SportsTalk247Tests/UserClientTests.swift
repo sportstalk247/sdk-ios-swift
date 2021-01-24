@@ -128,7 +128,7 @@ extension UserClientTests {
         createUpdateUser()
         createUpdateOtherUser()
         let request = UserRequest.ListUsers()
-        request.limit = "5"
+        request.limit = 5
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedUsers: [User]?
