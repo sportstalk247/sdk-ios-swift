@@ -1012,79 +1012,66 @@ public class ChatRequest {
         }
     }
     
-    /// Executes a command in a chat room
+    /// Creates a threaded reply to another message event
     ///
-    /// SENDING A MESSAGE:
+    /// The purpose of this method is to enable support of a sub-chat within the chat room. You can use it to split off the conversation into a nested conversation. You can build a tree structure of chat messages and replies, but it is recommended not to build experiences deeper than parent and child conversation level or it becomes complex for the users to follow.
     ///
-    ///  * Send any text that doesn't start with a reserved symbol to perform a SAY command.
-    ///  * Use this API call to REPLY to existing messages
+    /// Replies do not support admin or action commands
     ///
-    ///  example:
-    ///  These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World Hello, World
+    /// **Parameters**
     ///
-    ///  ACTION COMMANDS:
+    /// - eventid: (required) The ID of the event you are quoting
     ///
-    ///  * Action commands start with the / character
+    /// - userid: (required) The userid of the user who is publishing the quoted reply.
     ///
-    /// example:
+    /// - body: (required) The contents of the reply for the quoted reply. Cannot be empty.
     ///
-    /// /dance nicole User sees:
-    /// You dance with Nicole
-    /// Nicole sees: (user's handle) dances with you
-    /// Everyone else sees: (user's handle) dances with Nicoel
+    /// - customid: (optional) Assigns a custom ID to the quoted reply event.
     ///
-    /// This requires that the action command dance is on the approved list of commands and Nicole is the handle of a participant in the room, and that actions are allowed in the room.
+    /// - custompayload: (optional) Attach a custom payload string to the quoted reply such as JSON or XML.
     ///
-    /// ADMIN COMMANDS:
+    /// - customfield1: (optional) Use this field however you wish.
     ///
-    ///  * These commands start with the * character
-    /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
+    /// - customfield2: (optional) Use this field however you wish.
     ///
-    /// example:
+    /// - customtags: (optional) An array of strings, use this field however you wish.
     ///
-    ///  * ban : This bans the user from the entire chat experience (all rooms).
-    ///  * restore : This restores the user to the chat experience (all rooms).
-    ///  * purge : This deletes all messages from the specified user.
-    ///  * deleteallevents : This deletes all messages in this room.
-    ///
-    ///  SENDING A REPLY::
-    ///
-    ///   * replyto:  Use this field to provide the EventID of an event you want to reply to. Replies have a different event type and contain a copy of the original event.
-    ///
-    ///  Arguments:
-    ///
-    ///  command:  command that you want to pass
-    ///
-    ///  userid: user id specific to App
-    ///
-    ///  customtype: any type you want to save
-    ///
-    ///  customid: any custom id you want to pass
-    ///
-    ///  custompayload: any payload.
-    ///
-    /// - Warning: This method requires authentication.
     public class SendQuotedReply: ParametersBase<SendQuotedReply.Fields, SendQuotedReply> {
         public enum Fields {
             case roomid
-            case command
+            case eventid
             case userid
-            case replyto
+            case body
+            case customid
+            case custompayload
+            case customfield1
+            case customfield2
+            case customtags
         }
         
         public var roomid: String?
-        public var command: String?
+        public var eventid: String?
         public var userid: String?
-        public var replyto: String?
+        public var body: String?
+        public var customid: String?
+        public var custompayload: String?
+        public var customfield1: String?
+        public var customfield2: String?
+        public var customtags: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> SendQuotedReply {
             set(dictionary: dictionary)
             let ret = SendQuotedReply()
             
             ret.roomid = value(forKey: .roomid)
-            ret.command = value(forKey: .command)
+            ret.eventid = value(forKey: .eventid)
             ret.userid = value(forKey: .userid)
-            ret.replyto = value(forKey: .replyto)
+            ret.body = value(forKey: .body)
+            ret.customid = value(forKey: .customid)
+            ret.custompayload = value(forKey: .custompayload)
+            ret.customfield1 = value(forKey: .customfield1)
+            ret.customfield2 = value(forKey: .customfield2)
+            ret.customtags = value(forKey: .customtags)
             
             return ret
         }
@@ -1092,87 +1079,78 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            add(key: .command, value: command)
-            add(key: .userid, value: userid)
-            add(key: .replyto, value: replyto)
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .body, value: body)
+            add(key: .customid, value: customid)
+            add(key: .custompayload, value: custompayload)
+            add(key: .customfield1, value: customfield1)
+            add(key: .customfield2, value: customfield2)
+            add(key: .customtags, value: customtags)
             
             return toDictionary
         }
     }
     
-    /// Executes a command in a chat room
+    /// Creates a threaded reply to another message event
     ///
-    /// SENDING A MESSAGE:
+    /// The purpose of this method is to enable support of a sub-chat within the chat room. You can use it to split off the conversation into a nested conversation. You can build a tree structure of chat messages and replies, but it is recommended not to build experiences deeper than parent and child conversation level or it becomes complex for the users to follow.
     ///
-    ///  * Send any text that doesn't start with a reserved symbol to perform a SAY command.
-    ///  * Use this API call to REPLY to existing messages
+    /// Replies do not support admin or action commands
     ///
-    ///  example:
-    ///  These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World Hello, World
+    /// **Parameters**
     ///
-    ///  ACTION COMMANDS:
+    /// - eventid: (required) The ID of the event you are quoting
     ///
-    ///  * Action commands start with the / character
+    /// - userid: (required) The userid of the user who is publishing the quoted reply.
     ///
-    /// example:
+    /// - body: (required) The contents of the reply for the quoted reply. Cannot be empty.
     ///
-    /// /dance nicole User sees:
-    /// You dance with Nicole
-    /// Nicole sees: (user's handle) dances with you
-    /// Everyone else sees: (user's handle) dances with Nicoel
+    /// - customid: (optional) Assigns a custom ID to the quoted reply event.
     ///
-    /// This requires that the action command dance is on the approved list of commands and Nicole is the handle of a participant in the room, and that actions are allowed in the room.
+    /// - custompayload: (optional) Attach a custom payload string to the quoted reply such as JSON or XML.
     ///
-    /// ADMIN COMMANDS:
+    /// - customfield1: (optional) Use this field however you wish.
     ///
-    ///  * These commands start with the * character
-    /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
+    /// - customfield2: (optional) Use this field however you wish.
     ///
-    /// example:
+    /// - customtags: (optional) An array of strings, use this field however you wish.
     ///
-    ///  * ban : This bans the user from the entire chat experience (all rooms).
-    ///  * restore : This restores the user to the chat experience (all rooms).
-    ///  * purge : This deletes all messages from the specified user.
-    ///  * deleteallevents : This deletes all messages in this room.
-    ///
-    ///  SENDING A REPLY::
-    ///
-    ///   * replyto:  Use this field to provide the EventID of an event you want to reply to. Replies have a different event type and contain a copy of the original event.
-    ///
-    ///  Arguments:
-    ///
-    ///  command:  command that you want to pass
-    ///
-    ///  userid: user id specific to App
-    ///
-    ///  customtype: any type you want to save
-    ///
-    ///  customid: any custom id you want to pass
-    ///
-    ///  custompayload: any payload.
-    ///
-    /// - Warning: This method requires authentication.
     public class SendThreadedReply: ParametersBase<SendThreadedReply.Fields, SendThreadedReply> {
         public enum Fields {
             case roomid
-            case command
+            case eventid
             case userid
-            case replyto
+            case body
+            case customid
+            case custompayload
+            case customfield1
+            case customfield2
+            case customtags
         }
         
         public var roomid: String?
-        public var command: String?
+        public var eventid: String?
         public var userid: String?
-        public var replyto: String?
+        public var body: String?
+        public var customid: String?
+        public var custompayload: String?
+        public var customfield1: String?
+        public var customfield2: String?
+        public var customtags: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> SendThreadedReply {
             set(dictionary: dictionary)
             let ret = SendThreadedReply()
             
             ret.roomid = value(forKey: .roomid)
-            ret.command = value(forKey: .command)
+            ret.eventid = value(forKey: .eventid)
             ret.userid = value(forKey: .userid)
-            ret.replyto = value(forKey: .replyto)
+            ret.body = value(forKey: .body)
+            ret.customid = value(forKey: .customid)
+            ret.custompayload = value(forKey: .custompayload)
+            ret.customfield1 = value(forKey: .customfield1)
+            ret.customfield2 = value(forKey: .customfield2)
+            ret.customtags = value(forKey: .customtags)
             
             return ret
         }
@@ -1180,10 +1158,13 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomid, value: roomid)
-            add(key: .command, value: command)
-            add(key: .userid, value: userid)
-            add(key: .replyto, value: replyto)
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .body, value: body)
+            add(key: .customid, value: customid)
+            add(key: .custompayload, value: custompayload)
+            add(key: .customfield1, value: customfield1)
+            add(key: .customfield2, value: customfield2)
+            add(key: .customtags, value: customtags)
             
             return toDictionary
         }
@@ -1500,7 +1481,7 @@ public class ChatRequest {
     ///
     ///  userid:  user id specific to app
     ///
-    ///  roomId: Room Id, in which you want to react
+    /// - roomid: (required) Room Id, in which you want to react
     ///
     ///  roomNewestEventId: message id, that you want to report.
     ///
@@ -1508,7 +1489,8 @@ public class ChatRequest {
     ///
     ///  reaction: e.g. like
     ///
-    /// - Warning: This method requires authentication.
+    /// **Warning** This method requires authentication.
+    ///
     public class ReactToEvent: ParametersBase<ReactToEvent.Fields, ReactToEvent> {
         public enum Fields {
             case roomid
@@ -1540,7 +1522,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            add(key: .userid, value: userid)
+            addRequired(key: .userid, value: userid)
             add(key: .reaction, value: reaction)
             add(key: .reacted, value: reacted)
             

@@ -503,17 +503,16 @@ extension ChatClientTests {
         test_ChatRoomsServices_ListMessagesByUsers()
         let request = ChatRequest.SendQuotedReply()
         request.roomid = dummyRoom?.id
-        request.command = "SAY Hello SPORTSTALKSDK World!"
+        request.eventid = dummyEvent?.id
         request.userid = dummyUser?.userid
-        request.replyto = dummyEventList?.first?.id
+        request.body = "SAY Hello SPORTSTALKSDK World!"
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
     
         client.sendQuotedReply(request) { (code, message, _, response) in
             print(message ?? "")
-            print("Replied to: \(String(describing: response?.speech?.userid))")
-            print("With Command: \(String(describing: request.command))")
+            print("With Command: \(String(describing: request.body))")
             receivedCode = code
             self.dummyEvent = response?.speech
             expectation.fulfill()
@@ -527,17 +526,16 @@ extension ChatClientTests {
         test_ChatRoomsServices_ListMessagesByUsers()
         let request = ChatRequest.SendThreadedReply()
         request.roomid = dummyRoom?.id
-        request.command = "SAY Hello SPORTSTALKSDK World!"
+        request.eventid = dummyEvent?.id
         request.userid = dummyUser?.userid
-        request.replyto = dummyEventList?.first?.id
+        request.body = "SAY Hello SPORTSTALKSDK World!"
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
     
         client.sendThreadedReply(request) { (code, message, _, response) in
             print(message ?? "")
-            print("Replied to: \(String(describing: response?.speech?.userid))")
-            print("With Command: \(String(describing: request.command))")
+            print("With Command: \(String(describing: request.body))")
             receivedCode = code
             self.dummyEvent = response?.speech
             expectation.fulfill()

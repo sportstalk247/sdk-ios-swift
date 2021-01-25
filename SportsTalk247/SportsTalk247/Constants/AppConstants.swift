@@ -56,8 +56,8 @@ struct URLPath {
         static func GetUpdates(roomid: String?) -> String                       { return r + (roomid ?? "") + "/updates" }
         static func GetMoreUpdates(roomid: String?) -> String                   { return r + (roomid ?? "") + "/updates" }
         static func ExecuteCommand(roomid: String?) -> String                   { return r + (roomid ?? "") + "/command" }
-        static func QuotedReply(roomid: String?) -> String                      { return r + (roomid ?? "") + "/command" }
-        static func ThreadedReply(roomid: String?) -> String                    { return r + (roomid ?? "") + "/command" }
+        static func QuotedReply(roomid: String?, eventid: String?) -> String    { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/quote" }
+        static func ThreadedReply(roomid: String?, eventid: String?) -> String  { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/reply" }
         static func Bounce(roomid: String?) -> String                           { return r + (roomid ?? "") + "/bounce" }
         static func SearchEvent() -> String                                     { return "chat/searchevents/" }
         static func UpdateChatEvent(roomid: String?, eventid: String?) -> String{ return "\(r)\(roomid ?? "")/events/\(eventid ?? "")"}
