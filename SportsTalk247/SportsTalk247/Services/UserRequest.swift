@@ -2,21 +2,37 @@ import Foundation
 
 public class UserRequest {
     
+    /// All users must have a Handle. The display name is optional. If you create a user and don't provide a handle, but you do provide a display name, a handle will be generated for you based on the provided display name. The generated handle will not be able to contain all characters or spaces, and could have numbers appended to the end.
+    ///
     /// Invoke this API method if you want to create a user or update an existing user.
+    ///
+    /// Do not use this method to convert an anonymous user into a known user. Use the Convert User api method instead.
     ///
     /// When users send messages to a room the user ID is passed as a parameter. When you retrieve the events from a room, the user who generated the event is returned with the event data, so it is easy for your application to process and render chat events with minimal code.
     ///
-    /// userid: Required. If the userid is new then the user will be created. If the userid is already in use in the database then the user will be updated.
+    /// **Parameters**
     ///
-    /// handle: (Optional) If you are creating a user and you don't specify a handle, the system will generate one for you (using Display Name as basis if you provide that). If you request a handle and it's already in use a new handle will be generated for you and returned. Handle is an easy to type unique identifier for a user, for example @GeorgeWashington could be the handle but Display Name could be "da prez numero uno".
+    /// - userid: (required) If the userid is new then the user will be created. If the userid is already in use in the database then the user will be updated.
     ///
-    /// displayname: Optional. This is the desired name to display, typically the real name of the person.
+    /// - handle: (optional) A unique string representing the user that is easy for other users to type. Example @GeorgeWashington could be the handle but Display Name could be "Wooden Teef For The Win".
     ///
-    /// pictureurl: Optional. The URL to the picture for this user.
+    /// - displayname: (optional) This is the desired name to display, typically the real name of the person.
     ///
-    /// profileurl: Optional. The profileurl for this user.
+    /// - pictureurl: (optional) The URL to the picture for this user.
     ///
-    /// - Warning: Do not use this method to convert an anonymous user into a known user. Use the Convert User api method instead.
+    /// - profileurl: (optional) The profileurl for this user.
+    ///
+    /// **Note about handles**
+    /// 
+    /// - If you are creating a user and you don't specify a handle, the system will generate one for you (using Display Name as basis if you provide that).
+    ///
+    /// - If you request a handle and it's already in use a new handle will be generated for you by adding a number from 1-99 and returned.
+    ///
+    /// - If the handle can't be generated because all the options 1-99 on the end of it are taken then the request will be rejected with BadRequest status code.
+    ///
+    /// - Only these characters may be used:
+    ///     *"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_"*
+    
     public class CreateUpdateUser: ParametersBase<CreateUpdateUser.Fields, CreateUpdateUser> {
         public enum Fields {
             case userid
@@ -62,9 +78,12 @@ public class UserRequest {
     ///
     /// All rooms with messages by that user will have the messages from this user purged in the rooms.
     ///
-    /// UserId is the app specific User ID provided by your application.
+    /// **Parameters**
     ///
-    /// - Warning: This method requires authentication
+    /// - userid: (required) is the app specific User ID provided by your application.
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class DeleteUser: ParametersBase<DeleteUser.Fields,DeleteUser> {
         public enum Fields {
             case userid
@@ -88,13 +107,16 @@ public class UserRequest {
         
     }
     
-    /// Get the details about a User
+    /// Get the details about a User.
     ///
     /// This will return all the information about the user.
     ///
-    /// UserId is the app specific User ID provided by your application.
+    /// **Parameters**
     ///
-    /// - Warning: This method requires authentication
+    /// - userid: (required) is the app specific User ID provided by your application.
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class GetUserDetails: ParametersBase<GetUserDetails.Fields, GetUserDetails> {
         public enum Fields {
             case userid
@@ -116,13 +138,19 @@ public class UserRequest {
         }
     }
     
+    /// Gets a list of users.
+    ///
     /// Use this method to cursor through a list of users. This method will return users in the order in which they were created, so it is safe to add new users while cursoring through the list.
     ///
-    /// cursor: Each call to ListUsers will return a result set with a 'nextCursor' value. To get the next page of users, pass this value as the optional 'cursor' property. To get the first page of users, omit the 'cursor' argument.
+    /// **Parameters**
     ///
-    /// limit: You can omit this optional argument, in which case the default limit is 200 users to return.
+    /// - cursor: (optional) Each call to ListUsers will return a result set with a 'nextCursor' value.
+    /// To get the next page of users, pass this value as the optional 'cursor' property. To get the first page of users, omit the 'cursor' argument.
     ///
-    /// - Warning: This method requires authentication.
+    /// - limit: (optional) You can omit this optional argument, in which case the default limit is 200 users to return.
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class ListUsers: ParametersBase<ListUsers.Fields, ListUsers> {
         public enum Fields {
             case cursor
@@ -130,7 +158,7 @@ public class UserRequest {
         }
 
         public var cursor: String?
-        public var limit: String? = defaultLimit
+        public var limit: Int? = 200
 
         override public func from(dictionary: [AnyHashable: Any]) -> ListUsers {
             set(dictionary: dictionary)
@@ -152,12 +180,14 @@ public class UserRequest {
         }
     }
     
-    /// Use this method ban/restore a user.
+    /// Will toggle the user's banned flag.
     ///
-    /// userid: (required) The applicaiton provided userid of the user to ban
-    /// banned: (required) set true to ban a user; set false to restore a user
+    /// **Parameters**
     ///
-    /// - Warning: This method requires authentication.
+    /// - userid: (required) The applicaiton provided userid of the user to ban
+    ///
+    /// - banned: (required) Boolean. If true, user will be set to banned state. If false, will be set to non-banned state.
+    ///
     public class SetBanStatus: ParametersBase<SetBanStatus.Fields, SetBanStatus> {
         public enum Fields {
             case userid
@@ -188,7 +218,9 @@ public class UserRequest {
     
     /// Will purge all chat content published by the specified user
     ///
-    /// userid: (required) The application provided userid of the user to ban
+    /// **Parameters**
+    ///
+    /// - userid: (required) The application provided userid of the user to ban
     ///
     public class GloballyPurgeUserContent: ParametersBase<GloballyPurgeUserContent.Fields, GloballyPurgeUserContent> {
         public enum Fields {
@@ -224,19 +256,20 @@ public class UserRequest {
     ///
     /// userid: Required. If the userid is new then the user will be created. If the userid is already in use in the database then the user will be updated.
     ///
-    /// Arguments:
+    /// **Parameters**
     ///
-    /// cursor: Each call to ListUsers will return a result set with a 'nextCursor' value. To get the next page of users, pass this value as the optional 'cursor' property. To get the first page of users, omit the 'cursor' argument.
+    /// - cursor: Each call to ListUsers will return a result set with a 'nextCursor' value. To get the next page of users, pass this value as the optional 'cursor' property. To get the first page of users, omit the 'cursor' argument.
     ///
-    /// limit: You can omit this optional argument, in which case the default limit is 200 users to return.
+    /// - limit: You can omit this optional argument, in which case the default limit is 200 users to return.
     ///
-    /// name: Provide part of a name to search the user name field
+    /// - name: Provide part of a name to search the user name field
     ///
-    /// handle: Provide part of a handle to search by handle
+    /// - handle: Provide part of a handle to search by handle
     ///
-    /// userid: Provide part of a userid to search by userid
+    /// - userid: Provide part of a userid to search by userid
     ///
-    /// - Warning: This method requires authentication.
+    /// **Warning** This method requires authentication
+    ///
     public class SearchUser: ParametersBase<SearchUser.Fields, SearchUser> {
         public enum Fields {
             case cursor
@@ -278,21 +311,21 @@ public class UserRequest {
         }
     }
     
-    /// REPORTS a USER to the moderation team.
+    /// Reports a user to the moderation team.
     ///
+    /// **Paramters**
     ///
-    /// Arguments:
+    /// - userid : (required) This is the application specific user ID of the user reporting the first user.
     ///
-    /// userid : (required) This is the application specific user ID of the user reporting the first user.
+    /// - reporttype : (required) Possible values: "abuse", "spam". SPAM is unsolicited commercial messages and abuse is hate speach or other unacceptable behavior.
     ///
-    /// reporttype : (required) Possible values: "abuse", "spam". SPAM is unsolicited commercial messages and abuse is hate speach or other unacceptable behavior.
+    /// **RESPONSE CODES**
     ///
-    /// Response:
+    /// - 200 | Success : Request completed successfully
     ///
-    /// Code    Meaning     Description
-    /// 200     OK          Request completed successfully
-    /// 404     Not Found   The specified user or application could not be found
-    /// 409     Conflict    The request was rejected because user reporting is not enabled for the application
+    /// - 404 | Not Found : The specified user or application could not be found
+    ///
+    /// - 409 | Conflict : The request was rejected because user reporting is not enabled for the application
     ///
     public class ReportUser: ParametersBase<ReportUser.Fields, ReportUser> {
         public enum Fields {
@@ -325,13 +358,16 @@ public class UserRequest {
     
     /// Will toggle the user's shadow banned flag
     ///
-    /// Arguements
+    /// A Shadow Ban user can send messages into a chat room, however those messages are flagged as shadow banned. This enables the application to show those messags only to the shadow banned user, so that that person may not know they were shadow banned. This method shadow bans the user on the global level (or you can use this method to lift the ban). You can optionally specify an expiration time. If the expiration time is specified, then each time the shadow banned user tries to send a message the API will check if the shadow ban has expired and will lift the ban.
+    
     ///
-    /// userid: (required) The applicaiton provided userid of the user to ban
+    /// **Parameters**
     ///
-    /// shadowban: (required) true or false. If true, user will be set to banned state. If false, will be set to non-banned state.
+    /// - userid: (required) The applicaiton provided userid of the user to ban
     ///
-    /// expireseconds: (optional) Duration of shadowban value in seconds. If specified, the shadow ban will be lifted when this time is reached. If not specified, shadowban remains until explicitly lifted. Maximum seconds is a double byte value.
+    /// - shadowban: (required) true or false. If true, user will be set to banned state. If false, will be set to non-banned state.
+    ///
+    /// - expireseconds: (optional) Duration of shadowban value in seconds. If specified, the shadow ban will be lifted when this time is reached. If not specified, shadowban remains until explicitly lifted. Maximum seconds is a double byte value.
     ///
     public class SetShadowBanStatus: ParametersBase<SetShadowBanStatus.Fields, SetShadowBanStatus> {
         public enum Fields {
@@ -367,9 +403,11 @@ public class UserRequest {
     
     /// Returns a list of user notifications
     ///
-    /// Arguements
+    /// **Parameters**
+    /// 
+    /// - userid: (required) Return only notifications for this user
     ///
-    /// filterNotificationTypes : (optional) Return only events of the specified type. Pass the argument more than once to fetch multiple types of notifications at once.
+    /// - filterNotificationTypes: (optional) Return only events of the specified type. Pass the argument more than once to fetch multiple types of notifications at once.
     ///     - chatmention
     ///     - chatquote
     ///     - chatreply
@@ -377,15 +415,15 @@ public class UserRequest {
     ///     - commentquote
     ///     - commentreply
     ///
-    /// includeread : (optional | default = false) If true, notifications that have already been read are returned
+    /// - includeread: (optional | default = false) If true, notifications that have already been read are returned
     ///
-    /// filterChatRoomId : (optional) If provided, this will only return notifications associated with the specified chat room using the ChatRoom ID (exact match)
+    /// - filterChatRoomId: (optional) If provided, this will only return notifications associated with the specified chat room using the ChatRoom ID (exact match)
     ///
-    /// filterChatRoomCustomId : (optional) If provided, this will only return notifications associated with the specified chat room using the Custom ID (exact match)
+    /// - filterChatRoomCustomId: (optional) If provided, this will only return notifications associated with the specified chat room using the Custom ID (exact match)
     ///
-    /// limit : (optional) Default is 50, maximum is 200. Limits how many items are returned.
+    /// - limit: (optional) Default is 50, maximum is 200. Limits how many items are returned.
     ///
-    /// cursor : (optional) Leave blank to start from the beginning of the result set; provide the value from the previous returned cursor to resume cursoring through the next page of results
+    /// - cursor: (optional) Leave blank to start from the beginning of the result set; provide the value from the previous returned cursor to resume cursoring through the next page of results
     ///
     public class ListUserNotifications: ParametersBase<ListUserNotifications.Fields, ListUserNotifications> {
         public enum Fields {
@@ -418,7 +456,6 @@ public class UserRequest {
             ret.limit = value(forKey: .limit)
             ret.cursor = value(forKey: .cursor)
 
-            
             return ret
         }
         
@@ -436,17 +473,17 @@ public class UserRequest {
         }
     }
     
-    /// Set User UserNotification as Read
+    /// Set User Notification as Read
     ///
-    /// This marks a notification as being in READ status. That will prevent the notification from being returned in a call to List User Notifications unless the default filters are overridden. Notifications that are marked as read will be automatically deleted after some time
+    /// This marks a notification as being in READ status. That will prevent the notification from being returned in a call to List User Notifications unless the default filters are overridden. Notifications that are marked as read will be automatically deleted after some time.
     ///
-    /// Arguments
+    /// **Parameters**
     ///
-    /// userid : (required) The ID of the user marking the notification as read.
+    /// - userid: (required) The ID of the user marking the notification as read.
     ///
-    /// notificationid : (required) The unique ID of the notification being updated.
+    /// - notificationid: (required) The unique ID of the notification being updated.
     ///
-    /// read : (required) The read status (true/false) for the notification
+    /// - read: (required) The read status (true/false) for the notification
     ///
     public class SetUserNotificationAsRead: ParametersBase<SetUserNotificationAsRead.Fields, SetUserNotificationAsRead> {
         public enum Fields {

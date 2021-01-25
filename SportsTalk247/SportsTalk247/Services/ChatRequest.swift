@@ -3,27 +3,30 @@ import Foundation
 public class ChatRequest {
     /// Creates a new chat room
     ///
-    /// name: (required) The name of the room
+    /// **Parameters**
     ///
-    /// customid: (optional) A customid for the room. Can be unused, or a unique key.
+    /// - name: (required) The name of the room
     ///
-    /// description: (optional) The description of the room
+    /// - customid: (optional) A customid for the room. Can be unused, or a unique key.
     ///
-    /// moderation: (required) The type of moderation.
-    ///  - ```pre``` - marks the room as Premoderated
-    ///  - ```post``` - marks the room as Postmoderated
+    /// - description: (optional) The description of the room
     ///
-    /// enableactions: (optional) [true/false] Turns action commands on or off
+    /// - moderation: (required) The type of moderation.
+    ///     - ```pre``` - marks the room as Premoderated
+    ///     - ```post``` - marks the room as Postmoderated
     ///
-    /// enableenterandexit: (optional) [true/false] Turn enter and exit events on or off. Disable for large rooms to reduce noise.
+    /// - enableactions: (optional) [true/false] Turns action commands on or off
     ///
-    /// enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
+    /// - enableenterandexit: (optional) [true/false] Turn enter and exit events on or off. Disable for large rooms to reduce noise.
     ///
-    /// delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
+    /// - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
     ///
-    /// maxreportss: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
+    /// - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
     ///
-    /// - Warning: This method requires authentication.
+    /// - maxreportss: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class CreateRoom: ParametersBase<CreateRoom.Fields, CreateRoom> {
         public enum Fields {
             case name
@@ -85,9 +88,13 @@ public class ChatRequest {
     
     /// Get the details for a room
     ///
-    /// roomid: Room Id of a specific room againts which you want to fetch the details
+    /// This will return all the settings for the room and the participant count but not the participant list
     ///
-    /// - Warning: This method requires authentication.
+    /// **Parameters**
+    /// 
+    /// - roomid: (required) Room id of a specific room againts which you want to fetch the details
+    ///
+    /// **Warning** This method requires authentication
     public class GetRoomDetails: ParametersBase<GetRoomDetails.Fields, GetRoomDetails> {
         public enum Fields {
             case roomid
@@ -115,9 +122,14 @@ public class ChatRequest {
     
     /// Get the details for a room
     ///
-    /// customid: Custom Id or Slug of a specific room againts which you want to fetch the details
+    /// This will return all the settings for the room and the participant count but not the participant list.
     ///
-    /// - Warning: This method requires authentication.
+    /// **Parameters**
+    ///
+    /// - customid: Custom Id of a specific room againts which you want to fetch the details.
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class GetRoomDetailsByCustomId: ParametersBase<GetRoomDetailsByCustomId.Fields, GetRoomDetailsByCustomId> {
         public enum Fields {
             case customid
@@ -144,11 +156,16 @@ public class ChatRequest {
     }
     
     
-    /// Deletes the specified room and all events contained therein) by ID
+    /// Permanently deletes a chat room
     ///
-    /// roomid: that you want to delete
+    /// This cannot be reversed. This command permanently deletes the chat room and all events in it.
     ///
-    /// - Warning: This method requires authentication.
+    /// **Parameters**
+    ///
+    /// - roomid: (required) that you want to delete
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class DeleteRoom: ParametersBase<DeleteRoom.Fields, DeleteRoom> {
         public enum Fields {
             case roomid
@@ -172,31 +189,32 @@ public class ChatRequest {
     
     /// Updates an existing room
     ///
-    /// roomid: (required) The ID of the existing room
+    /// **Parameters**
     ///
-    /// slug: (optional) The URL friendly name of the room
+    /// - roomid: (required) The ID of the existing room.
     ///
-    /// name: (optional) The name of the room
+    /// - userid: (optional) The owner of the room.
     ///
-    /// description: (optional) The description of the room
+    /// - name: (optional) The name of the room.
     ///
-    /// moderation: (optional) [premoderation/postmoderation] Defaults to post-moderation.
+    /// - description: (optional) The description of the room.
     ///
-    /// enableactions: (optional) [true/false] Turns action commands on or off
+    /// - moderation: (optional) [premoderation/postmoderation] Defaults to post-moderation.
     ///
-    /// enableenterandexit: (optional) [true/false] Turn enter and exit events on or off. Disable for large rooms to reduce noise.
+    /// - enableactions: (optional) [true/false] Turns action commands on or off.
     ///
-    /// enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
+    /// - enableenterandexit: (optional) [true/false] Turn enter and exit events on or off. Disable for large rooms to reduce noise.
     ///
-    /// delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
+    /// - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
     ///
-    /// roomisopen: (optional) [true/false] If false, users cannot perform any commands in the room, chat is suspended.
+    /// - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling
     ///
-    /// throttle: (optional) Defaults to 0. This is the number of seconds to delay new incomming messags so that the chat room doesn't scroll messages too fast.
+    /// - roomisopen: (optional) [true/false] If false, users cannot perform any commands in the room, chat is suspended.
     ///
-    /// userid:  user id specific to App
+    /// - throttle: (optional) [default=0] This is the number of seconds to delay new incomming messags so that the chat room doesn't scroll messages too fast
     ///
-    /// - Warning: This method requires authentication.
+    /// **Warning** This method requires authentication
+    ///
     public class UpdateRoom: ParametersBase<UpdateRoom.Fields, UpdateRoom> {
         public enum Fields {
             case roomid
@@ -266,31 +284,34 @@ public class ChatRequest {
         }
     }
     
-    /// Update Room (Close a room)
+    /// Updates an existing room
     ///
-    /// roomid: (required) The ID of the existing room
+    /// **Parameters**
     ///
-    /// slug: (optional) The URL friendly name of the room
+    /// - roomid: (required) The ID of the existing room.
     ///
-    /// name: (optional) The name of the room
+    /// - userid: (optional) The owner of the room.
     ///
-    /// description: (optional) The description of the room
+    /// - name: (optional) The name of the room.
     ///
-    /// moderation: (optional) [premoderation/postmoderation] Defaults to post-moderation.
+    /// - description: (optional) The description of the room.
     ///
-    /// enableactions: (optional) [true/false] Turns action commands on or off
+    /// - moderation: (optional) [premoderation/postmoderation] Defaults to post-moderation.
     ///
-    /// enableenterandexit: (optional) [true/false] Turn enter and exit events on or off. Disable for large rooms to reduce noise.
+    /// - enableactions: (optional) [true/false] Turns action commands on or off.
     ///
-    /// enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
+    /// - enableenterandexit: (optional) [true/false] Turn enter and exit events on or off. Disable for large rooms to reduce noise.
     ///
-    /// delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
+    /// - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
     ///
-    /// roomisopen: (optional) [true/false] If false, users cannot perform any commands in the room, chat is suspended.
+    /// - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling
     ///
-    /// userid:  user id specific to App
+    /// - roomisopen: (optional) [true/false] If false, users cannot perform any commands in the room, chat is suspended.
     ///
-    /// - Warning: This method requires authentication.
+    /// - throttle: (optional) [default=0] This is the number of seconds to delay new incomming messags so that the chat room doesn't scroll messages too fast
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class UpdateRoomCloseARoom: ParametersBase<UpdateRoomCloseARoom.Fields, UpdateRoomCloseARoom> {
         public enum Fields {
             case roomid
@@ -353,7 +374,14 @@ public class ChatRequest {
     ///
     /// Rooms can be public or private. This method lists all public rooms that everyone can see.
     ///
-    /// - Warning: This method requires authentication.
+    /// **Parameters**
+    ///
+    /// - cursor: (optional) The first time you call list rooms, omit this property to start from the beginning. Call the method again passing in the value returned in the cursor field of the response to get the next page of results. If there are more results available, more will be true.
+    ///
+    /// - limit: (optional) Specify the number of items to return. Default is 200
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class ListRooms: ParametersBase<ListRooms.Fields, ListRooms>  {
         public enum Fields {
             case cursor
@@ -386,33 +414,64 @@ public class ChatRequest {
     
     /// Join A Room
     ///
-    /// You can join a room either by using the room ID or label. First this method attempts to join a room with the specified ID. If the ID is not found, it attempts to join using the specified label. Labels must be URL friendly. The label is provided when the room is created. For example, if you wanted to label the room with the ID of a match, you can join the room without the need to invoke list rooms to get a room id.
+    /// You want your chat experience to open fast. The steps to opening a chat experience are:
     ///
-    /// Logged in users:
-    ///  * To log a user in, provide a unique user ID string and chat handle string. If this is the first time the user ID has been used a new user record will be created for the user. Whenever the user creates an event in the room by doing an action like saying something, the user information will be returned.
-    ///  * You can optionally also provide a URL to an image and a URL to a profile.
-    ///  * If you provide user information and the user already exists in the database, the user will be updated with the new information.
-    ///  * The user will be added to the list of participants in the room and the room participant count will increase.
-    ///  * The user will be removed from the room automatically after some time if the user doesn't perform any operations.
-    ///  * Users can only execute commands in the room if they have joined the room.
-    ///  * When a logged in user joins a room an entrance event is generated in the room.
-    ///  * When a logged in user leaves a room, an exit event is generated in the room.
+    /// - Create Room
     ///
-    ///  Arguments:
+    /// - Create User
     ///
-    ///  roomid: (required) The room you want to join
+    /// - Join Room (user gets permission to access events data from the room)
     ///
-    ///  userid: user id specific to App
+    /// - Get Recent Events to display in your app
     ///
-    ///  handle: user handle specific to App
+    /// - If you have already created the room (step 1) then you can perform steps 2 - 4 using join room
     ///
-    ///  displayname: Display Name for user
+    /// **DATA PARAMETERS**
     ///
-    ///  pictureurl:  Picture url of user
+    /// Provide a unique user ID string and chat handle string. If this is the first time the user ID has been used a new user record will be created for the user. Whenever the user creates an event in the room by doing an action like saying something, the user information will be returned.
     ///
-    ///  profileurl: Profile url of user
+    /// You can optionally also provide a URL to an image and a URL to a profile.
     ///
-    /// - Warning: This method requires authentication.
+    /// If you provide user information and the user already exists in the database, the user will be updated with the new information.
+    ///
+    /// The user will be added to the list of participants in the room and the room participant count will increase.
+    ///
+    /// The user will be removed from the room automatically after some time if the user doesn't perform any operations.
+    ///
+    /// Users can only execute commands in the room if they have joined the room.
+    ///
+    /// When a logged in user joins a room an entrance event is generated in the room.
+    ///
+    /// When a logged in user leaves a room, an exit event is generated in the room
+    ///
+    /// **Creating A New User:** You have the option to create or update an existing user during join.
+    ///
+    /// **Parameters**
+    ///
+    /// - limit: (optional) Defaults to 50. This limits the number of previous messages returned when joining the room.
+    ///
+    /// - userid: (required) If the userid is new then the user will be created. If the userid is already in use in the database then the user will be updated.
+    ///
+    /// - handle: (Optional) A unique string representing the user that is easy for other users to type.
+    ///
+    ///     - Example @GeorgeWashington could be the handle but Display Name could be "Wooden Teef For The Win".
+    ///
+    ///     - If you are creating a user and you don't specify a handle, the system will generate one for you (using Display Name as basis if you provide that).
+    ///
+    ///     - If you request a handle and it's already in use a new handle will be generated for you by adding a number from 1-99 and returned.
+    ///
+    ///     - If the handle can't be generated because all the options 1-99 on the end of it are taken then the request will be rejected with BadRequest status code.
+    ///
+    ///     - Only these characters may be used: *"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_"*
+    ///
+    /// - displayname: (optional) This is the desired name to display, typically the real name of the person.
+    ///
+    /// - pictureurl: (optional) The URL to the picture for this user.
+    ///
+    /// - profileurl: (optional) The profileurl for this user.
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class JoinRoom: ParametersBase<JoinRoom.Fields, JoinRoom> {
         public enum Fields {
             case roomid
@@ -457,37 +516,74 @@ public class ChatRequest {
         }
     }
     
-    /// Join A Room (By Custom Id)
+    /// Join A Room By Custom ID
     ///
     /// This method is the same as Join Room, except you can use your customid
     ///
     /// The benefit of this method is you don't need to query to get the roomid using customid, and then make another call to join the room. This eliminates a request and enables you to bring your chat experience to your user faster.
     ///
-    /// Logged in users:
-    ///  * To log a user in, provide a unique user ID string and chat handle string. If this is the first time the user ID has been used a new user record will be created for the user. Whenever the user creates an event in the room by doing an action like saying something, the user information will be returned.
-    ///  * You can optionally also provide a URL to an image and a URL to a profile.
-    ///  * If you provide user information and the user already exists in the database, the user will be updated with the new information.
-    ///  * The user will be added to the list of participants in the room and the room participant count will increase.
-    ///  * The user will be removed from the room automatically after some time if the user doesn't perform any operations.
-    ///  * Users can only execute commands in the room if they have joined the room.
-    ///  * When a logged in user joins a room an entrance event is generated in the room.
-    ///  * When a logged in user leaves a room, an exit event is generated in the room.
+    /// You want your chat experience to open fast. The steps to opening a chat experience are:
     ///
-    ///  Arguments:
+    /// 1. Create Room
     ///
-    ///  customid: your custom id
+    /// 2. Create User
     ///
-    ///  userid: user id specific to App
+    /// 3. Join Room (user gets permission to access events data from the room)
     ///
-    ///  handle: user handle specific to App
+    /// 4. Get Recent Events to display in your app
     ///
-    ///  displayname: Display Name for user
+    /// If you have already created the room (step 1) then you can perform steps 2 - 4 using join room.
     ///
-    ///  pictureurl:  Picture url of user
+    /// When you attempt to join the room, if the userid you provide does not exist then a user will be created for you automatically.
     ///
-    ///  profileurl: Profile url of user
+    /// If you provide a Display Name and you do not provide a handle then the display name will automatically be used to generate a handle for you. If you do not provide a display name or a handle then a 16 character handle will be automatically generated for you.
     ///
-    /// - Warning: This method requires authentication.
+    /// **DATA PARAMETERS**
+    ///
+    /// Provide a unique user ID string and chat handle string. If this is the first time the user ID has been used a new user record will be created for the user. Whenever the user creates an event in the room by doing an action like saying something, the user information will be returned.
+    ///
+    /// You can optionally also provide a URL to an image and a URL to a profile.
+    ///
+    /// If you provide user information and the user already exists in the database, the user will be updated with the new information.
+    ///
+    /// The user will be added to the list of participants in the room and the room participant count will increase.
+    ///
+    /// The user will be removed from the room automatically after some time if the user doesn't perform any operations.
+    ///
+    /// Users can only execute commands in the room if they have joined the room.
+    ///
+    /// When a logged in user joins a room an entrance event is generated in the room.
+    ///
+    /// When a logged in user leaves a room, an exit event is generated in the room.
+    ///
+    /// **Creating A New User:** You have the option to create or update an existing user during join.
+    ///
+    /// **Parameters**
+    ///
+    /// - limit: (optional) Defaults to 50. This limits the number of previous messages returned when joining the room.
+    ///
+    /// - userid: (required). If the userid is new then the user will be created. If the userid is already in use in the database then the user will be updated.
+    ///
+    /// - handle: (Optional) A unique string representing the user that is easy for other users to type.
+    ///
+    ///     - Example @GeorgeWashington could be the handle but Display Name could be "Wooden Teef For The Win".
+    ///
+    ///     - If you are creating a user and you don't specify a handle, the system will generate one for you (using Display Name as basis if you provide that).
+    ///
+    ///     - If you request a handle and it's already in use a new handle will be generated for you by adding a number from 1-99 and returned.
+    ///
+    ///     - If the handle can't be generated because all the options 1-99 on the end of it are taken then the request will be rejected with BadRequest status code.
+    ///
+    ///     - Only these characters may be used: *"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_"*
+    ///
+    /// - displayname: (optional) This is the desired name to display, typically the real name of the person.
+    ///
+    /// - pictureurl: (optional) The URL to the picture for this user.
+    ///
+    /// - profileurl: (optional) The profileurl for this user.
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class JoinRoomByCustomId: ParametersBase<JoinRoomByCustomId.Fields, JoinRoomByCustomId> {
        public enum Fields {
            case customid
@@ -539,15 +635,16 @@ public class ChatRequest {
     ///
     /// To cursor through the results if there are many participants, invoke this function many times. Each result will return a cursor value and you can pass that value to the next invokation to get the next page of results. The result set will also include a next field with the full URL to get the next page, so you can just keep reading that and requesting that URL until you reach the end. When you reach the end, no more results will be returned or the result set will be less than maxresults and the next field will be empty.
     ///
-    ///  Arguments:
+    ///  **Parameters**
     ///
-    ///  roomid:  room id that you want to list the participants
+    ///  - roomid: (required)  room id that you want to list the participants
     ///
-    ///  cursor:  you can pass that value to the next invokation to get the next page of results
+    ///  - cursor: (optional) you can pass that value to the next invokation to get the next page of results
     ///
-    ///  limit: default is 200
+    ///  - limit: (optional) default is 200
     ///
-    /// - Warning: This method requires authentication.
+    /// **Warning** This method requires authentication
+    ///
     public class ListRoomParticipants: ParametersBase<ListRoomParticipants.Fields, ListRoomParticipants> {
         public enum Fields {
             case roomid
@@ -587,11 +684,14 @@ public class ChatRequest {
     ///
     /// - This method returns all events, even those in the inactive state
     ///
-    ///  Arguments:
+    ///  **Parameters**
     ///
-    ///  cursor: (Optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///  - roomid: (required)  Room id where you want event history to be listed
     ///
-    ///  limit: (Optional) default is 100, maximum 2000
+    ///  - limit: (optional) default is 100, maximum 2000
+    ///
+    ///  - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///
     public class ListEventHistory: ParametersBase<ListEventHistory.Fields, ListEventHistory> {
         public enum Fields {
             case roomid
@@ -626,7 +726,7 @@ public class ChatRequest {
 
     /// List Previous Events
     ///
-    /// - This method allows you to go back in time to "scroll" in reverse through past messages. The typical use case for this method is to power the scroll-back feature of a chat window allowing the user to look at recent messages that have scrolled out of view. It's intended use is to retrieve small batches of historical events as the user is scrolling up.
+    /// This method allows you to go back in time to "scroll" in reverse through past messages. The typical use case for this method is to power the scroll-back feature of a chat window allowing the user to look at recent messages that have scrolled out of view. It's intended use is to retrieve small batches of historical events as the user is scrolling up.
     ///
     /// - This method returns a list of events sorted from newest to oldest.
     ///
@@ -636,12 +736,14 @@ public class ChatRequest {
     ///
     /// - This method will not return events that were emitted and then deleted before this method was called
     ///
-    ///  Arguments:
+    ///  **Parameters**
     ///
-    ///  cursor: (Optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///  - roomid: (required)  Room id where you want previous events to be listed
     ///
-    ///  limit: (Optional) default is 100, maximum 500
-    
+    ///  - limit: (optional) default is 100, maximum 500
+    ///
+    ///  - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///
     public class ListPreviousEvents: ParametersBase<ListPreviousEvents.Fields, ListPreviousEvents> {
         public enum Fields {
             case roomid
@@ -677,13 +779,16 @@ public class ChatRequest {
     
     /// Exit a Room
     ///
-    ///  Arguments:
+    /// This method should be called to remove a user from a room. This will cause an EXIT event to be broadcast in the room and this user will no longer show up in the list of attendees in the room.
     ///
-    ///  roomid:  Room id that you want to exit
+    ///  **Parameters**
     ///
-    ///  userid:  user id specific to App
+    ///  - roomid: (required)  Room id that you want to exit
     ///
-    /// - Warning: This method requires authentication.
+    ///  - userid: (required) user id specific to App
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class ExitRoom: ParametersBase<ExitRoom.Fields, ExitRoom> {
         public enum Fields {
             case roomid
@@ -717,21 +822,32 @@ public class ChatRequest {
     ///
     /// You can use this function to poll the room to get the recent events in the room. The recommended poll interval is 500ms. Each event has an ID and a timestamp. To detect new messages using polling, call this function and then process items with a newer timestamp than the most recent one you have already processed.
     ///
-    /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
+    /// Each event in the stream has a KIND property. Inspect the property to determine if it is a;
     ///
-    /// exit event: A user has exited chat. message: A user has communicated a message. reply: A user sent a message in response to another user. reaction: A user has reacted to a message posted by another user. action: A user is performing an ACTION (emote) alone or with another user.
+    /// - enter event: A user has joined the room.
     ///
-    ///  Enter and Exit Events:
+    /// - exit event: A user has exited chat.
+    ///
+    /// - message: A user has communicated a message.
+    ///
+    /// - reply: A user sent a message in response to another user.
+    ///
+    /// - reaction: A user has reacted to a message posted by another user.
+    ///
+    /// - action: A user is performing an ACTION (emote) alone or with another user.
+    ///
+    ///  **Enter and Exit Events**
     ///
     ///  Enter and Exit events may not be sent if the room is expected to have a very large number of users.
     ///
-    ///  Arguments:
+    ///  **Parameters**
     ///
-    ///  roomid:  Room id that you want to update
+    ///  - roomid: (required) Room id that you want to update
     ///
-    ///  cursor:  Used in cursoring through the list. Gets the next batch of users. Read 'nextCur' property of result set and pass as cursor value.
+    ///  - cursor: (optional) Used in cursoring through the list. Gets the next batch of users. Read 'nextCur' property of result set and pass as cursor value.
     ///
-    /// - Warning: This method requires authentication.
+    /// **Warning** This method requires authentication
+    ///
     public class GetUpdates: ParametersBase<GetUpdates.Fields, GetUpdates> {
         public enum Fields {
             case roomid
@@ -764,21 +880,32 @@ public class ChatRequest {
     ///
     /// You can use this function to poll the room to get the recent events in the room. The recommended poll interval is 500ms. Each event has an ID and a timestamp. To detect new messages using polling, call this function and then process items with a newer timestamp than the most recent one you have already processed.
     ///
-    /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
+    /// Each event in the stream has a KIND property. Inspect the property to determine if it is a;
     ///
-    /// exit event: A user has exited chat. message: A user has communicated a message. reply: A user sent a message in response to another user. reaction: A user has reacted to a message posted by another user. action: A user is performing an ACTION (emote) alone or with another user.
+    /// - enter event: A user has joined the room.
     ///
-    /// Enter and Exit Events:
+    /// - exit event: A user has exited chat.
     ///
-    /// Enter and Exit events may not be sent if the room is expected to have a very large number of users.
+    /// - message: A user has communicated a message.
     ///
-    /// Arguments
+    /// - reply: A user sent a message in response to another user.
     ///
-    /// cursor : If provided will return events that are newer than what the cursor points to.
+    /// - reaction: A user has reacted to a message posted by another user.
     ///
-    /// limit : (optional) Specify the number of events to return.
+    /// - action: A user is performing an ACTION (emote) alone or with another user.
     ///
-    
+    ///  **Enter and Exit Events**
+    ///
+    ///  Enter and Exit events may not be sent if the room is expected to have a very large number of users.
+    ///
+    ///  **Parameters**
+    ///
+    ///  - limit: (optional) Specify the number of events to return.
+    ///
+    ///  - cursor: (optional) If provided will return events that are newer than what the cursor points to.
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class GetMoreUpdates: ParametersBase<GetMoreUpdates.Fields, GetMoreUpdates> {
         public enum Fields {
             case roomid
@@ -809,58 +936,93 @@ public class ChatRequest {
     
     /// Executes a command in a chat room
     ///
+    /// **Precondition** The user must JOIN the room first with a call to Join Room. Otherwise you'll receive HTTP Status Code PreconditionFailed (412)
+    ///
+    /// **API UPDATES**
+    /// - replyto: This is deprecated. For replies use Quoted Reply or Threaded Reply. For most use cases, Quoted Reply is the recommended approach.
+    ///
     /// SENDING A MESSAGE:
     ///
-    ///  * Send any text that doesn't start with a reserved symbol to perform a SAY command.
-    ///  * Use this API call to REPLY to existing messages
-    ///  * Use this API call to perform ACTION commands
-    ///  * Use this API call to perform ADMIN commands
+    ///  - Send any text that doesn't start with a reserved symbol to perform a SAY command.
+    ///  - Use this API call to REPLY to existing messages
+    ///  - Use this API call to perform ACTION commands
+    ///  - Use this API call to perform ADMIN commands
     ///
-    ///  example:
-    ///  These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World Hello, World
+    ///  *example*
+    ///  These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World
     ///
-    ///  ACTION COMMANDS:
+    ///  **ACTION COMMANDS**
     ///
-    ///  * Action commands start with the / character
+    ///  - Action commands start with the / character
     ///
-    /// example:
+    /// *example*
     ///
-    /// /dance nicole User sees:
-    /// You dance with Nicole
-    /// Nicole sees: (user's handle) dances with you
-    /// Everyone else sees: (user's handle) dances with Nicoel
+    /// `/dance nicole`
+    /// User sees: `You dance with Nicole`
+    /// Nicole sees: `(user's handle) dances with you`
+    /// Everyone else sees: `(user's handle) dances with Nicole`
     ///
     /// This requires that the action command dance is on the approved list of commands and Nicole is the handle of a participant in the room, and that actions are allowed in the room.
     ///
-    /// ADMIN COMMANDS:
+    /// **ADMIN COMMANDS**
     ///
-    ///  * These commands start with the * character
+    ///  - These commands start with the * character
+    ///
     /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
     ///
-    /// example:
+    /// *example*
     ///
-    ///  * ban : This bans the user from the entire chat experience (all rooms).
-    ///  * restore : This restores the user to the chat experience (all rooms).
-    ///  * purge : This deletes all messages from the specified user.
-    ///  * deleteallevents : This deletes all messages in this room.
+    /// - ban : This bans the user from the entire chat experience (all rooms).
     ///
-    ///  SENDING A REPLY::
+    /// - restore : This restores the user to the chat experience (all rooms).
     ///
-    ///   * replyto:  Use this field to provide the EventID of an event you want to reply to. Replies have a different event type and contain a copy of the original event.
+    /// - purge : This deletes all messages from the specified user.
     ///
-    ///  Arguments:
+    /// - deleteallevents : This deletes all messages in this room.
     ///
-    ///  command:  command that you want to pass
+    ///  **Parameters**
     ///
-    ///  userid: user id specific to App
+    /// - command: (required) The command to execute. See examples above.
     ///
-    ///  customtype: any type you want to save
+    /// - userid: (required) The userid of user who is executing the command. The user must have joined the room first.
     ///
-    ///  customid: any custom id you want to pass
+    /// - eventtype: (optional, default = speech) By default, the API will determine the type of event by processing your command. However you can send custom.
+    ///  commands.
     ///
-    ///  custompayload: any payload.
+    ///     - custom : This indicates you will be using a custom event type.
     ///
-    /// - Warning: This method requires authentication.
+    ///     - announcement : This indicates the event is of type announcement.
+    ///
+    ///     - ad : Use this event type to push an advertisement. Use the CustomPayload property to specify parameters for your add.
+    ///
+    ///     - customtype: (optional) A string having meaning to your app that represents a custom type of event defined by you. You must specify "custom" as the eventtype to use this. If you don't, the event type will be forced to custom anyway.
+    ///
+    /// - custompayload: (optional) A string (XML or JSON usually) representing custom data for your application to use.
+    ///
+    /// - replyto: (optional) Use this field to provide the EventID of an event you want to reply to. Replies have a different event type and contain a copy of the original event.
+    ///
+    /// - moderation: (optional) Use this field to override the moderation state of the chat event. Use this when you have already inspected the content. Use one of the values below.
+    ///
+    ///     - approved : The content has already been approved by a moderator and it should not be sent to the moderation queue if users report it since the decision was already made to approve it.
+    ///
+    ///     - prescreened : The content was prescreened, but not approved. This means it can still be flagged for moderation queue by the users. This state allows a data analyst to distinguish between content that was approved by a moderator and content that went through a filtering process but wasn't explicitly approved or rejected.
+    ///
+    ///     - rejected : The content has been rejected by a moderator and it should not be broadcast into the chat stream, but it should be saved to the chat room history for future analysis or audit trail purposes.
+    ///
+    /// **RESPONSE CODES**
+    ///
+    /// 200 | OK : Sweet, sweet success.
+    ///
+    /// 400 | BadRequest : Something is wrong with your request. View response message and errors list for details.
+    ///
+    /// 403 | Forbidden : The userid issuing the request is banned from chatting in this room (or is banned globally).
+    ///
+    /// 405 | MethodBlocked : The method was blocked because it contained profanity and filtermode was set to 'block'.
+    ///
+    /// 409 | Conflict : The customid of your event is already in use.
+    ///
+    /// 412 | PreconditionFailed : User must JOIN the room before executing a chat command.
+    ///
     public class ExecuteChatCommand: ParametersBase<ExecuteChatCommand.Fields, ExecuteChatCommand> {
         public enum Fields {
             case roomid
@@ -915,58 +1077,93 @@ public class ChatRequest {
     
     /// Executes a command in a chat room
     ///
+    /// **Precondition** The user must JOIN the room first with a call to Join Room. Otherwise you'll receive HTTP Status Code PreconditionFailed (412)
+    ///
+    /// **API UPDATES**
+    /// - replyto: This is deprecated. For replies use Quoted Reply or Threaded Reply. For most use cases, Quoted Reply is the recommended approach.
+    ///
     /// SENDING A MESSAGE:
     ///
-    ///  * Send any text that doesn't start with a reserved symbol to perform a SAY command.
-    ///  * Use this API call to REPLY to existing messages
-    ///  * Use this API call to perform ACTION commands
-    ///  * Use this API call to perform ADMIN commands
+    ///  - Send any text that doesn't start with a reserved symbol to perform a SAY command.
+    ///  - Use this API call to REPLY to existing messages
+    ///  - Use this API call to perform ACTION commands
+    ///  - Use this API call to perform ADMIN commands
     ///
-    ///  example:
-    ///  These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World Hello, World
+    ///  *example*
+    ///  These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World
     ///
-    ///  ACTION COMMANDS:
+    ///  **ACTION COMMANDS**
     ///
-    ///  * Action commands start with the / character
+    ///  - Action commands start with the / character
     ///
-    /// example:
+    /// *example*
     ///
-    /// /dance nicole User sees:
-    /// You dance with Nicole
-    /// Nicole sees: (user's handle) dances with you
-    /// Everyone else sees: (user's handle) dances with Nicoel
+    /// `/dance nicole`
+    /// User sees: `You dance with Nicole`
+    /// Nicole sees: `(user's handle) dances with you`
+    /// Everyone else sees: `(user's handle) dances with Nicole`
     ///
     /// This requires that the action command dance is on the approved list of commands and Nicole is the handle of a participant in the room, and that actions are allowed in the room.
     ///
-    /// ADMIN COMMANDS:
+    /// **ADMIN COMMANDS**
     ///
-    ///  * These commands start with the * character
+    ///  - These commands start with the * character
+    ///
     /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
     ///
-    /// example:
+    /// *example*
     ///
-    ///  * ban : This bans the user from the entire chat experience (all rooms).
-    ///  * restore : This restores the user to the chat experience (all rooms).
-    ///  * purge : This deletes all messages from the specified user.
-    ///  * deleteallevents : This deletes all messages in this room.
+    /// - ban : This bans the user from the entire chat experience (all rooms).
     ///
-    ///  SENDING A REPLY::
+    /// - restore : This restores the user to the chat experience (all rooms).
     ///
-    ///   * replyto:  Use this field to provide the EventID of an event you want to reply to. Replies have a different event type and contain a copy of the original event.
+    /// - purge : This deletes all messages from the specified user.
     ///
-    ///  Arguments:
+    /// - deleteallevents : This deletes all messages in this room.
     ///
-    ///  command:  command that you want to pass
+    ///  **Parameters**
     ///
-    ///  userid: user id specific to App
+    /// - command: (required) The command to execute. See examples above.
     ///
-    ///  customtype: any type you want to save
+    /// - userid: (required) The userid of user who is executing the command. The user must have joined the room first.
     ///
-    ///  customid: any custom id you want to pass
+    /// - eventtype: (optional, default = speech) By default, the API will determine the type of event by processing your command. However you can send custom.
+    ///  commands.
     ///
-    ///  custompayload: any payload.
+    ///     - custom : This indicates you will be using a custom event type.
     ///
-    /// - Warning: This method requires authentication.
+    ///     - announcement : This indicates the event is of type announcement.
+    ///
+    ///     - ad : Use this event type to push an advertisement. Use the CustomPayload property to specify parameters for your add.
+    ///
+    ///     - customtype: (optional) A string having meaning to your app that represents a custom type of event defined by you. You must specify "custom" as the eventtype to use this. If you don't, the event type will be forced to custom anyway.
+    ///
+    /// - custompayload: (optional) A string (XML or JSON usually) representing custom data for your application to use.
+    ///
+    /// - replyto: (optional) Use this field to provide the EventID of an event you want to reply to. Replies have a different event type and contain a copy of the original event.
+    ///
+    /// - moderation: (optional) Use this field to override the moderation state of the chat event. Use this when you have already inspected the content. Use one of the values below.
+    ///
+    ///     - approved : The content has already been approved by a moderator and it should not be sent to the moderation queue if users report it since the decision was already made to approve it.
+    ///
+    ///     - prescreened : The content was prescreened, but not approved. This means it can still be flagged for moderation queue by the users. This state allows a data analyst to distinguish between content that was approved by a moderator and content that went through a filtering process but wasn't explicitly approved or rejected.
+    ///
+    ///     - rejected : The content has been rejected by a moderator and it should not be broadcast into the chat stream, but it should be saved to the chat room history for future analysis or audit trail purposes.
+    ///
+    /// **RESPONSE CODES**
+    ///
+    /// 200 | OK : Sweet, sweet success.
+    ///
+    /// 400 | BadRequest : Something is wrong with your request. View response message and errors list for details.
+    ///
+    /// 403 | Forbidden : The userid issuing the request is banned from chatting in this room (or is banned globally).
+    ///
+    /// 405 | MethodBlocked : The method was blocked because it contained profanity and filtermode was set to 'block'.
+    ///
+    /// 409 | Conflict : The customid of your event is already in use.
+    ///
+    /// 412 | PreconditionFailed : User must JOIN the room before executing a chat command.
+    ///
     public class ExecuteDanceAction: ParametersBase<ExecuteDanceAction.Fields, ExecuteDanceAction> {
         public enum Fields {
             case roomid
@@ -1174,17 +1371,18 @@ public class ChatRequest {
     ///
     /// The purpose of this method is to get a list of messages or comments by a user, with count of replies and reaction data. This way, you can easily make a screen in your application that shows the user a list of their comment contributions and how people reacted to it.
     ///
-    ///  Arguments:
+    ///  **Parameters**
     ///
-    ///  roomid:  Room id, in which you want to fetch messages
+    ///  - roomid: (required)  Room id, in which you want to fetch messages
     ///
-    ///  userid:  user id, against which you want to fetch messages
+    ///  - userid: (required) user id, against which you want to fetch messages
     ///
-    ///  cursor:  Used in cursoring through the list. Gets the next batch of users. Read 'nextCur' property of result set and pass as cursor value.
+    ///  - cursor: (optional) Used in cursoring through the list. Gets the next batch of users. Read 'nextCur' property of result set and pass as cursor value.
     ///
-    ///  limit: default 200
+    ///  - limit: (optional) default 200
     ///
-    /// - Warning: This method requires authentication.
+    /// **Warning** This method requires authentication
+    ///
     public class ListMessagesByUser: ParametersBase<ListMessagesByUser.Fields, ListMessagesByUser> {
         public enum Fields {
             case cursor
@@ -1219,27 +1417,29 @@ public class ChatRequest {
         }
     }
     
-    /// Set deleted (LOGICAL DELETE)
+    /// Set Deleted (LOGICAL DELETE)
     ///
     /// Everything in a chat room is an event. Each event has a type. Events of type "speech, reply, quote" are considered "messages".
     ///
     /// Use logical delete if you want to flag something as deleted without actually deleting the message so you still have the data. When you use this method:
     ///
-    /// The message is not actually deleted. The comment is flagged as deleted, and can no longer be read, but replies are not deleted.
-    /// If flag "permanentifnoreplies" is true, then it will be a permanent delete instead of logical delete for this comment if it has no children.
-    /// If you use "permanentifnoreplies" = true, and this comment has a parent that has been logically deleted, and this is the only child, then the parent will also be permanently deleted (and so on up the hierarchy of events).
+    /// - The message is not actually deleted. The comment is flagged as deleted, and can no longer be read, but replies are not deleted.
     ///
-    /// Arguments:
+    /// - If flag "permanentifnoreplies" is true, then it will be a permanent delete instead of logical delete for this comment if it has no children.
     ///
-    /// roomid: (required) The ID of the room containing the event
+    /// - If you use "permanentifnoreplies" = true, and this comment has a parent that has been logically deleted, and this is the only child, then the parent will also be permanently deleted (and so on up the hierarchy of events).
     ///
-    /// eventid: (required) The unique ID of the chat event to delete. The user posting the delete request must be the owner of the event or have moderator permission
+    /// **Parameters**
     ///
-    /// userId: (required) This is the application specific user ID of the user deleting the comment. Must be the owner of the message event or authorized moderator.
+    /// - roomid: (required) The ID of the room containing the event
     ///
-    /// deleted: (required) Set to true or false to flag the comment as deleted. If a comment is deleted, then it will have the deleted field set to true, in which case the contents of the event message should not be shown and the body of the message will not be returned by the API by default. If a previously deleted message is undeleted, the flag for deleted is set to false and the original comment body is returned
+    /// - eventid: (required) The unique ID of the chat event to delete. The user posting the delete request must be the owner of the event or have moderator permission
     ///
-    /// permanentifnoreplies: (optional) If this optional parameter is set to "true", then if this event has no replies it will be permanently deleted instead of logically deleted. If a permanent delete is performed, the result will include the field "permanentdelete=true"
+    /// - userid: (required) This is the application specific user ID of the user deleting the comment. Must be the owner of the message event or authorized moderator.
+    ///
+    /// - deleted: (required) Set to true or false to flag the comment as deleted. If a comment is deleted, then it will have the deleted field set to true, in which case the contents of the event message should not be shown and the body of the message will not be returned by the API by default. If a previously deleted message is undeleted, the flag for deleted is set to false and the original comment body is returned
+    ///
+    /// - permanentifnoreplies: (optional) If this optional parameter is set to "true", then if this event has no replies it will be permanently deleted instead of logically deleted. If a permanent delete is performed, the result will include the field "permanentdelete=true"
     ///
     /// If you want to mark a comment as deleted, and replies are still visible, use "true" for the logical delete value. If you want to permanently delete the message and all of its replies, pass false
     public class FlagEventLogicallyDeleted: ParametersBase<FlagEventLogicallyDeleted.Fields, FlagEventLogicallyDeleted> {
@@ -1281,22 +1481,23 @@ public class ChatRequest {
         }
     }
     
-    /// Removes a message from a room.
+    /// Deletes an event from the room.
     ///
     /// This does not DELETE the message. It flags the message as moderator removed.
     ///
-    /// Arguments:
+    /// **Parameters**
     ///
-    /// roomId:  the room id in which you want to remove the message
+    /// - roomid: (required)  the room id in which you want to remove the message
     ///
-    /// eventId:  the message you want to remove
+    /// - eventId: (required) the message you want to remove.
     ///
-    /// userId: (Optional)  the id to whom the message belongs to
+    /// - userid: (optional)  the id to whom the message belongs to
     /// If provided, a check will be made to enforce this userid (the one deleting the event) is the owner of the event or has elevated permissions. If null, it assumes your business service made the determination to delete the event.
     ///
-    /// permanent: (Optional) remove permanently if no reply. Defaults to true
+    /// - permanent: (optional) remove permanently if no reply. Defaults to true.
     ///
-    /// - Warning: This method requires authentication.
+    /// **Warning** This method requires authentication
+    ///
     public class PermanentlyDeleteEvent: ParametersBase<PermanentlyDeleteEvent.Fields, PermanentlyDeleteEvent> {
         public enum Fields {
             case roomid
@@ -1328,11 +1529,15 @@ public class ChatRequest {
         }
     }
     
-    /// Removes all messages in a room.
+    /// Deletes all the events in a room.
     ///
-    ///  Arguments:
+    ///  **Parameters**
     ///
-    ///  password: a valid admin password
+    /// - roomid: (required)
+    ///
+    /// - userid: (required) the id of the owner of the messages
+    ///
+    /// - password: (required) a valid admin password
     ///
     public class DeleteAllEvents: ParametersBase<DeleteAllEvents.Fields, DeleteAllEvents> {
         public enum Fields {
@@ -1374,11 +1579,15 @@ public class ChatRequest {
     ///
     /// This does not DELETE the message. It flags the message as moderator removed.
     ///
-    ///  Arguments:
+    ///  **Parameters**
     ///
-    ///  handle: the handle of the owner of the messages
+    ///  - roomid: (required)
     ///
-    ///  password: a valid admin password
+    ///  - userid: (required) the id of the owner of the messages
+    ///
+    ///  - handle: (required) the handle of the owner of the messages
+    ///
+    ///  - password: (required) a valid admin password
     ///
     /// - Warning: This method requires authentication.
     public class PurgeUserMessages: ParametersBase<PurgeUserMessages.Fields, PurgeUserMessages> {
@@ -1420,21 +1629,22 @@ public class ChatRequest {
     }
     
     
-    /// REPORTS a message to the moderation team
+    /// Reports a message to the moderation team
     ///
     /// A reported message is temporarily removed from the chat event stream until it is evaluated by a moderator.
     ///
-    ///  Arguments:
+    /// **Parameters**
     ///
-    ///  reporttype:  e.g. abuse
+    /// - roomid: the id of the room in which you want to report the event
     ///
-    ///  userid:  user id specific to app
+    /// - eventid: the id of the event that you want to report.
     ///
-    ///  roomid: the id of the room in which you want to report the event
+    /// - userid: (required) user id specific to app
     ///
-    ///  eventid: the id of the event that you want to report.
+    /// - reporttype: (required) [defaults="abuse"] e.g. abuse
     ///
-    /// - Warning: This method requires authentication.
+    /// **Warning** This method requires authentication.
+    ///
     public class ReportMessage: ParametersBase<ReportMessage.Fields, ReportMessage> {
         public enum Fields {
             case roomid
@@ -1477,17 +1687,17 @@ public class ChatRequest {
     ///
     /// After this completes, a new event appears in the stream representing the reaction. The new event will have an updated version of the event in the replyto field, which you can use to update your UI.
     ///
-    ///  Arguments:
+    /// **Parameters**
     ///
-    ///  userid:  user id specific to app
+    /// - userid: (required) user id specific to app
     ///
     /// - roomid: (required) Room Id, in which you want to react
     ///
-    ///  roomNewestEventId: message id, that you want to report.
+    /// - eventid: (required) message id, that you want to report.
     ///
-    ///  reacted: true/false
+    /// - reacted: (required) true/false
     ///
-    ///  reaction: e.g. like
+    /// - reaction: (required) e.g. like
     ///
     /// **Warning** This method requires authentication.
     ///
@@ -1530,29 +1740,60 @@ public class ChatRequest {
         }
     }
     
-    /// SEARCHES the message history applying the specified filters.
+    /// Searches the message history applying the specified filters.
     ///
     /// This returns displayable messages (for example speech, quote, threadedreply) that are in the active state (not flagged by moderator or logically deleted).
     ///
-    /// Arguments:
+    /// **Parameters**
     ///
-    /// fromuserid : (optional) Return ony events from the specified user
+    /// - fromuserid: (optional) Return ony events from the specified user
     ///
-    /// fromhandle : (optional) Return only events from a user with the specified handle. Exact match, case insensitive.
+    /// - fromhandle: (optional) Return only events from a user with the specified handle. Exact match, case insensitive.
     ///
-    /// roomid : (optional) Return only events in the specified room.
+    /// - roomid: (optional) Return only events in the specified room.
     ///
-    /// body : (optional) Returns only messages which contain the specified body substring.
+    /// - body: (optional) Returns only messages which contain the specified body substring.
     ///
-    /// limit : (optional) Default is 50, maximum is 200. Limits how many items are returned.
+    /// - limit: (optional) Default is 50, maximum is 200. Limits how many items are returned.
     ///
-    /// cursor : (optional) Leave blank to start from the beginning of the result set; provide the value from the previous returned cursor to resume cursoring through the next page of results.
+    /// - cursor: (optional) Leave blank to start from the beginning of the result set; provide the value from the previous returned cursor to resume cursoring through the next page of results.
     ///
-    /// direction : (optional) Defaults to Backward. Pass forward or backward. Backward is newest to oldest order, forward is oldest to newest order.
+    /// - direction: (optional) Defaults to Backward. Pass forward or backward. Backward is newest to oldest order, forward is oldest to newest order.
     ///
-    /// types : (optional) Default = all. Use this to filter for specific event types.
+    /// - types: (optional) Default = all. Use this to filter for specific event types.
     ///
-    
+    ///     - speech
+    ///
+    ///     - quote
+    ///
+    ///     - reply
+    ///
+    ///     - announcement
+    ///
+    ///     - custom
+    ///
+    ///     - reaction
+    ///
+    ///     - action
+    ///
+    ///     - enter
+    ///
+    ///     - exit
+    ///
+    ///     - ad
+    ///
+    ///     - roomopened
+    ///
+    ///     - roomclosed
+    ///
+    ///     - purge
+    ///
+    ///     - remove
+    ///
+    ///     - replace
+    ///
+    ///     - bounce
+    ///
     public class SearchEvent: ParametersBase<SearchEvent.Fields, SearchEvent> {
         public enum Fields {
             case fromuserid
@@ -1611,18 +1852,19 @@ public class ChatRequest {
     /// Remove the user from the room and prevent the user from reentering.
     ///
     /// Optionally display a message to people in the room indicating this person was bounced.
+    ///
     /// When you bounce a user from the room, the user is removed from the room and blocked from reentering.
     /// Past events generated by that user are not modified (past messages from the user are not removed)
     ///
-    ///  Arguments:
+    /// **Parameters**
     ///
-    ///  userid: (required)  user id specific to app
+    /// - userid: (required)  user id specific to app
     ///
-    ///  bounce: (required) True if the user is being bounced from the room. False if user is debounced, allowing the user to reenter the room.
+    /// - bounce: (required) True if the user is being bounced from the room. False if user is debounced, allowing the user to reenter the room.
     ///
-    ///  roomid: (required) The ID of the chat room from which to bounce this user
+    /// - roomid: (required) The ID of the chat room from which to bounce this user
     ///
-    ///  announcement: (optional) If provided, this announcement is displayed to the people who are in the room, as the body of a BOUNCE event.
+    /// - announcement: (optional) If provided, this announcement is displayed to the people who are in the room, as the body of a BOUNCE event.
     ///
     public class BounceUser: ParametersBase<BounceUser.Fields, BounceUser> {
         public enum Fields {
@@ -1660,29 +1902,29 @@ public class ChatRequest {
         }
     }
     
-    /// UPDATES the contents of an existing chat event
+    /// Updates the contents of an existing chat event
     ///
     /// This API may be used to update the body of an existing Chat Event. It is used to enable the user to edit the message after it is published. This may only be used with MESSAGE event types (speech, quote, reply). When the chat event is updated another event of type "replace" will be emitted with the updated event contents, and the original event will be replaced in future calls to List Event History, Join and List Previous Events. The event will also be flagged as edited by user.
     ///
-    ///  Arguments:
+    /// **Parameters**
     ///
-    ///  roomid : (required) The ID of the chat room conversation
+    /// - roomid: (required) The ID of the chat room conversation
     ///
-    ///  eventid : (required) The unique ID of the chat event to be edited. This must be a messsage type event (speech, quote or reply).
+    /// - eventid: (required) The unique ID of the chat event to be edited. This must be a messsage type event (speech, quote or reply).
     ///
-    ///  userid : (required) The application specific user ID updating the chat event. This must be the owner of the comment or moderator / admin.
+    /// - userid: (required) The application specific user ID updating the chat event. This must be the owner of the comment or moderator / admin.
     ///
-    ///  body : (required) The new body contents of the event.
+    /// - body: (required) The new body contents of the event.
     ///
-    ///  customid : (optional) Optionally replace the customid.
+    /// - customid: (optional) Optionally replace the customid.
     ///
-    ///  custompayload : (optional) Optionally replace the payload of the event.
+    /// - custompayload: (optional) Optionally replace the payload of the event.
     ///
-    ///  customfield1 : (optional) Optionally replace the customfield1 value.
+    /// - customfield1: (optional) Optionally replace the customfield1 value.
     ///
-    ///  customfield2 : (optional) Optionally replace the customfield2 value.
+    /// - customfield2: (optional) Optionally replace the customfield2 value.
     ///
-    ///  customtags : (optional) Optionaly replace the custom tags.
+    /// - customtags: (optional) Optionaly replace the custom tags.
     ///
     public class UpdateChatEvent: ParametersBase<UpdateChatEvent.Fields, UpdateChatEvent> {
         public enum Fields {
@@ -1739,54 +1981,95 @@ public class ChatRequest {
         }
     }
     
-    ///  Execute Admin Command (*help)
+    /// Execute Admin Command (*help)
+    ///
+    /// **Precondition** The user must JOIN the room first with a call to Join Room. Otherwise you'll receive HTTP Status Code PreconditionFailed (412)
+    ///
+    /// **API UPDATES**
+    /// - replyto: This is deprecated. For replies use Quoted Reply or Threaded Reply. For most use cases, Quoted Reply is the recommended approach.
     ///
     /// SENDING A MESSAGE:
     ///
-    ///  * Send any text that doesn't start with a reserved symbol to perform a SAY command.
-    ///  * Use this API call to REPLY to existing messages
+    ///  - Send any text that doesn't start with a reserved symbol to perform a SAY command.
+    ///  - Use this API call to REPLY to existing messages
+    ///  - Use this API call to perform ACTION commands
+    ///  - Use this API call to perform ADMIN commands
     ///
-    ///  example:
-    ///  These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World Hello, World
+    ///  *example*
+    ///  These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World
     ///
-    ///  ACTION COMMANDS:
+    ///  **ACTION COMMANDS**
     ///
-    ///  * Action commands start with the / character
+    ///  - Action commands start with the / character
     ///
-    /// example:
+    /// *example*
     ///
-    /// /dance nicole User sees:
-    /// You dance with Nicole
-    /// Nicole sees: (user's handle) dances with you
-    /// Everyone else sees: (user's handle) dances with Nicoel
+    /// `/dance nicole`
+    /// User sees: `You dance with Nicole`
+    /// Nicole sees: `(user's handle) dances with you`
+    /// Everyone else sees: `(user's handle) dances with Nicole`
     ///
     /// This requires that the action command dance is on the approved list of commands and Nicole is the handle of a participant in the room, and that actions are allowed in the room.
     ///
-    /// ADMIN COMMANDS:
+    /// **ADMIN COMMANDS**
     ///
-    ///  * These commands start with the * character
+    ///  - These commands start with the * character
+    ///
     /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
     ///
-    /// example:
+    /// *example*
     ///
-    ///  * *banuserhere nicole: This bans the user Nicole from this room.
-    ///  * *banusereverywhere nicole: This bans user Nicole from all rooms.
-    ///  * *deletemessageshere nicole: This deletes all messages by user Nicole in this room
-    ///  * *deletemessageseverywhere nicole: This deletes all messages by user Nicole in all rooms
+    /// - ban : This bans the user from the entire chat experience (all rooms).
     ///
-    ///  Arguments:
+    /// - restore : This restores the user to the chat experience (all rooms).
     ///
-    ///  command:  command that you want to pass
+    /// - purge : This deletes all messages from the specified user.
     ///
-    ///  userid: user id specific to App
+    /// - deleteallevents : This deletes all messages in this room.
     ///
-    ///  customtype: any type you want to save
+    ///  **Parameters**
     ///
-    ///  customid: any custom id you want to pass
+    /// - command: (required) The command to execute. See examples above.
     ///
-    ///  custompayload: any payload.
+    /// - userid: (required) The userid of user who is executing the command. The user must have joined the room first.
     ///
-    /// - Warning: This method requires authentication.
+    /// - eventtype: (optional, default = speech) By default, the API will determine the type of event by processing your command. However you can send custom.
+    ///  commands.
+    ///
+    ///     - custom : This indicates you will be using a custom event type.
+    ///
+    ///     - announcement : This indicates the event is of type announcement.
+    ///
+    ///     - ad : Use this event type to push an advertisement. Use the CustomPayload property to specify parameters for your add.
+    ///
+    ///     - customtype: (optional) A string having meaning to your app that represents a custom type of event defined by you. You must specify "custom" as the eventtype to use this. If you don't, the event type will be forced to custom anyway.
+    ///
+    /// - custompayload: (optional) A string (XML or JSON usually) representing custom data for your application to use.
+    ///
+    /// - replyto: (optional) Use this field to provide the EventID of an event you want to reply to. Replies have a different event type and contain a copy of the original event.
+    ///
+    /// - moderation: (optional) Use this field to override the moderation state of the chat event. Use this when you have already inspected the content. Use one of the values below.
+    ///
+    ///     - approved : The content has already been approved by a moderator and it should not be sent to the moderation queue if users report it since the decision was already made to approve it.
+    ///
+    ///     - prescreened : The content was prescreened, but not approved. This means it can still be flagged for moderation queue by the users. This state allows a data analyst to distinguish between content that was approved by a moderator and content that went through a filtering process but wasn't explicitly approved or rejected.
+    ///
+    ///     - rejected : The content has been rejected by a moderator and it should not be broadcast into the chat stream, but it should be saved to the chat room history for future analysis or audit trail purposes.
+    ///
+    /// **RESPONSE CODES**
+    ///
+    /// 200 | OK : Sweet, sweet success.
+    ///
+    /// 400 | BadRequest : Something is wrong with your request. View response message and errors list for details.
+    ///
+    /// 403 | Forbidden : The userid issuing the request is banned from chatting in this room (or is banned globally).
+    ///
+    /// 405 | MethodBlocked : The method was blocked because it contained profanity and filtermode was set to 'block'.
+    ///
+    /// 409 | Conflict : The customid of your event is already in use.
+    ///
+    /// 412 | PreconditionFailed : User must JOIN the room before executing a chat command.
+    ///
     public class ExecuteAdminCommand: ParametersBase<ExecuteAdminCommand.Fields, ExecuteAdminCommand> {
         public enum Fields {
             case roomId
