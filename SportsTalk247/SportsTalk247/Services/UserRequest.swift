@@ -144,8 +144,7 @@ public class UserRequest {
     ///
     /// **Parameters**
     ///
-    /// - cursor: (optional) Each call to ListUsers will return a result set with a 'nextCursor' value.
-    /// To get the next page of users, pass this value as the optional 'cursor' property. To get the first page of users, omit the 'cursor' argument.
+    /// - cursor: (optional) Each call to ListUsers will return a result set with a 'nextCursor' value. To get the next page of users, pass this value as the optional 'cursor' property. To get the first page of users, omit the 'cursor' argument.
     ///
     /// - limit: (optional) You can omit this optional argument, in which case the default limit is 200 users to return.
     ///
@@ -254,19 +253,23 @@ public class UserRequest {
     ///
     /// Use this method to cursor through a list of users. This method will return users in the order in which they were created, so it is safe to add new users while cursoring through the list.
     ///
-    /// userid: Required. If the userid is new then the user will be created. If the userid is already in use in the database then the user will be updated.
-    ///
     /// **Parameters**
     ///
-    /// - cursor: Each call to ListUsers will return a result set with a 'nextCursor' value. To get the next page of users, pass this value as the optional 'cursor' property. To get the first page of users, omit the 'cursor' argument.
+    /// - cursor: (optional) Each call to ListUsers will return a result set with a 'nextCursor' value. To get the next page of users, pass this value as the optional 'cursor' property. To get the first page of users, omit the 'cursor' argument.
     ///
-    /// - limit: You can omit this optional argument, in which case the default limit is 200 users to return.
+    /// - limit: (optional) You can omit this optional argument, in which case the default limit is 200 users to return.
     ///
-    /// - name: Provide part of a name to search the user name field
+    /// - name: (optional) Provide part of a name to search the user name field
     ///
-    /// - handle: Provide part of a handle to search by handle
+    /// - handle: (optional) Provide part of a handle to search by handle
     ///
-    /// - userid: Provide part of a userid to search by userid
+    /// - userid: (optional) Provide part of a userid to search by userid
+    ///
+    /// **Note**
+    /// At least one of these parameters is required;
+    /// - userid
+    /// - handle
+    /// - name
     ///
     /// **Warning** This method requires authentication
     ///
@@ -406,7 +409,8 @@ public class UserRequest {
     /// 
     /// - userid: (required) Return only notifications for this user
     ///
-    /// - filterNotificationTypes: (optional) Return only events of the specified type. Pass the argument more than once to fetch multiple types of notifications at once.
+    /// - filternotificationtypes: (optional) Return only events of the specified type. Pass the argument more than once to fetch multiple types of notifications at once.
+    ///
     ///     - chatmention
     ///     - chatquote
     ///     - chatreply
@@ -416,9 +420,9 @@ public class UserRequest {
     ///
     /// - includeread: (optional | default = false) If true, notifications that have already been read are returned
     ///
-    /// - filterChatRoomId: (optional) If provided, this will only return notifications associated with the specified chat room using the ChatRoom ID (exact match)
+    /// - filterchatroomid: (optional) If provided, this will only return notifications associated with the specified chat room using the ChatRoom ID (exact match)
     ///
-    /// - filterChatRoomCustomId: (optional) If provided, this will only return notifications associated with the specified chat room using the Custom ID (exact match)
+    /// - filterchatroomcustomid: (optional) If provided, this will only return notifications associated with the specified chat room using the Custom ID (exact match)
     ///
     /// - limit: (optional) Default is 50, maximum is 200. Limits how many items are returned.
     ///
