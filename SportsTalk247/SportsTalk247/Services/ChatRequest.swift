@@ -23,7 +23,7 @@ public class ChatRequest {
     ///
     /// - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
     ///
-    /// - maxreportss: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
+    /// - maxreports: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
     ///
     /// **Warning** This method requires authentication
     ///
@@ -289,27 +289,23 @@ public class ChatRequest {
     ///
     /// **Parameters**
     ///
-    /// - roomid: (required) The ID of the existing room.
+    /// - roomid: (required) The ID of the existing room
     ///
-    /// - userid: (optional) The owner of the room.
+    /// - name: (optional) The name of the room
     ///
-    /// - name: (optional) The name of the room.
-    ///
-    /// - description: (optional) The description of the room.
+    /// - description: (optional) The description of the room
     ///
     /// - moderation: (optional) [premoderation/postmoderation] Defaults to post-moderation.
     ///
-    /// - enableactions: (optional) [true/false] Turns action commands on or off.
+    /// - enableactions: (optional) [true/false] Turns action commands on or off
     ///
     /// - enableenterandexit: (optional) [true/false] Turn enter and exit events on or off. Disable for large rooms to reduce noise.
     ///
     /// - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
     ///
-    /// - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling
+    /// - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
     ///
     /// - roomisopen: (optional) [true/false] If false, users cannot perform any commands in the room, chat is suspended.
-    ///
-    /// - throttle: (optional) [default=0] This is the number of seconds to delay new incomming messags so that the chat room doesn't scroll messages too fast
     ///
     /// **Warning** This method requires authentication
     ///
@@ -1219,6 +1215,7 @@ public class ChatRequest {
         }
     }
     
+
     /// Quotes an existing message and republishes it with a new message
     ///
     /// This method is provided to support a chat experience where a person wants to reply to another person, and the reply is inline with the rest of chat, but contains a copy of all or part of the original message you are replying to. You can see this behavior in WhatsApp and iMessage. This way, when viewing the reply, the user doesn't need to scroll up searching conversation history for the context (the parent the reply is addresssing).
@@ -1297,6 +1294,7 @@ public class ChatRequest {
         }
     }
     
+
     /// Creates a threaded reply to another message event
     ///
     /// The purpose of this method is to enable support of a sub-chat within the chat room. You can use it to split off the conversation into a nested conversation. You can build a tree structure of chat messages and replies, but it is recommended not to build experiences deeper than parent and child conversation level or it becomes complex for the users to follow.
@@ -1642,9 +1640,9 @@ public class ChatRequest {
     ///
     /// **Parameters**
     ///
-    /// - roomid: the id of the room in which you want to report the event
+    /// - roomid: (required) the id of the room in which you want to report the event
     ///
-    /// - eventid: the id of the event that you want to report.
+    /// - eventid: (required) the id of the event that you want to report.
     ///
     /// - userid: (required) user id specific to app
     ///
