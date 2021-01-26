@@ -1209,11 +1209,10 @@ public class ChatRequest {
         }
     }
     
-    /// Creates a threaded reply to another message event
+    /// Quotes an existing message and republishes it with a new message
     ///
-    /// The purpose of this method is to enable support of a sub-chat within the chat room. You can use it to split off the conversation into a nested conversation. You can build a tree structure of chat messages and replies, but it is recommended not to build experiences deeper than parent and child conversation level or it becomes complex for the users to follow.
+    /// This method is provided to support a chat experience where a person wants to reply to another person, and the reply is inline with the rest of chat, but contains a copy of all or part of the original message you are replying to. You can see this behavior in WhatsApp and iMessage. This way, when viewing the reply, the user doesn't need to scroll up searching conversation history for the context (the parent the reply is addresssing).
     ///
-    /// Replies do not support admin or action commands
     ///
     /// **Parameters**
     ///
