@@ -327,6 +327,7 @@ extension ChatClientTests {
         request.userid = dummyUser?.userid
         request.displayname = dummyUser?.displayname
         request.roomid = dummyRoom?.id
+        request.limit = 150
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -438,6 +439,7 @@ extension ChatClientTests {
         test_ChatRoomsServices_ExecuteChatCommand()
         let request = ChatRequest.GetUpdates()
         request.roomid = dummyRoom?.id
+        request.cursor = nil //Insert valid cursor
         request.limit = 20
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -453,6 +455,28 @@ extension ChatClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertTrue(receivedCode == 200)
     }
+    
+    func test_ChatRoomsServices_GetMoreUpdates() {
+        test_ChatRoomsServices_ExecuteChatCommand()
+        let request = ChatRequest.GetMoreUpdates()
+        request.roomid = dummyRoom?.id
+        request.limit = 3
+
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.getMoreUpdates(request) { (code, message, _, response) in
+            print(message ?? "")
+            print(String(describing: response?.cursor))
+            print("\(String(describing: response?.events.count)) items returned")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+
 
      func test_ChatRoomsServices_ExecuteChatCommand() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
@@ -641,7 +665,7 @@ extension ChatClientTests {
         
         test_ChatRoomsServices_ExecuteChatCommand()
         let request = ChatRequest.ListMessagesByUser()
-        request.limit = "4"
+        request.limit = 4
 //        request.cursor = "samplecursor"
         request.roomid = dummyRoom?.id
         request.userId = dummyUser?.userid

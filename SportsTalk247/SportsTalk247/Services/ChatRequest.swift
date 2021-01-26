@@ -12,8 +12,8 @@ public class ChatRequest {
     /// - description: (optional) The description of the room
     ///
     /// - moderation: (required) The type of moderation.
-    ///     - ```pre``` - marks the room as Premoderated
-    ///     - ```post``` - marks the room as Postmoderated
+    ///     - `pre` - marks the room as Premoderated
+    ///     - `post` - marks the room as Postmoderated
     ///
     /// - enableactions: (optional) [true/false] Turns action commands on or off
     ///
@@ -389,7 +389,7 @@ public class ChatRequest {
         }
         
         public var cursor: String?
-        public var limit: Int =  100
+        public var limit: Int =  200
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListRooms {
             set(dictionary: dictionary)
@@ -480,6 +480,7 @@ public class ChatRequest {
             case displayname
             case pictureurl
             case profileurl
+            case limit
         }
         
         public var roomid: String?
@@ -488,6 +489,7 @@ public class ChatRequest {
         public var displayname: String?
         public var pictureurl: URL?
         public var profileurl: URL?
+        public var limit: Int? = 50
         
         override public func from(dictionary: [AnyHashable: Any]) -> JoinRoom {
             set(dictionary: dictionary)
@@ -499,6 +501,7 @@ public class ChatRequest {
             ret.displayname = value(forKey: .displayname)
             ret.pictureurl = value(forKey: .pictureurl)
             ret.profileurl = value(forKey: .profileurl)
+            ret.limit = value(forKey: .limit)
             
             return ret
         }
@@ -511,6 +514,7 @@ public class ChatRequest {
             add(key: .displayname, value: displayname)
             add(key: .pictureurl, value: pictureurl?.absoluteString)
             add(key: .profileurl, value: profileurl?.absoluteString)
+            add(key: .limit, value: limit)
             
             return toDictionary
         }
@@ -753,7 +757,7 @@ public class ChatRequest {
         
         public var roomid: String?
         public var cursor: String?
-        public var limit: Int? = 100
+        public var limit: Int? = 500
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListPreviousEvents {
             set(dictionary: dictionary)
@@ -846,15 +850,19 @@ public class ChatRequest {
     ///
     ///  - cursor: (optional) Used in cursoring through the list. Gets the next batch of users. Read 'nextCur' property of result set and pass as cursor value.
     ///
+    ///  - limit: (optional) Number of events to return. Default is 100, maximum is 500
+    ///
     /// **Warning** This method requires authentication
     ///
     public class GetUpdates: ParametersBase<GetUpdates.Fields, GetUpdates> {
         public enum Fields {
             case roomid
+            case cursor
             case limit
         }
         
         public var roomid: String?
+        public var cursor: String?
         public var limit: Int = 100
         
         override public func from(dictionary: [AnyHashable: Any]) -> GetUpdates {
@@ -862,6 +870,7 @@ public class ChatRequest {
             let ret = GetUpdates()
             
             ret.roomid = value(forKey: .roomid)
+            ret.cursor = value(forKey: .cursor)
             ret.limit = value(forKey: .limit)
             
             return ret
@@ -871,6 +880,7 @@ public class ChatRequest {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .limit, value: limit)
+            add(key: .cursor, value: cursor)
             
             return toDictionary
         }
@@ -909,10 +919,12 @@ public class ChatRequest {
     public class GetMoreUpdates: ParametersBase<GetMoreUpdates.Fields, GetMoreUpdates> {
         public enum Fields {
             case roomid
+            case limit
             case cursor
         }
         
         public var roomid: String?
+        public var limit: Int? = 100
         public var cursor: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> GetMoreUpdates {
@@ -920,6 +932,7 @@ public class ChatRequest {
             let ret = GetMoreUpdates()
             
             ret.roomid = value(forKey: .roomid)
+            ret.limit = value(forKey: .limit)
             ret.cursor = value(forKey: .cursor)
             
             return ret
@@ -929,6 +942,7 @@ public class ChatRequest {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .cursor, value: cursor)
+            add(key: .limit, value: limit)
             
             return toDictionary
         }
@@ -995,7 +1009,7 @@ public class ChatRequest {
     ///
     ///     - ad : Use this event type to push an advertisement. Use the CustomPayload property to specify parameters for your add.
     ///
-    ///     - customtype: (optional) A string having meaning to your app that represents a custom type of event defined by you. You must specify "custom" as the eventtype to use this. If you don't, the event type will be forced to custom anyway.
+    /// - customtype: (optional) A string having meaning to your app that represents a custom type of event defined by you. You must specify "custom" as the eventtype to use this. If you don't, the event type will be forced to custom anyway.
     ///
     /// - custompayload: (optional) A string (XML or JSON usually) representing custom data for your application to use.
     ///
@@ -1391,7 +1405,7 @@ public class ChatRequest {
         }
         
         public var cursor: String?
-        public var limit: String? = defaultLimit
+        public var limit: Int? = 200
         public var userId: String?
         public var roomid: String?
         
@@ -1492,8 +1506,6 @@ public class ChatRequest {
     ///
     /// - userid: (optional)  the id to whom the message belongs to
     /// If provided, a check will be made to enforce this userid (the one deleting the event) is the owner of the event or has elevated permissions. If null, it assumes your business service made the determination to delete the event.
-    ///
-    /// - permanent: (optional) remove permanently if no reply. Defaults to true.
     ///
     /// **Warning** This method requires authentication
     ///
@@ -1713,7 +1725,7 @@ public class ChatRequest {
         public var eventid: String?
         public var userid: String?
         public var reaction: String?
-        public var reacted: String? = "true"
+        public var reacted: String? = "false"
         
         override public func from(dictionary: [AnyHashable: Any]) -> ReactToEvent {
             set(dictionary: dictionary)
@@ -1760,37 +1772,21 @@ public class ChatRequest {
     /// - direction: (optional) Defaults to Backward. Pass forward or backward. Backward is newest to oldest order, forward is oldest to newest order.
     ///
     /// - types: (optional) Default = all. Use this to filter for specific event types.
-    ///
     ///     - speech
-    ///
     ///     - quote
-    ///
     ///     - reply
-    ///
     ///     - announcement
-    ///
     ///     - custom
-    ///
     ///     - reaction
-    ///
     ///     - action
-    ///
     ///     - enter
-    ///
     ///     - exit
-    ///
     ///     - ad
-    ///
     ///     - roomopened
-    ///
     ///     - roomclosed
-    ///
     ///     - purge
-    ///
     ///     - remove
-    ///
     ///     - replace
-    ///
     ///     - bounce
     ///
     public class SearchEvent: ParametersBase<SearchEvent.Fields, SearchEvent> {
@@ -1980,19 +1976,15 @@ public class ChatRequest {
         }
     }
     
-    /// Execute Admin Command (*help)
+    /// Executes a command in a chat room
     ///
-    /// **Precondition** The user must JOIN the room first with a call to Join Room. Otherwise you'll receive HTTP Status Code PreconditionFailed (412)
+    /// **SENDING A MESSAGE**
     ///
-    /// **API UPDATES**
-    /// - replyto: This is deprecated. For replies use Quoted Reply or Threaded Reply. For most use cases, Quoted Reply is the recommended approach.
+    /// Send any text that doesn't start with a reserved symbol to perform a SAY command.
     ///
-    /// SENDING A MESSAGE:
+    /// *example*
     ///
-    ///  - Send any text that doesn't start with a reserved symbol to perform a SAY command.
-    ///  - Use this API call to REPLY to existing messages
-    ///  - Use this API call to perform ACTION commands
-    ///  - Use this API call to perform ADMIN commands
+    /// These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World Hello, World
     ///
     ///  *example*
     ///  These commands both do the same thing, which is send the message "Hello World" to the room. SAY Hello, World
@@ -2026,52 +2018,9 @@ public class ChatRequest {
     ///
     /// - deleteallevents : This deletes all messages in this room.
     ///
-    ///  **Parameters**
-    ///
-    /// - command: (required) The command to execute. See examples above.
-    ///
-    /// - userid: (required) The userid of user who is executing the command. The user must have joined the room first.
-    ///
-    /// - eventtype: (optional, default = speech) By default, the API will determine the type of event by processing your command. However you can send custom.
-    ///  commands.
-    ///
-    ///     - custom : This indicates you will be using a custom event type.
-    ///
-    ///     - announcement : This indicates the event is of type announcement.
-    ///
-    ///     - ad : Use this event type to push an advertisement. Use the CustomPayload property to specify parameters for your add.
-    ///
-    ///     - customtype: (optional) A string having meaning to your app that represents a custom type of event defined by you. You must specify "custom" as the eventtype to use this. If you don't, the event type will be forced to custom anyway.
-    ///
-    /// - custompayload: (optional) A string (XML or JSON usually) representing custom data for your application to use.
-    ///
-    /// - replyto: (optional) Use this field to provide the EventID of an event you want to reply to. Replies have a different event type and contain a copy of the original event.
-    ///
-    /// - moderation: (optional) Use this field to override the moderation state of the chat event. Use this when you have already inspected the content. Use one of the values below.
-    ///
-    ///     - approved : The content has already been approved by a moderator and it should not be sent to the moderation queue if users report it since the decision was already made to approve it.
-    ///
-    ///     - prescreened : The content was prescreened, but not approved. This means it can still be flagged for moderation queue by the users. This state allows a data analyst to distinguish between content that was approved by a moderator and content that went through a filtering process but wasn't explicitly approved or rejected.
-    ///
-    ///     - rejected : The content has been rejected by a moderator and it should not be broadcast into the chat stream, but it should be saved to the chat room history for future analysis or audit trail purposes.
-    ///
-    /// **RESPONSE CODES**
-    ///
-    /// 200 | OK : Sweet, sweet success.
-    ///
-    /// 400 | BadRequest : Something is wrong with your request. View response message and errors list for details.
-    ///
-    /// 403 | Forbidden : The userid issuing the request is banned from chatting in this room (or is banned globally).
-    ///
-    /// 405 | MethodBlocked : The method was blocked because it contained profanity and filtermode was set to 'block'.
-    ///
-    /// 409 | Conflict : The customid of your event is already in use.
-    ///
-    /// 412 | PreconditionFailed : User must JOIN the room before executing a chat command.
-    ///
     public class ExecuteAdminCommand: ParametersBase<ExecuteAdminCommand.Fields, ExecuteAdminCommand> {
         public enum Fields {
-            case roomId
+            case roomid
             case command
             case userid
             case customtype
@@ -2079,8 +2028,8 @@ public class ChatRequest {
             case custompayload
         }
         
-        public var roomId: String?
-        public var command: String?
+        public var roomid: String?
+        private var command: String? = "*help"
         public var userid: String?
         public var customtype: String?
         public var customid: String?
@@ -2090,7 +2039,7 @@ public class ChatRequest {
             set(dictionary: dictionary)
             let ret = ExecuteAdminCommand()
             
-            ret.roomId = value(forKey: .roomId)
+            ret.roomid = value(forKey: .roomid)
             ret.command = value(forKey: .command)
             ret.userid = value(forKey: .userid)
             ret.customtype = value(forKey: .customtype)
@@ -2103,7 +2052,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .roomId, value: roomId)
+            addRequired(key: .roomid, value: roomid)
             add(key: .command, value: command)
             add(key: .userid, value: userid)
             add(key: .customtype, value: customtype)
