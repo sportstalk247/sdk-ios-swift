@@ -315,9 +315,9 @@ public class UserRequest {
     ///
     /// **Paramters**
     ///
-    /// - userid : (required) This is the application specific user ID of the user reporting the first user.
+    /// - userid: (required) This is the application specific user ID of the user reporting the first user.
     ///
-    /// - reporttype : (required) Possible values: "abuse", "spam". SPAM is unsolicited commercial messages and abuse is hate speach or other unacceptable behavior.
+    /// - reporttype: (required) Possible values: "abuse", "spam". SPAM is unsolicited commercial messages and abuse is hate speach or other unacceptable behavior.
     ///
     /// **RESPONSE CODES**
     ///
@@ -359,7 +359,6 @@ public class UserRequest {
     /// Will toggle the user's shadow banned flag
     ///
     /// A Shadow Ban user can send messages into a chat room, however those messages are flagged as shadow banned. This enables the application to show those messags only to the shadow banned user, so that that person may not know they were shadow banned. This method shadow bans the user on the global level (or you can use this method to lift the ban). You can optionally specify an expiration time. If the expiration time is specified, then each time the shadow banned user tries to send a message the API will check if the shadow ban has expired and will lift the ban.
-    
     ///
     /// **Parameters**
     ///

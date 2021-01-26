@@ -1,13 +1,14 @@
 import Foundation
 
 public class ModerationRequest {
-    /// APPROVES a message in the moderation queue
+    /// Approves a message in the moderation queue
     ///
     /// If PRE-MODERATION is enabled for a room, then all messages go to the queue before they can appear in the event stream. For each incomming message, a webhook will be fired, if one is configured.
     ///
     /// If the room is set to use POST-MODERATION, messages will only be sent to the moderation queue if they are reported.
     ///
-    /// - Warning: Requires Authentication
+    /// **Warning** This method requires authentication
+    ///
     public class ApproveEvent: ParametersBase<ApproveEvent.Fields, ApproveEvent> {
         public enum Fields {
             case roomid
@@ -36,6 +37,14 @@ public class ModerationRequest {
         }
     }
     
+    /// Rejects a message in the moderation queue
+    ///
+    /// If PRE-MODERATION is enabled for a room, then all messages go to the queue before they can appear in the event stream. For each incomming message, a webhook will be fired, if one is configured.
+    ///
+    /// If the room is set to use POST-MODERATION, messages will only be sent to the moderation queue if they are reported.
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class RejectEvent: ParametersBase<RejectEvent.Fields, RejectEvent> {
         public enum Fields {
             case roomid
@@ -68,11 +77,16 @@ public class ModerationRequest {
     
     /// List all the messages in the moderation queue
     ///
-    /// Arguments:
-    /// limit: (optional) Defaults to 200. This limits how many messages to return from the queue
-    /// roomId: (optional) Provide the ID for a room to filter for only the queued events for a specific room
-    /// cursor: (optional) Provide cursor value to get the next page of results.
-    /// - Warning: Requires Authentication
+    /// **Parameters**
+    ///
+    /// - limit: (optional) Defaults to 200. This limits how many messages to return from the queue
+    ///
+    /// - roomId: (optional) Provide the ID for a room to filter for only the queued events for a specific room
+    ///
+    /// - cursor: (optional) Provide cursor value to get the next page of results.
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class listMessagesInModerationQueue: ParametersBase<listMessagesInModerationQueue.Fields, listMessagesInModerationQueue> {
         public enum Fields {
             case limit
@@ -109,8 +123,7 @@ public class ModerationRequest {
     ///
     /// If the room is set to use POST-MODERATION, messages will only be sent to the moderation queue if they are reported.
     ///
-    ///
-    /// - Warning: Requires Authentication
+    /// **Warning** This method requires authentication
     public class ApproveCommentInQueue: ParametersBase<ApproveCommentInQueue.Fields, ApproveCommentInQueue> {
         public enum Fields {
             case commentid
@@ -145,7 +158,7 @@ public class ModerationRequest {
     /// If the room is set to use POST-MODERATION, messages will only be sent to the moderation queue if they are reported.
     ///
     ///
-    /// - Warning: Requires Authentication
+    /// **Warning** This method requires authentication
     public class RejectCommentInQueue: ParametersBase<RejectCommentInQueue.Fields, RejectCommentInQueue> {
         public enum Fields {
             case commentid
@@ -173,20 +186,32 @@ public class ModerationRequest {
         }
     }
     
-    // List all the messages in the moderation queue
+    /// List all the messages in the moderation queue
     ///
-    /// Arguments:
-    /// limit: (optional) Defaults to 200. This limits how many messages to return from the queue
-    /// roomId: (optional) Provide the ID for a room to filter for only the queued events for a specific room
-    /// cursor: (optional) Provide cursor value to get the next page of results.
-    /// filterHandle: (optional) Filters using exact match for a handle of a user
-    /// filterKeyword: (optional) Filters using substring search for your string
-    /// filterModerationState: (optional) Filters for comments in the specified moderation state.
-    ///  * approved: Moderator approved the comment
-    ///  * rejected: Moderator rejected the comment
-    ///  * pending: A new comment was posted to a premoderation room, and is pending review, but was never reported as abuse
-    ///  * flagged: Enough users reported the comment that it is in the flagged state and sent to moderation queue
-    /// - Warning: Requires Authentication
+    /// **Parameters**
+    ///
+    /// - limit: (optional) Defaults to 200. This limits how many messages to return from the queue
+    ///
+    /// - roomId: (optional) Provide the ID for a room to filter for only the queued events for a specific room
+    ///
+    /// - cursor: (optional) Provide cursor value to get the next page of results.
+    ///
+    /// - filterHandle: (optional) Filters using exact match for a handle of a user
+    ///
+    /// - filterKeyword: (optional) Filters using substring search for your string
+    ///
+    /// - filterModerationState: (optional) Filters for comments in the specified moderation state.
+    ///
+    ///     - approved: Moderator approved the comment
+    ///
+    ///     - rejected: Moderator rejected the comment
+    ///
+    ///     - pending: A new comment was posted to a premoderation room, and is pending review, but was never reported as abuse
+    ///
+    ///     - flagged: Enough users reported the comment that it is in the flagged state and sent to moderation queue
+    ///
+    /// **Warning** This method requires authentication
+    ///
     public class ListCommentsInModerationQueue: ParametersBase<ListCommentsInModerationQueue.Fields, ListCommentsInModerationQueue> {
         public enum Fields {
             case limit

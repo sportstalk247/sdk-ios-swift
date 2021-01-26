@@ -95,6 +95,7 @@ public class ChatRequest {
     /// - roomid: (required) Room id of a specific room againts which you want to fetch the details
     ///
     /// **Warning** This method requires authentication
+    ///
     public class GetRoomDetails: ParametersBase<GetRoomDetails.Fields, GetRoomDetails> {
         public enum Fields {
             case roomid
@@ -240,9 +241,9 @@ public class ChatRequest {
         public var enableenterandexit: Bool?
         public var enableprofanityfilter: Bool?
         public var delaymessageseconds: Int?
-        public var roomisopen:Bool?
-        public var throttle:Int?
-        public var userid:String?
+        public var roomisopen: Bool?
+        public var throttle: Int?
+        public var userid: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> UpdateRoom {
             set(dictionary: dictionary)
@@ -334,8 +335,8 @@ public class ChatRequest {
         public var enableenterandexit: Bool?
         public var enableprofanityfilter: Bool?
         public var delaymessageseconds: Int?
-        public var roomisopen:Bool? = false
-        public var userid:String?
+        public var roomisopen: Bool? = false
+        public var userid: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> UpdateRoomCloseARoom {
             set(dictionary: dictionary)
@@ -410,6 +411,149 @@ public class ChatRequest {
             return toDictionary
         }
 
+    }
+
+    /// List all the participants in the specified room
+    ///
+    /// Use this method to cursor through the people who have subscribe to the room.
+    ///
+    /// To cursor through the results if there are many participants, invoke this function many times. Each result will return a cursor value and you can pass that value to the next invokation to get the next page of results. The result set will also include a next field with the full URL to get the next page, so you can just keep reading that and requesting that URL until you reach the end. When you reach the end, no more results will be returned or the result set will be less than maxresults and the next field will be empty.
+    ///
+    ///  **Parameters**
+    ///
+    ///  - roomid: (required)  room id that you want to list the participants
+    ///
+    ///  - cursor: (optional) you can pass that value to the next invokation to get the next page of results
+    ///
+    ///  - limit: (optional) default is 200
+    ///
+    /// **Warning** This method requires authentication
+    ///
+    public class ListRoomParticipants: ParametersBase<ListRoomParticipants.Fields, ListRoomParticipants> {
+        public enum Fields {
+            case roomid
+            case cursor
+            case limit
+        }
+        
+        public var roomid: String?
+        public var cursor: String? = ""
+        public var limit: Int? = 200
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ListRoomParticipants {
+            set(dictionary: dictionary)
+            let ret = ListRoomParticipants()
+            ret.roomid = value(forKey: .roomid)
+            ret.cursor = value(forKey: .cursor)
+            ret.limit = value(forKey: .limit)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .cursor, value: cursor)
+            add(key: .limit, value: limit)
+            
+            return toDictionary
+        }
+    }
+
+    /// - This method enables you to download all of the events from a room in large batches. It should only be used if doing a data export.
+    ///
+    /// - This method returns a list of events sorted from oldest to newest.
+    ///
+    /// - This method returns all events, even those in the inactive state
+    ///
+    ///  **Parameters**
+    ///
+    ///  - roomid: (required)  Room id where you want event history to be listed
+    ///
+    ///  - limit: (optional) default is 100, maximum 2000
+    ///
+    ///  - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///
+    public class ListEventHistory: ParametersBase<ListEventHistory.Fields, ListEventHistory> {
+        public enum Fields {
+            case roomid
+            case cursor
+            case limit
+        }
+        
+        public var roomid: String?
+        public var cursor: String? = ""
+        public var limit: Int? = 100
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ListEventHistory {
+            set(dictionary: dictionary)
+            let ret = ListEventHistory()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.cursor = value(forKey: .cursor)
+            ret.limit = value(forKey: .limit)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .cursor, value: cursor)
+            add(key: .limit, value: limit)
+            
+            return toDictionary
+        }
+    }
+
+    /// This method allows you to go back in time to "scroll" in reverse through past messages. The typical use case for this method is to power the scroll-back feature of a chat window allowing the user to look at recent messages that have scrolled out of view. It's intended use is to retrieve small batches of historical events as the user is scrolling up.
+    ///
+    /// - This method returns a list of events sorted from newest to oldest.
+    ///
+    /// - This method excludes events that are not in the active state (for example if they are removed by a moderator)
+    ///
+    /// - This method excludes non-displayable events (reaction, replace, remove, purge)
+    ///
+    /// - This method will not return events that were emitted and then deleted before this method was called
+    ///
+    ///  **Parameters**
+    ///
+    ///  - roomid: (required)  Room id where you want previous events to be listed
+    ///
+    ///  - limit: (optional) default is 100, maximum 500
+    ///
+    ///  - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///
+    public class ListPreviousEvents: ParametersBase<ListPreviousEvents.Fields, ListPreviousEvents> {
+        public enum Fields {
+            case roomid
+            case cursor
+            case limit
+        }
+        
+        public var roomid: String?
+        public var cursor: String?
+        public var limit: Int? = 100
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ListPreviousEvents {
+            set(dictionary: dictionary)
+            let ret = ListPreviousEvents()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.cursor = value(forKey: .cursor)
+            ret.limit = value(forKey: .limit)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .cursor, value: cursor)
+            add(key: .limit, value: limit)
+            
+            return toDictionary
+        }
     }
     
     /// Join A Room
@@ -589,197 +733,52 @@ public class ChatRequest {
     /// **Warning** This method requires authentication
     ///
     public class JoinRoomByCustomId: ParametersBase<JoinRoomByCustomId.Fields, JoinRoomByCustomId> {
-       public enum Fields {
-           case customid
-           case userid
-           case handle
-           case displayname
-           case pictureurl
-           case profileurl
-       }
-       
-       public var customid: String?
-       public var userid: String?
-       public var handle: String?
-       public var displayname: String?
-       public var pictureurl: URL?
-       public var profileurl: URL?
-       
-       override public func from(dictionary: [AnyHashable: Any]) -> JoinRoomByCustomId {
-           set(dictionary: dictionary)
-           let ret = JoinRoomByCustomId()
-           
-           ret.customid = value(forKey: .customid)
-           ret.userid = value(forKey: .userid)
-           ret.handle = value(forKey: .handle)
-           ret.displayname = value(forKey: .displayname)
-           ret.pictureurl = value(forKey: .pictureurl)
-           ret.profileurl = value(forKey: .profileurl)
-           
-           return ret
-       }
-       
-       public func toDictionary() -> [AnyHashable: Any] {
-           toDictionary = [AnyHashable: Any]()
-           
-           addRequired(key: .userid, value: userid)
-           add(key: .handle, value: handle)
-           add(key: .displayname, value: displayname)
-           add(key: .pictureurl, value: pictureurl?.absoluteString)
-           add(key: .profileurl, value: profileurl?.absoluteString)
-           
-           return toDictionary
-       }
-    }
-
-    
-    /// List all the participants in the specified room
-    ///
-    /// Use this method to cursor through the people who have subscribe to the room.
-    ///
-    /// To cursor through the results if there are many participants, invoke this function many times. Each result will return a cursor value and you can pass that value to the next invokation to get the next page of results. The result set will also include a next field with the full URL to get the next page, so you can just keep reading that and requesting that URL until you reach the end. When you reach the end, no more results will be returned or the result set will be less than maxresults and the next field will be empty.
-    ///
-    ///  **Parameters**
-    ///
-    ///  - roomid: (required)  room id that you want to list the participants
-    ///
-    ///  - cursor: (optional) you can pass that value to the next invokation to get the next page of results
-    ///
-    ///  - limit: (optional) default is 200
-    ///
-    /// **Warning** This method requires authentication
-    ///
-    public class ListRoomParticipants: ParametersBase<ListRoomParticipants.Fields, ListRoomParticipants> {
         public enum Fields {
-            case roomid
-            case cursor
+            case customid
+            case userid
+            case handle
+            case displayname
+            case pictureurl
+            case profileurl
             case limit
         }
-        
-        public var roomid: String?
-        public var cursor: String? = ""
-        public var limit: Int? = 200
-        
-        override public func from(dictionary: [AnyHashable: Any]) -> ListRoomParticipants {
+       
+        public var customid: String?
+        public var userid: String?
+        public var handle: String?
+        public var displayname: String?
+        public var pictureurl: URL?
+        public var profileurl: URL?
+        public var limit: Int? = 50
+       
+        override public func from(dictionary: [AnyHashable: Any]) -> JoinRoomByCustomId {
             set(dictionary: dictionary)
-            let ret = ListRoomParticipants()
-            ret.roomid = value(forKey: .roomid)
-            ret.cursor = value(forKey: .cursor)
+            let ret = JoinRoomByCustomId()
+            
+            ret.customid = value(forKey: .customid)
+            ret.userid = value(forKey: .userid)
+            ret.handle = value(forKey: .handle)
+            ret.displayname = value(forKey: .displayname)
+            ret.pictureurl = value(forKey: .pictureurl)
+            ret.profileurl = value(forKey: .profileurl)
             ret.limit = value(forKey: .limit)
             
             return ret
         }
-        
+       
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            add(key: .cursor, value: cursor)
+            addRequired(key: .userid, value: userid)
+            add(key: .handle, value: handle)
+            add(key: .displayname, value: displayname)
+            add(key: .pictureurl, value: pictureurl?.absoluteString)
+            add(key: .profileurl, value: profileurl?.absoluteString)
             add(key: .limit, value: limit)
             
             return toDictionary
         }
-    }
-
-    /// List Event History
-    ///
-    /// - This method enables you to download all of the events from a room in large batches. It should only be used if doing a data export.
-    ///
-    /// - This method returns a list of events sorted from oldest to newest.
-    ///
-    /// - This method returns all events, even those in the inactive state
-    ///
-    ///  **Parameters**
-    ///
-    ///  - roomid: (required)  Room id where you want event history to be listed
-    ///
-    ///  - limit: (optional) default is 100, maximum 2000
-    ///
-    ///  - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
-    ///
-    public class ListEventHistory: ParametersBase<ListEventHistory.Fields, ListEventHistory> {
-        public enum Fields {
-            case roomid
-            case cursor
-            case limit
-        }
-        
-        public var roomid: String?
-        public var cursor: String? = ""
-        public var limit: Int? = 100
-        
-        override public func from(dictionary: [AnyHashable: Any]) -> ListEventHistory {
-            set(dictionary: dictionary)
-            let ret = ListEventHistory()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
-            
-            return ret
-        }
-        
-        public func toDictionary() -> [AnyHashable: Any] {
-            toDictionary = [AnyHashable: Any]()
-            
-            add(key: .cursor, value: cursor)
-            add(key: .limit, value: limit)
-            
-            return toDictionary
-        }
-    }
-
-    /// List Previous Events
-    ///
-    /// This method allows you to go back in time to "scroll" in reverse through past messages. The typical use case for this method is to power the scroll-back feature of a chat window allowing the user to look at recent messages that have scrolled out of view. It's intended use is to retrieve small batches of historical events as the user is scrolling up.
-    ///
-    /// - This method returns a list of events sorted from newest to oldest.
-    ///
-    /// - This method excludes events that are not in the active state (for example if they are removed by a moderator)
-    ///
-    /// - This method excludes non-displayable events (reaction, replace, remove, purge)
-    ///
-    /// - This method will not return events that were emitted and then deleted before this method was called
-    ///
-    ///  **Parameters**
-    ///
-    ///  - roomid: (required)  Room id where you want previous events to be listed
-    ///
-    ///  - limit: (optional) default is 100, maximum 500
-    ///
-    ///  - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
-    ///
-    public class ListPreviousEvents: ParametersBase<ListPreviousEvents.Fields, ListPreviousEvents> {
-        public enum Fields {
-            case roomid
-            case cursor
-            case limit
-        }
-        
-        public var roomid: String?
-        public var cursor: String?
-        public var limit: Int? = 500
-        
-        override public func from(dictionary: [AnyHashable: Any]) -> ListPreviousEvents {
-            set(dictionary: dictionary)
-            let ret = ListPreviousEvents()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
-            
-            return ret
-        }
-        
-        public func toDictionary() -> [AnyHashable: Any] {
-            toDictionary = [AnyHashable: Any]()
-            
-            add(key: .cursor, value: cursor)
-            add(key: .limit, value: limit)
-            
-            return toDictionary
-        }
-    }
-
+     }
     
     /// Exit a Room
     ///
@@ -955,7 +954,7 @@ public class ChatRequest {
     /// **API UPDATES**
     /// - replyto: This is deprecated. For replies use Quoted Reply or Threaded Reply. For most use cases, Quoted Reply is the recommended approach.
     ///
-    /// SENDING A MESSAGE:
+    /// **SENDING A MESSAGE**
     ///
     ///  - Send any text that doesn't start with a reserved symbol to perform a SAY command.
     ///  - Use this API call to REPLY to existing messages
@@ -982,8 +981,6 @@ public class ChatRequest {
     ///
     ///  - These commands start with the * character
     ///
-    /// Each event in the stream has a KIND property. Inspect the property to determine if it is a... enter event: A user has joined the room.
-    ///
     /// *example*
     ///
     /// - ban : This bans the user from the entire chat experience (all rooms).
@@ -1000,8 +997,7 @@ public class ChatRequest {
     ///
     /// - userid: (required) The userid of user who is executing the command. The user must have joined the room first.
     ///
-    /// - eventtype: (optional, default = speech) By default, the API will determine the type of event by processing your command. However you can send custom.
-    ///  commands.
+    /// - eventtype: (optional, default = speech) By default, the API will determine the type of event by processing your command. However you can send custom commands.
     ///
     ///     - custom : This indicates you will be using a custom event type.
     ///
@@ -1504,8 +1500,7 @@ public class ChatRequest {
     ///
     /// - eventId: (required) the message you want to remove.
     ///
-    /// - userid: (optional)  the id to whom the message belongs to
-    /// If provided, a check will be made to enforce this userid (the one deleting the event) is the owner of the event or has elevated permissions. If null, it assumes your business service made the determination to delete the event.
+    /// - userid: (optional) If provided, a check will be made to enforce this userid (the one deleting the event) is the owner of the event or has elevated permissions. If null, it assumes your business service made the determination to delete the event. If it is not provided this authorization check is bypassed.
     ///
     /// **Warning** This method requires authentication
     ///
@@ -1590,17 +1585,18 @@ public class ChatRequest {
     ///
     /// This does not DELETE the message. It flags the message as moderator removed.
     ///
-    ///  **Parameters**
+    /// **Parameters**
     ///
-    ///  - roomid: (required)
+    /// - roomid: (required)
     ///
-    ///  - userid: (required) the id of the owner of the messages
+    /// - userid: (required) the id of the owner of the messages
     ///
-    ///  - handle: (required) the handle of the owner of the messages
+    /// - handle: (required) the handle of the owner of the messages
     ///
-    ///  - password: (required) a valid admin password
+    /// - password: (required) a valid admin password
     ///
-    /// - Warning: This method requires authentication.
+    /// **Warning** This method requires authentication
+    ///
     public class PurgeUserMessages: ParametersBase<PurgeUserMessages.Fields, PurgeUserMessages> {
         public enum Fields {
             case roomid
@@ -1691,9 +1687,6 @@ public class ChatRequest {
         }
     }
     
-    
-    /// React To Event
-    ///
     /// Adds or removes a reaction to an existing event
     ///
     /// After this completes, a new event appears in the stream representing the reaction. The new event will have an updated version of the event in the replyto field, which you can use to update your UI.
