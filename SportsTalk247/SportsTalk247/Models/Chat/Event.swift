@@ -209,7 +209,7 @@ public struct ChatEventReport: Codable {
 }
 
 internal func ISODateFormat(_ string: String) -> Date? {
-    if #available(iOS 11.0, *) {
+    if #available(iOS 11.3, *) {
         let formatter = ISO8601DateFormatter()
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.formatOptions = [.withFullDate,

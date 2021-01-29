@@ -13,6 +13,9 @@ open class User: NSObject, Codable {
     public var handlelowercase: String?
     public var pictureurl: String?
     public var reports: [UserReport]?
+    var roleString: String?
+    public var role: Role?
+    public var customtags: [String]?
     
     private enum CodingKeys: String, CodingKey {
         case kind
@@ -27,6 +30,8 @@ open class User: NSObject, Codable {
         case handlelowercase
         case pictureurl
         case reports
+        case roleString = "role"
+        case customtags
     }
     
     public required convenience init(from decoder: Decoder) throws {
@@ -41,6 +46,7 @@ open class User: NSObject, Codable {
         self.displayname = try container.decodeIfPresent(String.self, forKey: .displayname)
         self.handlelowercase = try container.decodeIfPresent(String.self, forKey: .handlelowercase)
         self.pictureurl = try container.decodeIfPresent(String.self, forKey: .pictureurl)
+        self.customtags = try container.decodeIfPresent([String].self, forKey: .customtags)
         
         if let reports = try container.decodeIfPresent([UserReport].self, forKey: .reports) {
             self.reports = reports
@@ -50,6 +56,10 @@ open class User: NSObject, Codable {
         
         if let shadowbanexpires = try container.decodeIfPresent(String.self, forKey: .shadowbanexpires) {
             self.shadowbanexpires = ISODateFormat(shadowbanexpires)
+        }
+        
+        if let roleString = try container.decodeIfPresent(String.self, forKey: .roleString) {
+            self.role = Role(rawValue: roleString)
         }
     }
 }

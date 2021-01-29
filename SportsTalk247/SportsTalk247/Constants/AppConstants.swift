@@ -103,3 +103,8 @@ public enum EventType: String {
     case custom
 }
 
+public enum Role: String {
+    case user
+    case moderator
+    case admin
+}
