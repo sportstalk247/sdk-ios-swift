@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "SportsTalk247"
-  spec.version      = "1.0.1"
+  spec.version      = "1.1.0"
   spec.summary      = "The Sportstalk SDK is a helpful wrapper around the Sportstalk API"
 
   spec.description  = "This Sportstalk SDK is meant to power custom chat applications.  Sportstalk does not enforce any restricitons on your UI design, but instead empowers your developers to focus on the user experience without worrying about the underlying chat behavior."

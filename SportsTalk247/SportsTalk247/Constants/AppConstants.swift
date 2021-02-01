@@ -50,6 +50,8 @@ struct URLPath {
         static func Participants(roomid: String?) -> String                     { return r + (roomid ?? "") + "/participants" }
         static func EventHistory(roomid: String?) -> String                     { return r + (roomid ?? "") + "/listeventshistory" }
         static func PreviousEvent(roomid: String?) -> String                    { return r + (roomid ?? "") + "/listpreviousevents" }
+        static func EventByType(roomid: String?) -> String                      { return r + (roomid ?? "") + "/listeventsbytype" }
+        static func EventByTime(roomid: String?, time: Int?) -> String          { return "\(r)\(roomid ?? "")/eventsbytimestamp/list/\(time ?? 0)" }
         static func Join(roomid: String?) -> String                             { return r + (roomid ?? "") + "/join" }
         static func Join(customid: String?) -> String                           { return c + (customid ?? "") + "/join" }
         static func Exit(roomid: String?) -> String                             { return r + (roomid ?? "") + "/exit" }

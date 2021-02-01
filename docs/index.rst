@@ -268,14 +268,20 @@ When users send messages to a room the user ID is passed as a parameter. When yo
 .. code-block:: swift
 
     open class User: NSObject, Codable {
+        public var kind: String?
         public var userid: String?
         public var handle: String?
         public var profileurl: String?
         public var banned: Bool?
+        public var shadowbanned: Bool?
+        public var shadowbanexpires: Date?
+        public var moderation: String?
         public var displayname: String?
         public var handlelowercase: String?
         public var pictureurl: String?
-        public var kind: String?
+        public var reports: [UserReport]?
+        public var role: Role?
+        public var customtags: [String]?
     }
 
 Delete User
@@ -341,14 +347,20 @@ This will return all the information about the user.
 .. code-block:: swift
 
         open class User: NSObject, Codable {
+            public var kind: String?
             public var userid: String?
             public var handle: String?
             public var profileurl: String?
             public var banned: Bool?
+            public var shadowbanned: Bool?
+            public var shadowbanexpires: Date?
+            public var moderation: String?
             public var displayname: String?
             public var handlelowercase: String?
             public var pictureurl: String?
-            public var kind: String?
+            public var reports: [UserReport]?
+            public var role: Role?
+            public var customtags: [String]?
         }
 
 List Users
@@ -416,14 +428,20 @@ Will toggle the user's banned flag.
 .. code-block:: swift
 
         open class User: NSObject, Codable {
+            public var kind: String?
             public var userid: String?
             public var handle: String?
             public var profileurl: String?
             public var banned: Bool?
+            public var shadowbanned: Bool?
+            public var shadowbanexpires: Date?
+            public var moderation: String?
             public var displayname: String?
             public var handlelowercase: String?
             public var pictureurl: String?
-            public var kind: String?
+            public var reports: [UserReport]?
+            public var role: Role?
+            public var customtags: [String]?
         }
 
 Global Purge User
@@ -542,14 +560,20 @@ Report User
 .. code-block:: swift
 
         open class User: NSObject, Codable {
+            public var kind: String?
             public var userid: String?
             public var handle: String?
             public var profileurl: String?
             public var banned: Bool?
+            public var shadowbanned: Bool?
+            public var shadowbanexpires: Date?
+            public var moderation: String?
             public var displayname: String?
             public var handlelowercase: String?
             public var pictureurl: String?
-            public var kind: String?
+            public var reports: [UserReport]?
+            public var role: Role?
+            public var customtags: [String]?
         }
         
 Shadow Ban User
@@ -585,14 +609,20 @@ A Shadow Ban user can send messages into a chat room, however those messages are
 .. code-block:: swift
 
         open class User: NSObject, Codable {
+            public var kind: String?
             public var userid: String?
             public var handle: String?
             public var profileurl: String?
             public var banned: Bool?
+            public var shadowbanned: Bool?
+            public var shadowbanexpires: Date?
+            public var moderation: String?
             public var displayname: String?
             public var handlelowercase: String?
             public var pictureurl: String?
-            public var kind: String?
+            public var reports: [UserReport]?
+            public var role: Role?
+            public var customtags: [String]?
         }
         
 ListUserNotifications
@@ -1200,7 +1230,7 @@ List Previous Events
 ============================
 .. code-block:: javascript
 
-    func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents,completionHandler: @escaping Completion<ListEventsResponse>)
+    func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents, completionHandler: @escaping Completion<ListEventsResponse>)
 
 This method allows you to go back in time to "scroll" in reverse through past messages. The typical use case for this method is to power the scroll-back feature of a chat window allowing the user to look at recent messages that have scrolled out of view. It's intended use is to retrieve small batches of historical events as the user is scrolling up.
 
@@ -1228,6 +1258,112 @@ This method allows you to go back in time to "scroll" in reverse through past me
             public var roomid: String?
             public var cursor: String?
             public var limit: Int? = 100
+        }
+                
+**Response Model: ListEventsResponse**
+
+.. code-block:: swift
+
+        public struct ListEventsResponse: Codable {
+            public var kind: String?
+            public var cursor: String?
+            public var more: Bool?
+            public var itemcount: Int64?
+            public var events: [Event]
+        }
+        
+List Event By Type
+============================
+.. code-block:: javascript
+
+            func listEventByType(_ request: ChatRequest.ListEventByType, completionHandler: @escaping Completion<ListEventsResponse>)
+
+- This method enables you to retrieve a small list of recent events by type. This is useful for things like fetching a list of recent announcements or custom event types without the need to scroll through the entire chat history.
+    
+- This method returns a list of events sorted from newest to oldest.
+    
+- This method returns only active events.
+    
+**Parameters**
+    
+- roomid: (required) Room id where you want previous events to be listed
+    
+- eventtype: (required)
+    
+- limit: (optional) default is 10, maximum 100
+    
+- cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    
+**Request Model: ChatRequest.ListEventByType**
+
+.. code-block:: swift
+
+        public class ListPreviousEvents {
+            public var roomid: String?
+            public var eventtype: EventType?
+            public var cursor: String?
+            public var limit: Int? = 10
+        }
+                
+**Response Model: ListEventsResponse**
+
+.. code-block:: swift
+
+        public struct ListEventsResponse: Codable {
+            public var kind: String?
+            public var cursor: String?
+            public var more: Bool?
+            public var itemcount: Int64?
+            public var events: [Event]
+        }
+        
+List Event By Timestamp
+============================
+.. code-block:: javascript
+
+            func listEventByTimestamp(_ request: ChatRequest.ListEventByTimestamp,completionHandler: @escaping Completion<ListEventsResponse>)
+
+- This method enables you to retrieve an event using a timestamp.
+    
+- You can optionally retrieve a small number of displayable events before and after the message at the requested timestamp.
+    
+- This method returns a list of events sorted from oldest to newest.
+    
+- This method returns only active events.
+    
+- The timestamp is a high resolution timestamp accurate to the thousanth of a second. It is possible, but very unlikely, for two messages to have the same timestamp.
+    
+- The method returns "timestampolder". This can be passed as the timestamp value when calling functions like this which accept a timestamp to retrieve data.
+    
+- The method returns "timestampnewer". This can be passed as the timestamp value when calling this function again.
+    
+- The method returns "cursorpolder". This can be passed as the cursor to ethods that accept an events-sorted-by-time cursor.
+    
+- The method returns "cursornewer". This can be passed as the cursor to methods that accept an events-sorted-by-time cursor.
+    
+**Limitation**
+    
+If you pass in 0 for limitolder you won't get any older events than your timestamp and hasmoreolder will always be false because the API will not query for older events. If you pass in 0 for limitnewer you won't get any newer events than your timestamp and hasmorenewer will always be false because the API will not query for newer events
+    
+**Parameters**
+    
+- roomid: (required) Room id where you want previous events to be listed
+    
+- ts: (required) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call
+    
+- limitolder: (optional) Defaults to 0, maximum 100.
+    
+- limitnewer : (optional) Defaults to 0, maximum 100
+    
+**Request Model: ChatRequest.ListEventByType**
+
+.. code-block:: swift
+
+        public class ListPreviousEvents {
+            public var roomid: String?
+            public var timestamp: Int?
+            public var limitolder: Int? = 0
+            public var limitnewer: Int? = 0
         }
                 
 **Response Model: ListEventsResponse**
