@@ -512,13 +512,13 @@ public class ChatRequest {
     ///
     /// - This method will not return events that were emitted and then deleted before this method was called
     ///
-    ///  **Parameters**
+    /// **Parameters**
     ///
-    ///  - roomid: (required)  Room id where you want previous events to be listed
+    /// - roomid: (required)  Room id where you want previous events to be listed
     ///
-    ///  - limit: (optional) default is 100, maximum 500
+    /// - limit: (optional) default is 100, maximum 500
     ///
-    ///  - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    /// - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
     ///
     public class ListPreviousEvents: ParametersBase<ListPreviousEvents.Fields, ListPreviousEvents> {
         public enum Fields {
@@ -547,6 +547,125 @@ public class ChatRequest {
             
             add(key: .cursor, value: cursor)
             add(key: .limit, value: limit)
+            
+            return toDictionary
+        }
+    }
+    
+    /// - This method enables you to retrieve a small list of recent events by type. This is useful for things like fetching a list of recent announcements or custom event types without the need to scroll through the entire chat history.
+    ///
+    /// - This method returns a list of events sorted from newest to oldest.
+    ///
+    /// - This method returns only active events.
+    ///
+    /// **Parameters**
+    ///
+    /// - roomid: (required) Room id where you want previous events to be listed
+    ///
+    /// - eventtype: (required)
+    ///
+    /// - limit: (optional) default is 10, maximum 100
+    ///
+    /// - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///
+    public class ListEventByType: ParametersBase<ListEventByType.Fields, ListEventByType> {
+        public enum Fields {
+            case roomid
+            case eventtype
+            case cursor
+            case limit
+        }
+        
+        public var roomid: String?
+        public var eventtype: EventType?
+        public var cursor: String?
+        public var limit: Int? = 10
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ListEventByType {
+            set(dictionary: dictionary)
+            let ret = ListEventByType()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.eventtype = value(forKey: .eventtype)
+            ret.cursor = value(forKey: .cursor)
+            ret.limit = value(forKey: .limit)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .eventtype, value: eventtype?.rawValue)
+            add(key: .cursor, value: cursor)
+            add(key: .limit, value: limit)
+            
+            return toDictionary
+        }
+    }
+    
+    /// - This method enables you to retrieve an event using a timestamp.
+    ///
+    /// - You can optionally retrieve a small number of displayable events before and after the message at the requested timestamp.
+    ///
+    /// - This method returns a list of events sorted from oldest to newest.
+    ///
+    /// - This method returns only active events.
+    ///
+    /// - The timestamp is a high resolution timestamp accurate to the thousanth of a second. It is possible, but very unlikely, for two messages to have the same timestamp.
+    ///
+    /// - The method returns "timestampolder". This can be passed as the timestamp value when calling functions like this which accept a timestamp to retrieve data.
+    ///
+    /// - The method returns "timestampnewer". This can be passed as the timestamp value when calling this function again.
+    ///
+    /// - The method returns "cursorpolder". This can be passed as the cursor to ethods that accept an events-sorted-by-time cursor.
+    ///
+    /// - The method returns "cursornewer". This can be passed as the cursor to methods that accept an events-sorted-by-time cursor.
+    ///
+    /// **Limitation**
+    ///
+    /// If you pass in 0 for limitolder you won't get any older events than your timestamp and hasmoreolder will always be false because the API will not query for older events. If you pass in 0 for limitnewer you won't get any newer events than your timestamp and hasmorenewer will always be false because the API will not query for newer events
+    ///
+    /// **Parameters**
+    ///
+    /// - roomid: (required) Room id where you want previous events to be listed
+    ///
+    /// - ts: (required) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call
+    ///
+    /// - limitolder: (optional) Defaults to 0, maximum 100.
+    ///
+    /// - limitnewer : (optional) Defaults to 0, maximum 100
+    ///
+    public class ListEventByTimestamp: ParametersBase<ListEventByTimestamp.Fields, ListEventByTimestamp> {
+        public enum Fields {
+            case roomid
+            case ts
+            case limitolder
+            case limitnewer
+        }
+        
+        public var roomid: String?
+        public var timestamp: Int?
+        public var limitolder: Int? = 0
+        public var limitnewer: Int? = 0
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ListEventByTimestamp {
+            set(dictionary: dictionary)
+            let ret = ListEventByTimestamp()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.timestamp = value(forKey: .ts)
+            ret.limitolder = value(forKey: .limitolder)
+            ret.limitnewer = value(forKey: .limitnewer)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .limitolder, value: limitolder)
+            add(key: .limitnewer, value: limitnewer)
             
             return toDictionary
         }

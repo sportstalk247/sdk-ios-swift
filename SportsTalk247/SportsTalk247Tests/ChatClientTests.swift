@@ -314,6 +314,48 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
+    func test_ChatRoomsServices_ListEventsByType() {
+        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        let request = ChatRequest.ListEventByType()
+        request.roomid = dummyRoom?.id
+        request.eventtype = .speech
+        request.limit = 1
+
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+
+        client.listEventByType(request) { (code, message, kind, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_ListEventsByTime() {
+        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        let request = ChatRequest.ListEventByTimestamp()
+        request.roomid = dummyRoom?.id
+        request.timestamp = 123123123123
+        request.limitolder = 10
+        request.limitnewer = 10
+
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+
+        client.listEventByTimestamp(request) { (code, message, kind, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+
+    
     func test_ChatRoomsServices_JoinRoom() {
         if dummyUser ==  nil {
             self.createUpdateUser()
