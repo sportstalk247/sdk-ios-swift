@@ -15,6 +15,7 @@
 		80A1B72623BDBD48009F6004 /* ChatRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A1B72523BDBD48009F6004 /* ChatRequest.swift */; };
 		80D415D323B607C600055739 /* SportsTalk247.h in Headers */ = {isa = PBXBuildFile; fileRef = 80D415D123B607C600055739 /* SportsTalk247.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8448316D2444479000C29381 /* CommentRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448316C2444479000C29381 /* CommentRequest.swift */; };
+		A84A214E25CB09560042068F /* Foundation+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84A214D25CB09560042068F /* Foundation+Extension.swift */; };
 		A855D79024714D4000206560 /* ListChatRoomParticipantsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D76E24714D4000206560 /* ListChatRoomParticipantsResponse.swift */; };
 		A855D79224714D4000206560 /* GetUpdatesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77024714D4000206560 /* GetUpdatesResponse.swift */; };
 		A855D79324714D4000206560 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77124714D4000206560 /* Event.swift */; };
@@ -71,6 +72,7 @@
 		80D415D123B607C600055739 /* SportsTalk247.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SportsTalk247.h; sourceTree = "<group>"; };
 		80D415D223B607C600055739 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8448316C2444479000C29381 /* CommentRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentRequest.swift; sourceTree = "<group>"; };
+		A84A214D25CB09560042068F /* Foundation+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Foundation+Extension.swift"; sourceTree = "<group>"; };
 		A855D76E24714D4000206560 /* ListChatRoomParticipantsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListChatRoomParticipantsResponse.swift; sourceTree = "<group>"; };
 		A855D77024714D4000206560 /* GetUpdatesResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetUpdatesResponse.swift; sourceTree = "<group>"; };
 		A855D77124714D4000206560 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 			children = (
 				80D415D123B607C600055739 /* SportsTalk247.h */,
 				80D415D223B607C600055739 /* Info.plist */,
+				A84A214B25CB093E0042068F /* Helpers */,
 				A855D7A924714DB300206560 /* Clients */,
 				8023405423BA245700A43C20 /* Constants */,
 				80428D0623B635DC00A6CFBF /* BaseServices */,
@@ -194,6 +197,22 @@
 				A8C61F922464D18900D3FD94 /* Models */,
 			);
 			path = SportsTalk247;
+			sourceTree = "<group>";
+		};
+		A84A214B25CB093E0042068F /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				A84A214C25CB09440042068F /* Extensions */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		A84A214C25CB09440042068F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				A84A214D25CB09560042068F /* Foundation+Extension.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		A855D76C24714D4000206560 /* Chat */ = {
@@ -388,6 +407,7 @@
 				A86EA03F25AC8A25002B9B3F /* ListNotificationResponse.swift in Sources */,
 				8448316D2444479000C29381 /* CommentRequest.swift in Sources */,
 				A855D7A624714D4D00206560 /* SportsTalkSDK.swift in Sources */,
+				A84A214E25CB09560042068F /* Foundation+Extension.swift in Sources */,
 				A855D79D24714D4000206560 /* ExecuteChatCommandResponse.swift in Sources */,
 				A85E7CFF24732BCC00A26D54 /* User.swift in Sources */,
 				A855D79024714D4000206560 /* ListChatRoomParticipantsResponse.swift in Sources */,
@@ -601,7 +621,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -628,7 +648,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;

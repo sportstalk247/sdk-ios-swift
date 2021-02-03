@@ -999,6 +999,57 @@ extension ChatClientTests {
     }
 }
 
+// MARK: - Helpers
+extension ChatClientTests {
+    func test_ExecuteCommandThrottle() {
+         // This test will always pass. The purpose of this test is to see if the date comparison works and is within the throttle's timeout parameter. However, the result tends to differ since it is affected by server response time.
+         // Attach logs to ChatClient.throttle() -> Bool in order to check logic and timing.
+        
+        test_ChatRoomsServices_JoinRoom()
+        
+        let randomMessages = [
+            "Hello New Command", "Hello world", "I am Mark", "What did you say?", "Dummy dum dum...", "Hollgrehenn you scum!", "Boom! I'm deds..." //addmore
+        ]
+        
+        func executeCommand() {
+            let request = ChatRequest.ExecuteChatCommand()
+            request.roomid = dummyRoom?.id
+            request.command = randomMessages[Int.random(in: 0..<randomMessages.count)]
+//            request.command = "Hello New Command"
+            request.userid = dummyUser?.userid
+            request.eventtype = .speech
+        
+            client.executeChatCommand(request) { (code, message, _, response) in
+                print(message ?? "")
+                self.dummyEvent = response?.speech
+            }
+        }
+        
+        
+        let limit = 15.0 // seconds
+        var runtime = Double(0) // seconds
+        
+        let interval: Double = 0.5
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        let timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { timer in
+            print("\(runtime)/\(limit)")
+
+            executeCommand()
+            
+            if runtime >= limit {
+                timer.invalidate()
+                expectation.fulfill()
+            } else {
+                runtime += interval
+            }
+        }
+        
+        timer.fire()
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+}
+
 // MARK: - Convenience
 extension ChatClientTests {
     private func createUpdateUser() {
