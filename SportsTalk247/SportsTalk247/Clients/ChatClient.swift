@@ -48,6 +48,9 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     var firstCursor: String = ""
     var lastCursor: String = ""
     var lastRoomId: String?
+    var lastCommand: String?
+    var lastCommandSent: Date?
+    static let timeout = 3000 // milliseconds
     
     public override init(config: ClientConfig) {
         super.init(config: config)
@@ -55,6 +58,44 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     
     deinit {
         stopListeningToChatUpdates()
+    }
+}
+
+// MARK: - Convenience
+extension ChatClient {
+    private func throttle(command: String?) -> Bool {
+        guard command != nil else {
+            if SportsTalkSDK.shared.debugMode {
+                print("SDK Error: Missing command string.")
+                print("sent command: \(String(describing: command))")
+            }
+            return false
+        }
+        
+        guard let lastCommand = self.lastCommand, let lastSent = self.lastCommandSent else {
+            return true
+        }
+        
+        var allow = false
+        
+        if command == lastCommand {
+            let milliseconds = Date().difference(between: Date(), and: lastSent) * 1000
+            
+            if milliseconds >= ChatClient.timeout {
+                allow = true
+            } else {
+                if SportsTalkSDK.shared.debugMode {
+                    print("SDK Error: Command is being sent too frequently. Please wait \(ChatClient.timeout)ms until you send another.")
+                    print("command: \(String(describing: command))")
+                    print("last sent (ms): \(milliseconds)")
+                }
+                allow = false
+            }
+        } else {
+            allow = true
+        }
+        
+        return allow
     }
 }
 
@@ -175,19 +216,31 @@ extension ChatClient {
     }
 
     public func executeChatCommand(_ request: ChatRequest.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
+        guard throttle(command: request.command) else { return }
+        
         makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+            self.lastCommand = request.command
+            self.lastCommandSent = Date()
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
+        guard throttle(command: request.body) else { return }
+        
         makeRequest(URLPath.Room.QuotedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+            self.lastCommand = request.body
+            self.lastCommandSent = Date()
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) {
+        guard throttle(command: request.body) else { return }
+        
         makeRequest(URLPath.Room.ThreadedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+            self.lastCommand = request.body
+            self.lastCommandSent = Date()
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
