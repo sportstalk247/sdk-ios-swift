@@ -1,6 +1,6 @@
 import Foundation
 
-public struct BounceUserRequest: Codable {
+public struct BounceUserResponse: Codable {
     public var kind: String?
     public var event: Event?
     public var room: ChatRoom?

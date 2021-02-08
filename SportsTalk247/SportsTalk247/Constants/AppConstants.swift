@@ -60,6 +60,7 @@ struct URLPath {
         static func ExecuteCommand(roomid: String?) -> String                   { return r + (roomid ?? "") + "/command" }
         static func QuotedReply(roomid: String?, eventid: String?) -> String    { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/quote" }
         static func ThreadedReply(roomid: String?, eventid: String?) -> String  { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/reply" }
+        static func Report(roomid: String?, userid: String?) -> String          { return "\(r)\(roomid ?? "")/users/\(userid ?? "")/report" }
         static func Bounce(roomid: String?) -> String                           { return r + (roomid ?? "") + "/bounce" }
         static func SearchEvent() -> String                                     { return "chat/searchevents/" }
         static func UpdateChatEvent(roomid: String?, eventid: String?) -> String{ return "\(r)\(roomid ?? "")/events/\(eventid ?? "")"}
@@ -109,4 +110,9 @@ public enum Role: String {
     case user
     case moderator
     case admin
+}
+
+public enum ReportType: String {
+    case abuse
+    case spam
 }

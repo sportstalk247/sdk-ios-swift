@@ -122,6 +122,17 @@ open class ParametersBase<T,S> {
         
         return event
     }
+    
+    func value(forKey key: T) -> ReportType? {
+        guard
+            let id = dictionary[toString(key: key)] as? String,
+            let event = ReportType.init(rawValue: id)
+        else {
+            return nil
+        }
+        
+        return event
+    }
  
     func toString(key: T) -> String {
         return "\(key)"
