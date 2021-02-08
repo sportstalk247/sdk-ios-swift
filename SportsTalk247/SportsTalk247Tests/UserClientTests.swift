@@ -3,8 +3,8 @@ import SportsTalk247
 
 struct Config {
     static let url = URL(string: "https://qa-talkapi.sportstalk247.com/api/v3/")
-    static let appId = "5ebbe03d5617e00de4b044c2"
-    static let authToken = "lKXXRQ0QA0W7ySVNQa0Bhg8yDKrBMCfkGnfpsApZin-g"
+    static let appId = "5ff056f75617e00c58a32d25"
+    static let authToken = "IxJ8QTXRekWCPyjffeplNQ0FTuAmJmWE2N1BwPUhYLAQ"
     static let TIMEOUT: Double = 30
 }
 
@@ -248,7 +248,7 @@ extension UserClientTests {
         
         let request = UserRequest.ReportUser()
         request.userid = otherUser?.userid
-        request.reporttype = "abuse"
+        request.reporttype = .abuse
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
