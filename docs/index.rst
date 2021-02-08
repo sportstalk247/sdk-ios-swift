@@ -1850,7 +1850,7 @@ Send Quoted Reply
 ============================
 .. code-block:: javascript
 
-    func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
+    func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<Event>)
 
 Quotes an existing message and republishes it with a new message
     
@@ -1891,23 +1891,48 @@ This method is provided to support a chat experience where a person wants to rep
             public var customtags: String?
         }
                 
-**Response Model: ExecuteChatCommandResponse**
+**Response Model: Event**
 
 .. code-block:: swift
 
-        public struct ExecuteChatCommandResponse: Codable {
+        open class Event: Codable, Equatable {
             public var kind: String?
-            public var op: String?
-            public var room: ChatRoom?
-            public var speech: Event?
-            public var action: Event?
+            public var id: String?
+            public var roomid: String?
+            public var body: String?
+            public var originalbody: String?
+            public var added: Date?
+            public var modified: Date?
+            public var ts: Date?
+            public var eventtype: EventType?
+            public var userid: String?
+            public var user: User?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var replyto: Event?
+            public var parentid: String?
+            public var edited: Bool?
+            public var editedbymoderator: Bool?
+            public var censored: Bool?
+            public var deleted: Bool?
+            public var active: Bool?
+            public var shadowban: Bool?
+            public var likecount: Int64?
+            public var replycount: Int64?
+            public var reactions: [ChatEventReaction]
+            public var moderation: String?
+            public var reports: [ChatEventReport]
         }
         
 Send Threaded Reply
 ============================
 .. code-block:: javascript
         
-        func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
+    func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<Event>)
 
 Creates a threaded reply to another message event
     
@@ -1949,16 +1974,41 @@ Replies do not support admin or action commands
             public var customtags: String?
         }
                 
-**Response Model: ExecuteChatCommandResponse**
+**Response Model: Event**
 
 .. code-block:: swift
 
-        public struct ExecuteChatCommandResponse: Codable {
+        open class Event: Codable, Equatable {
             public var kind: String?
-            public var op: String?
-            public var room: ChatRoom?
-            public var speech: Event?
-            public var action: Event?
+            public var id: String?
+            public var roomid: String?
+            public var body: String?
+            public var originalbody: String?
+            public var added: Date?
+            public var modified: Date?
+            public var ts: Date?
+            public var eventtype: EventType?
+            public var userid: String?
+            public var user: User?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var replyto: Event?
+            public var parentid: String?
+            public var edited: Bool?
+            public var editedbymoderator: Bool?
+            public var censored: Bool?
+            public var deleted: Bool?
+            public var active: Bool?
+            public var shadowban: Bool?
+            public var likecount: Int64?
+            public var replycount: Int64?
+            public var reactions: [ChatEventReaction]
+            public var moderation: String?
+            public var reports: [ChatEventReport]
         }
         
 List Messages By User
