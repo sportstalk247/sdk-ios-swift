@@ -580,7 +580,7 @@ extension ChatClientTests {
             print(message ?? "")
             print("With Command: \(String(describing: request.body))")
             receivedCode = code
-            self.dummyEvent = response?.speech
+            self.dummyEvent = response
             expectation.fulfill()
         }
 
@@ -603,7 +603,7 @@ extension ChatClientTests {
             print(message ?? "")
             print("With Command: \(String(describing: request.body))")
             receivedCode = code
-            self.dummyEvent = response?.speech
+            self.dummyEvent = response
             expectation.fulfill()
         }
 
