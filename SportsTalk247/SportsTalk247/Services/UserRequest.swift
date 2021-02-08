@@ -337,14 +337,14 @@ public class UserRequest {
         }
         
         public var userid: String?
-        public var reporttype = "abuse"
+        public var reporttype: ReportType? = .abuse
         
         override public func from(dictionary: [AnyHashable: Any]) -> ReportUser {
             set(dictionary: dictionary)
             let ret = ReportUser()
             
             ret.userid = value(forKey: .userid)
-            ret.reporttype = value(forKey: .reporttype) ?? "abuse"
+            ret.reporttype = value(forKey: .reporttype)
             
             return ret
         }
@@ -353,7 +353,7 @@ public class UserRequest {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .userid, value: userid)
-            add(key: .reporttype, value: reporttype)
+            add(key: .reporttype, value: reporttype?.rawValue)
             
             return toDictionary
         }

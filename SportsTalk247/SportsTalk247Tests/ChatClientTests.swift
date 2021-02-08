@@ -740,6 +740,7 @@ extension ChatClientTests {
         request.eventid = dummyEvent?.id
         request.roomid = dummyRoom?.id
         request.userid = dummyUser?.userid
+        request.reporttype = .abuse
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -774,6 +775,33 @@ extension ChatClientTests {
             expectation.fulfill()
         }
 
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_ReportUserInRoom() {
+        if dummyUser == nil {
+            createUpdateUser()
+        }
+        
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPremoderated()
+        }
+        
+        let request = ChatRequest.ReportUserInRoom()
+        request.roomid = dummyRoom?.id
+        request.userid = dummyUser?.userid
+        request.reporttype = .spam
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.reportUserInRoom(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+        
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertTrue(receivedCode == 200)
     }

@@ -43,7 +43,7 @@
 		A86EA04325AC8A6A002B9B3F /* UserNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EA04225AC8A6A002B9B3F /* UserNotification.swift */; };
 		A86EC091247484310025A5FA /* ParametersBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EC090247484310025A5FA /* ParametersBase.swift */; };
 		A8B45222250D3E5100592F9B /* DeleteEventResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */; };
-		A8B7D04E2522569200CF406C /* BounceUserRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B7D04D2522569200CF406C /* BounceUserRequest.swift */; };
+		A8B7D04E2522569200CF406C /* BounceUserResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B7D04D2522569200CF406C /* BounceUserResponse.swift */; };
 		A8C1868624738B8D00C744DC /* ChatClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C1868524738B8D00C744DC /* ChatClientTests.swift */; };
 		A8EEE85E258D0FF90094D0D3 /* ListEventsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8EEE85D258D0FF90094D0D3 /* ListEventsResponse.swift */; };
 		A8F8C35725A4BBBC0021ADF7 /* UserReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8F8C35625A4BBBC0021ADF7 /* UserReport.swift */; };
@@ -100,7 +100,7 @@
 		A86EA04225AC8A6A002B9B3F /* UserNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNotification.swift; sourceTree = "<group>"; };
 		A86EC090247484310025A5FA /* ParametersBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParametersBase.swift; sourceTree = "<group>"; };
 		A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteEventResponse.swift; sourceTree = "<group>"; };
-		A8B7D04D2522569200CF406C /* BounceUserRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BounceUserRequest.swift; sourceTree = "<group>"; };
+		A8B7D04D2522569200CF406C /* BounceUserResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BounceUserResponse.swift; sourceTree = "<group>"; };
 		A8C1868524738B8D00C744DC /* ChatClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatClientTests.swift; sourceTree = "<group>"; };
 		A8EEE85D258D0FF90094D0D3 /* ListEventsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEventsResponse.swift; sourceTree = "<group>"; };
 		A8F8C35625A4BBBC0021ADF7 /* UserReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserReport.swift; sourceTree = "<group>"; };
@@ -230,7 +230,7 @@
 				A855D77B24714D4000206560 /* ExecuteChatCommandResponse.swift */,
 				A855D77C24714D4000206560 /* DeleteChatRoomResponse.swift */,
 				A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */,
-				A8B7D04D2522569200CF406C /* BounceUserRequest.swift */,
+				A8B7D04D2522569200CF406C /* BounceUserResponse.swift */,
 				A855D77E24714D4000206560 /* Moderation */,
 			);
 			path = Chat;
@@ -417,7 +417,7 @@
 				A855D79324714D4000206560 /* Event.swift in Sources */,
 				A855D79424714D4000206560 /* ListMessagesByUser.swift in Sources */,
 				A8EEE85E258D0FF90094D0D3 /* ListEventsResponse.swift in Sources */,
-				A8B7D04E2522569200CF406C /* BounceUserRequest.swift in Sources */,
+				A8B7D04E2522569200CF406C /* BounceUserResponse.swift in Sources */,
 				A85E7D0124732BCC00A26D54 /* ListUsersResponse.swift in Sources */,
 				A855D7B124716F0200206560 /* UserClient.swift in Sources */,
 				A86EA04325AC8A6A002B9B3F /* UserNotification.swift in Sources */,
