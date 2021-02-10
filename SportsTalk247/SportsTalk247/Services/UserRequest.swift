@@ -518,4 +518,42 @@ public class UserRequest {
             return toDictionary
         }
     }
+    
+    /// Mark All User Notifications as Read
+    ///
+    /// This marks all of the user's notifications as read with one API call only. Due to caching, a call to List User Notifications may still return items for a short time. Set delete = true to delete the notification instead of marking it read. This should be used for most use cases.
+    ///
+    /// **Parameters**
+    ///
+    /// - userid: (required) The ID of the user marking the notification as read.
+    ///
+    /// - delete: (optional) [default=true] If true, this deletes the notification. If false, it marks it read but does not delete it.
+    ///
+    public class MarkAllNotificationAsRead: ParametersBase<MarkAllNotificationAsRead.Fields, MarkAllNotificationAsRead> {
+        public enum Fields {
+            case userid
+            case delete
+        }
+        
+        public var userid: String?
+        public var delete: Bool? = true
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> MarkAllNotificationAsRead {
+            set(dictionary: dictionary)
+            let ret = MarkAllNotificationAsRead()
+            
+            ret.userid = value(forKey: .userid)
+            ret.delete = value(forKey: .delete)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .delete, value: delete)
+            
+            return toDictionary
+        }
+    }
 }

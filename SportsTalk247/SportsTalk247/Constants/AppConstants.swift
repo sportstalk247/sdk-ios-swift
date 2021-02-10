@@ -37,6 +37,7 @@ struct URLPath {
         static func ShadowBan(userid: String?) -> String                        { return u + (userid ?? "") + "/shadowban" }
         static func ListNotifications(userid: String?) -> String                { return u + (userid ?? "") + "/\(n)listnotifications/" }
         static func SetNotifAsRead(userid: String?, noteid: String?) -> String  { return "\(u)\(userid ?? "")/\(n)notifications/\(noteid ?? "")/update"}
+        static func MarkAllNotifAsRead(userid: String?) -> String               { return "\(u)\(userid ?? "")/\(n)notifications_all/markread"}
     }
     
     struct Room {

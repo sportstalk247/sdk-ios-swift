@@ -12,6 +12,7 @@ public protocol UserClientProtocol {
     func setShadowBanStatus(_ request: UserRequest.SetShadowBanStatus, completionHandler: @escaping Completion<User>)
     func listUserNotifications(_ request: UserRequest.ListUserNotifications, completionHandler: @escaping Completion<ListNotificationResponse>)
     func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
+    func markAllNotificationAsRead(_ request: UserRequest.MarkAllNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
 }
 
 public class UserClient: NetworkService, UserClientProtocol {
@@ -85,6 +86,12 @@ extension UserClient {
     
     public func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>) {
         makeRequest(URLPath.User.SetNotifAsRead(userid: request.userid, noteid: request.notificationid), withData: request.toDictionary(), requestType: .PUT, expectation: UserNotification.self, append: true) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func markAllNotificationAsRead(_ request: UserRequest.MarkAllNotificationAsRead, completionHandler: @escaping Completion<UserNotification>) {
+        makeRequest(URLPath.User.MarkAllNotifAsRead(userid: request.userid), withData: request.toDictionary(), requestType: .PUT, expectation: UserNotification.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }

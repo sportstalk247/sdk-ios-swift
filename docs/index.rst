@@ -625,7 +625,7 @@ A Shadow Ban user can send messages into a chat room, however those messages are
             public var customtags: [String]?
         }
         
-ListUserNotifications
+List User Notifications
 ============================
 .. code-block:: javascript
 
@@ -703,7 +703,7 @@ This marks a notification as being in READ status. That will prevent the notific
 
 .. code-block:: swift
 
-        public class ListUserNotifications {
+        public class SetUserNotificationAsRead {
             public var userid: String?
             public var notificationid: String?
             public var read: Bool? = false
@@ -722,7 +722,58 @@ This marks a notification as being in READ status. That will prevent the notific
             public var whenread: String?
             public var isread: Bool?
             public var notificationtype: String?
+            public var chatroomid: String?
+            public var chatroomcustomid: String?
+            public var commentconversationid: String?
+            public var commentconversationcustomid: String?
+            public var chateventid: String?
+            public var commentid: String?
         }
+
+Mark All Notification As Read
+============================
+.. code-block:: javascript
+
+    func markAllNotificationAsRead(_ request: UserRequest.MarkAllNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
+
+This marks all of the user's notifications as read with one API call only. Due to caching, a call to List User Notifications may still return items for a short time. Set delete = true to delete the notification instead of marking it read. This should be used for most use cases.
+
+**Parameters**
+
+- userid: (required) The ID of the user marking the notification as read.
+
+- delete: (optional) [default=true] If true, this deletes the notification. If false, it marks it read but does not delete it.
+
+**Request Model: UserRequest.MarkAllNotificationAsRead**
+
+.. code-block:: swift
+
+        public class MarkAllNotificationAsRead {
+            public var userid: String?
+            public var delete: Bool? = true
+        }
+        
+**Response Model: UserNotification**
+
+.. code-block:: swift
+
+        open class UserNotification: Codable {
+            public var kind: String?
+            public var id: String?
+            public var added: Date?
+            public var userid: String?
+            public var ts: Date?
+            public var whenread: String?
+            public var isread: Bool?
+            public var notificationtype: String?
+            public var chatroomid: String?
+            public var chatroomcustomid: String?
+            public var commentconversationid: String?
+            public var commentconversationcustomid: String?
+            public var chateventid: String?
+            public var commentid: String?
+        }
+
 
 Chat Client
 ------------------

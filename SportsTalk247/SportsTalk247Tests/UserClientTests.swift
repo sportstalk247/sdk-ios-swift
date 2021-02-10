@@ -336,6 +336,28 @@ extension UserClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssert(receivedCode == 200)
     }
+    
+    func test_UserServices_MarkAllNotificationAsRead() {
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        let request = UserRequest.MarkAllNotificationAsRead()
+        request.userid = dummyUser!.userid
+        request.delete = false
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.markAllNotificationAsRead(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(receivedCode == 200)
+    }
 }
 
 // MARK: - Convenience
