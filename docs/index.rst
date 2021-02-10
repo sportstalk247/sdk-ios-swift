@@ -1417,14 +1417,18 @@ If you pass in 0 for limitolder you won't get any older events than your timesta
             public var limitnewer: Int? = 0
         }
                 
-**Response Model: ListEventsResponse**
+**Response Model: ListEventByTimestampResponse**
 
 .. code-block:: swift
 
-        public struct ListEventsResponse: Codable {
+        public struct ListEventByTimestampResponse: Codable {
             public var kind: String?
-            public var cursor: String?
-            public var more: Bool?
+            public var cursorolder: String?
+            public var cursornewer: String?
+            public var timestampolder: Int?
+            public var timestampnewer: Int?
+            public var hasmoreolder: Bool?
+            public var hasmorenewer: Bool?
             public var itemcount: Int64?
             public var events: [Event]
         }
