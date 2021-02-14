@@ -682,6 +682,50 @@ Returns a list of user notifications
             public var itemcount: Int?
             public var notifications: [UserNotification]?
         }
+
+Mark All Notification As Read
+============================
+.. code-block:: javascript
+
+    func markAllNotificationAsRead(_ request: UserRequest.MarkAllNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
+
+This marks all of the user's notifications as read with one API call only. Due to caching, a call to List User Notifications may still return items for a short time. Set delete = true to delete the notification instead of marking it read. This should be used for most use cases.
+
+**Parameters**
+
+- userid: (required) The ID of the user marking the notification as read.
+
+- delete: (optional) [default=true] If true, this deletes the notification. If false, it marks it read but does not delete it.
+
+**Request Model: UserRequest.MarkAllNotificationAsRead**
+
+.. code-block:: swift
+
+        public class MarkAllNotificationAsRead {
+            public var userid: String?
+            public var delete: Bool? = true
+        }
+        
+**Response Model: UserNotification**
+
+.. code-block:: swift
+
+        open class UserNotification: Codable {
+            public var kind: String?
+            public var id: String?
+            public var added: Date?
+            public var userid: String?
+            public var ts: Date?
+            public var whenread: String?
+            public var isread: Bool?
+            public var notificationtype: String?
+            public var chatroomid: String?
+            public var chatroomcustomid: String?
+            public var commentconversationid: String?
+            public var commentconversationcustomid: String?
+            public var chateventid: String?
+            public var commentid: String?
+        }
         
 Set User Notification As Read
 ============================
@@ -689,16 +733,22 @@ Set User Notification As Read
 
     func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
 
+Set User Notification as Read
+    
+Unless your workflow must support use of read notifications, instead use ```func deleteUserNotification(_ request:completionHandler:)```
+    
 This marks a notification as being in READ status. That will prevent the notification from being returned in a call to List User Notifications unless the default filters are overridden. Notifications that are marked as read will be automatically deleted after some time.
-
+    
+Calling this over and over again for an event, or calling it on events where the reader is not the person that the reply is directed to, or calling it against events that are not type ChatReply or ChatQuote is inappropriate use of the API
+    
 **Parameters**
-
-- userid: (required) The ID of the user marking the notification as read.
-
-- notificationid: (required) The unique ID of the notification being updated.
-
-- read: (required) The read status (true/false) for the notification
-
+    
+- userid: (required) The ID of the user marking the notification as read. This is used to ensure a user can't mark another user's notification as read.
+    
+- notificationid: (required) The unique ID of the notification being updated
+    
+- read: (required) The read status (true/false) for the notification. You can pass false to mark the notification as unread
+    
 **Request Model: UserRequest.SetUserNotificationAsRead**
 
 .. code-block:: swift
@@ -729,28 +779,131 @@ This marks a notification as being in READ status. That will prevent the notific
             public var chateventid: String?
             public var commentid: String?
         }
-
-Mark All Notification As Read
+        
+Set User Notification As Read (By ChatEventId)
 ============================
 .. code-block:: javascript
 
-    func markAllNotificationAsRead(_ request: UserRequest.MarkAllNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
-
-This marks all of the user's notifications as read with one API call only. Due to caching, a call to List User Notifications may still return items for a short time. Set delete = true to delete the notification instead of marking it read. This should be used for most use cases.
-
+    func setUserNotificationAsReadByEventId(_ request: UserRequest.SetUserNotificationAsReadByChatEventId, completionHandler: @escaping Completion<UserNotification>)
+    
+Unless your workflow must support use of read notifications, use ```func deleteUserNotification(_ request:completionHandler:)``` instead.
+    
+- This marks a notification as being in READ status.
+    
+- That will prevent the notification from being returned in a call to List User Notifications unless the default filters are overridden.
+    
+- Notifications that are marked as read will be automatically deleted after some time.
+    
+- Only call this once per event. Only call this for events of type ChatReply or ChatQuote
+    
 **Parameters**
-
-- userid: (required) The ID of the user marking the notification as read.
-
-- delete: (optional) [default=true] If true, this deletes the notification. If false, it marks it read but does not delete it.
-
-**Request Model: UserRequest.MarkAllNotificationAsRead**
+    
+- userid: (required) The ID of the user marking the notification as read. This is used to ensure a user can't mark another user's notification as read.
+    
+- chateventid: (required) The unique ID of the notification's chatEvent.
+    
+- read: (required) The read status (true/false) for the notification. You can pass false to mark the notification as unread.
+    
+**Request Model: UserRequest.SetUserNotificationAsReadByChatEventId**
 
 .. code-block:: swift
 
-        public class MarkAllNotificationAsRead {
+        public class SetUserNotificationAsReadByChatEventId {
             public var userid: String?
-            public var delete: Bool? = true
+            public var eventid: String?
+            public var read: Bool? = false
+        }
+        
+**Response Model: UserNotification**
+
+.. code-block:: swift
+
+        open class UserNotification: Codable {
+            public var kind: String?
+            public var id: String?
+            public var added: Date?
+            public var userid: String?
+            public var ts: Date?
+            public var whenread: String?
+            public var isread: Bool?
+            public var notificationtype: String?
+            public var chatroomid: String?
+            public var chatroomcustomid: String?
+            public var commentconversationid: String?
+            public var commentconversationcustomid: String?
+            public var chateventid: String?
+            public var commentid: String?
+        }
+
+Delete User Notification
+============================
+.. code-block:: javascript
+
+    func deleteUserNotification(_ request: UserRequest.DeleteUserNotification, completionHandler: @escaping Completion<UserNotification>)
+
+Deletes a User Notification
+    
+Immediately deletes a user notification. Unless your workflow specifically implements access to read notifications, you should delete notifications after they are consumed.
+    
+**Parameters**
+    
+- userid: (required) The ID of the user marking the notification as read. This is used to ensure a user can't mark another user's notification as read.
+    
+- notificationid: (required) The unique ID of the notification being updated.
+
+**Request Model: UserRequest.DeleteUserNotification**
+
+.. code-block:: swift
+
+        public class DeleteUserNotification {
+            public var userid: String?
+            public var notificationid: String?
+        }
+        
+**Response Model: UserNotification**
+
+.. code-block:: swift
+
+        open class UserNotification: Codable {
+            public var kind: String?
+            public var id: String?
+            public var added: Date?
+            public var userid: String?
+            public var ts: Date?
+            public var whenread: String?
+            public var isread: Bool?
+            public var notificationtype: String?
+            public var chatroomid: String?
+            public var chatroomcustomid: String?
+            public var commentconversationid: String?
+            public var commentconversationcustomid: String?
+            public var chateventid: String?
+            public var commentid: String?
+        }
+        
+Delete User Notification By ChatEventId
+============================
+.. code-block:: javascript
+
+    func deleteUserNotificationByEventId(_ request: UserRequest.DeleteUserNotificationByChatEventId, completionHandler: @escaping Completion<UserNotification>)
+
+Deletes a User Notification
+    
+Immediately deletes a user notification. Unless your workflow specifically implements access to read notifications, you should delete notifications after they are consumed.
+    
+**Parameters**
+    
+- userid: (required) The ID of the user marking the notification as read. This is used to ensure a user can't mark another user's notification as read.
+    
+- chateventid: (required) The unique ID of the notification's chatEvent.
+
+**Request Model: UserRequest.DeleteUserNotificationByChatEventId**
+
+.. code-block:: swift
+
+        public class DeleteUserNotificationByChatEventId {
+            public var userid: String?
+            public var chateventid: String?
         }
         
 **Response Model: UserNotification**

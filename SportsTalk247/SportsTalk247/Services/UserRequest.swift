@@ -476,49 +476,6 @@ public class UserRequest {
         }
     }
     
-    /// Set User Notification as Read
-    ///
-    /// This marks a notification as being in READ status. That will prevent the notification from being returned in a call to List User Notifications unless the default filters are overridden. Notifications that are marked as read will be automatically deleted after some time.
-    ///
-    /// **Parameters**
-    ///
-    /// - userid: (required) The ID of the user marking the notification as read.
-    ///
-    /// - notificationid: (required) The unique ID of the notification being updated.
-    ///
-    /// - read: (required) The read status (true/false) for the notification
-    ///
-    public class SetUserNotificationAsRead: ParametersBase<SetUserNotificationAsRead.Fields, SetUserNotificationAsRead> {
-        public enum Fields {
-            case userid
-            case notificationid
-            case read
-        }
-        
-        public var userid: String?
-        public var notificationid: String?
-        public var read: Bool? = false
-        
-        override public func from(dictionary: [AnyHashable: Any]) -> SetUserNotificationAsRead {
-            set(dictionary: dictionary)
-            let ret = SetUserNotificationAsRead()
-            
-            ret.userid = value(forKey: .userid)
-            ret.notificationid = value(forKey: .notificationid)
-            ret.read = value(forKey: .read)
-            
-            return ret
-        }
-        
-        public func toDictionary() -> [AnyHashable: Any] {
-            toDictionary = [AnyHashable: Any]()
-            
-            add(key: .read, value: read)
-            
-            return toDictionary
-        }
-    }
-    
     /// Mark All User Notifications as Read
     ///
     /// This marks all of the user's notifications as read with one API call only. Due to caching, a call to List User Notifications may still return items for a short time. Set delete = true to delete the notification instead of marking it read. This should be used for most use cases.
@@ -553,6 +510,176 @@ public class UserRequest {
             
             add(key: .delete, value: delete)
             
+            return toDictionary
+        }
+    }
+    
+    /// Set User Notification as Read
+    ///
+    /// Unless your workflow must support use of read notifications, instead use ```func deleteUserNotification(_ request:completionHandler:)```
+    ///
+    /// This marks a notification as being in READ status. That will prevent the notification from being returned in a call to List User Notifications unless the default filters are overridden. Notifications that are marked as read will be automatically deleted after some time.
+    ///
+    /// Calling this over and over again for an event, or calling it on events where the reader is not the person that the reply is directed to, or calling it against events that are not type ChatReply or ChatQuote is inappropriate use of the API
+    ///
+    /// **Parameters**
+    ///
+    /// - userid: (required) The ID of the user marking the notification as read. This is used to ensure a user can't mark another user's notification as read.
+    ///
+    /// - notificationid: (required) The unique ID of the notification being updated
+    ///
+    /// - read: (required) The read status (true/false) for the notification. You can pass false to mark the notification as unread
+    ///
+    public class SetUserNotificationAsRead: ParametersBase<SetUserNotificationAsRead.Fields, SetUserNotificationAsRead> {
+        public enum Fields {
+            case userid
+            case notificationid
+            case read
+        }
+        
+        public var userid: String?
+        public var notificationid: String?
+        public var read: Bool? = false
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> SetUserNotificationAsRead {
+            set(dictionary: dictionary)
+            let ret = SetUserNotificationAsRead()
+            
+            ret.userid = value(forKey: .userid)
+            ret.notificationid = value(forKey: .notificationid)
+            ret.read = value(forKey: .read)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .read, value: read)
+            
+            return toDictionary
+        }
+    }
+    
+    /// Set Notification Read Status (by ChatEventId)
+    ///
+    /// Unless your workflow must support use of read notifications, use
+    /// 
+    /// ```func deleteUserNotification(_ request:completionHandler:)``` instead.
+    ///
+    /// - This marks a notification as being in READ status.
+    ///
+    /// - That will prevent the notification from being returned in a call to List User Notifications unless the default filters are overridden.
+    ///
+    /// - Notifications that are marked as read will be automatically deleted after some time.
+    ///
+    /// - Only call this once per event. Only call this for events of type ChatReply or ChatQuote
+    ///
+    /// **Parameters**
+    ///
+    /// - userid: (required) The ID of the user marking the notification as read. This is used to ensure a user can't mark another user's notification as read.
+    ///
+    /// - chateventid: (required) The unique ID of the notification's chatEvent.
+    ///
+    /// - read: (required) The read status (true/false) for the notification. You can pass false to mark the notification as unread.
+    ///
+    public class SetUserNotificationAsReadByChatEventId: ParametersBase<SetUserNotificationAsReadByChatEventId.Fields, SetUserNotificationAsReadByChatEventId> {
+        public enum Fields {
+            case userid
+            case chateventid
+            case read
+        }
+        
+        public var userid: String?
+        public var eventid: String?
+        public var read: Bool? = false
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> SetUserNotificationAsReadByChatEventId {
+            set(dictionary: dictionary)
+            let ret = SetUserNotificationAsReadByChatEventId()
+            
+            ret.userid = value(forKey: .userid)
+            ret.eventid = value(forKey: .chateventid)
+            ret.read = value(forKey: .read)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .read, value: read)
+            
+            return toDictionary
+        }
+    }
+    
+    /// Deletes a User Notification
+    ///
+    /// Immediately deletes a user notification. Unless your workflow specifically implements access to read notifications, you should delete notifications after they are consumed.
+    ///
+    /// **Parameters**
+    ///
+    /// - userid: (required) The ID of the user marking the notification as read. This is used to ensure a user can't mark another user's notification as read.
+    ///
+    /// - notificationid: (required) The unique ID of the notification being updated.
+    ///
+    public class DeleteUserNotification: ParametersBase<DeleteUserNotification.Fields, DeleteUserNotification> {
+        public enum Fields {
+            case userid
+            case notificationid
+        }
+        
+        public var userid: String?
+        public var notificationid: String?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> DeleteUserNotification {
+            set(dictionary: dictionary)
+            let ret = DeleteUserNotification()
+            
+            ret.userid = value(forKey: .userid)
+            ret.notificationid = value(forKey: .notificationid)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            return toDictionary
+        }
+    }
+    
+    /// Deletes a User Notification
+    /// 
+    /// Immediately deletes a user notification. Unless your workflow specifically implements access to read notifications, you should delete notifications after they are consumed.
+    ///
+    /// **Parameters**
+    ///
+    /// - userid: (required) The ID of the user marking the notification as read. This is used to ensure a user can't mark another user's notification as read.
+    ///
+    /// - chateventid: (required) The unique ID of the notification's chatEvent.
+    ///
+    public class DeleteUserNotificationByChatEventId: ParametersBase<DeleteUserNotificationByChatEventId.Fields, DeleteUserNotificationByChatEventId> {
+        public enum Fields {
+            case userid
+            case chateventid
+        }
+        
+        public var userid: String?
+        public var eventid: String?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> DeleteUserNotificationByChatEventId {
+            set(dictionary: dictionary)
+            let ret = DeleteUserNotificationByChatEventId()
+            
+            ret.userid = value(forKey: .userid)
+            ret.eventid = value(forKey: .chateventid)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
             return toDictionary
         }
     }

@@ -303,7 +303,30 @@ extension UserClientTests {
         client.listUserNotifications(request) { (code, message, _, response) in
             print(message ?? "")
             receivedCode = code
-            self.dummyNotification = response?.notifications?.filter{ ($0.isread ?? false) == false }.first
+//            self.dummyNotification = response?.notifications?.filter{ ($0.isread ?? false) == false }.first
+            self.dummyNotification = response?.notifications?.first
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(receivedCode == 200)
+    }
+    
+    func test_UserServices_MarkAllNotificationAsRead() {
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        let request = UserRequest.MarkAllNotificationAsRead()
+        request.userid = dummyUser!.userid
+        request.delete = false
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.markAllNotificationAsRead(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
             expectation.fulfill()
         }
 
@@ -312,6 +335,8 @@ extension UserClientTests {
     }
     
     func test_UserServices_SetNotificationAsRead() {
+        // Run ChatClientTest.test_chatRoomsServicesSendQuotedReply() if dummNotification is empty
+        
         if self.dummyUser == nil {
             test_UserServices_UpdateUser()
         }
@@ -337,19 +362,81 @@ extension UserClientTests {
         XCTAssert(receivedCode == 200)
     }
     
-    func test_UserServices_MarkAllNotificationAsRead() {
+    func test_UserServices_SetNotificationAsReadByEventId() {
+        // Run ChatClientTest.test_chatRoomsServicesSendQuotedReply() if dummNotification is empty
+        
         if self.dummyUser == nil {
             test_UserServices_UpdateUser()
         }
         
-        let request = UserRequest.MarkAllNotificationAsRead()
+        if self.dummyNotification == nil {
+            test_UserServices_ListUserNotification()
+        }
+        
+        let request = UserRequest.SetUserNotificationAsReadByChatEventId()
         request.userid = dummyUser!.userid
-        request.delete = false
+        request.eventid = dummyNotification?.chateventid
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         
-        client.markAllNotificationAsRead(request) { (code, message, _, response) in
+        client.setUserNotificationAsReadByEventId(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(receivedCode == 200)
+    }
+    
+    func test_UserServices_DeleteNotification() {
+        // Run ChatClientTest.test_chatRoomsServicesSendQuotedReply() if dummNotification is empty
+        
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        if self.dummyNotification == nil {
+            test_UserServices_ListUserNotification()
+        }
+        
+        let request = UserRequest.DeleteUserNotification()
+        request.userid = dummyUser!.userid
+        request.notificationid = dummyNotification?.id
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.deleteUserNotification(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(receivedCode == 200)
+    }
+    
+    func test_UserServices_DeleteNotificationByEventId() {
+        // Run ChatClientTest.test_chatRoomsServicesSendQuotedReply() if dummNotification is empty
+        
+        if self.dummyUser == nil {
+            test_UserServices_UpdateUser()
+        }
+        
+        if self.dummyNotification == nil {
+            test_UserServices_ListUserNotification()
+        }
+        
+        let request = UserRequest.DeleteUserNotificationByChatEventId()
+        request.userid = dummyUser!.userid
+        request.eventid = dummyNotification?.chateventid
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.deleteUserNotificationByEventId(request) { (code, message, _, response) in
             print(message ?? "")
             receivedCode = code
             expectation.fulfill()
