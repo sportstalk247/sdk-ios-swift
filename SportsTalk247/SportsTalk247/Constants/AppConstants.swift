@@ -36,8 +36,11 @@ struct URLPath {
         static func Report(userid: String?) -> String                           { return u + (userid ?? "") + "/report" }
         static func ShadowBan(userid: String?) -> String                        { return u + (userid ?? "") + "/shadowban" }
         static func ListNotifications(userid: String?) -> String                { return u + (userid ?? "") + "/\(n)listnotifications/" }
-        static func SetNotifAsRead(userid: String?, noteid: String?) -> String  { return "\(u)\(userid ?? "")/\(n)notifications/\(noteid ?? "")/update"}
         static func MarkAllNotifAsRead(userid: String?) -> String               { return "\(u)\(userid ?? "")/\(n)notifications_all/markread"}
+        static func SetNotifRead(userid: String?, noteid: String?) -> String    { return "\(u)\(userid ?? "")/\(n)notifications/\(noteid ?? "")/update"}
+        static func SetNotifRead(userid: String?, eventid: String?) -> String   { return "\(u)\(userid ?? "")/\(n)notificationsbyid/chateventid/\(eventid ?? "")/update"}
+        static func DeleteNotif(userid: String?, noteid: String?) -> String     { return "\(u)\(userid ?? "")/\(n)notifications/\(noteid ?? "")"}
+        static func DeleteNotif(userid: String?, eventid: String?) -> String    { return "\(u)\(userid ?? "")/\(n)notificationsbyid/chateventid/\(eventid ?? "")"}
     }
     
     struct Room {

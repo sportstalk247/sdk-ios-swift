@@ -11,8 +11,11 @@ public protocol UserClientProtocol {
     func reportUser(_ request: UserRequest.ReportUser, completionHandler: @escaping Completion<User>)
     func setShadowBanStatus(_ request: UserRequest.SetShadowBanStatus, completionHandler: @escaping Completion<User>)
     func listUserNotifications(_ request: UserRequest.ListUserNotifications, completionHandler: @escaping Completion<ListNotificationResponse>)
-    func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
     func markAllNotificationAsRead(_ request: UserRequest.MarkAllNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
+    func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
+    func setUserNotificationAsReadByEventId(_ request: UserRequest.SetUserNotificationAsReadByChatEventId, completionHandler: @escaping Completion<UserNotification>)
+    func deleteUserNotification(_ request: UserRequest.DeleteUserNotification, completionHandler: @escaping Completion<UserNotification>)
+    func deleteUserNotificationByEventId(_ request: UserRequest.DeleteUserNotificationByChatEventId, completionHandler: @escaping Completion<UserNotification>)
 }
 
 public class UserClient: NetworkService, UserClientProtocol {
@@ -84,14 +87,32 @@ extension UserClient {
         }
     }
     
-    public func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>) {
-        makeRequest(URLPath.User.SetNotifAsRead(userid: request.userid, noteid: request.notificationid), withData: request.toDictionary(), requestType: .PUT, expectation: UserNotification.self, append: true) { (response) in
+    public func markAllNotificationAsRead(_ request: UserRequest.MarkAllNotificationAsRead, completionHandler: @escaping Completion<UserNotification>) {
+        makeRequest(URLPath.User.MarkAllNotifAsRead(userid: request.userid), withData: request.toDictionary(), requestType: .PUT, expectation: UserNotification.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
-    public func markAllNotificationAsRead(_ request: UserRequest.MarkAllNotificationAsRead, completionHandler: @escaping Completion<UserNotification>) {
-        makeRequest(URLPath.User.MarkAllNotifAsRead(userid: request.userid), withData: request.toDictionary(), requestType: .PUT, expectation: UserNotification.self, append: true) { (response) in
+    public func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>) {
+        makeRequest(URLPath.User.SetNotifRead(userid: request.userid, noteid: request.notificationid), withData: request.toDictionary(), requestType: .PUT, expectation: UserNotification.self, append: true) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func setUserNotificationAsReadByEventId(_ request: UserRequest.SetUserNotificationAsReadByChatEventId, completionHandler: @escaping Completion<UserNotification>) {
+        makeRequest(URLPath.User.SetNotifRead(userid: request.userid, eventid: request.eventid), withData: request.toDictionary(), requestType: .PUT, expectation: UserNotification.self, append: true) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func deleteUserNotification(_ request: UserRequest.DeleteUserNotification, completionHandler: @escaping Completion<UserNotification>) {
+        makeRequest(URLPath.User.DeleteNotif(userid: request.userid, noteid: request.notificationid), withData: request.toDictionary(), requestType: .DELETE, expectation: UserNotification.self, append: true) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func deleteUserNotificationByEventId(_ request: UserRequest.DeleteUserNotificationByChatEventId, completionHandler: @escaping Completion<UserNotification>) {
+        makeRequest(URLPath.User.SetNotifRead(userid: request.userid, eventid: request.eventid), withData: request.toDictionary(), requestType: .DELETE, expectation: UserNotification.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
