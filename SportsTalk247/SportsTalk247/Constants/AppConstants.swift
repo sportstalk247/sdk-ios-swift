@@ -116,7 +116,7 @@ public enum Role: String {
     case admin
 }
 
-public enum ReportType: String {
+public enum ReportType: String, Codable {
     case abuse
     case spam
 }
