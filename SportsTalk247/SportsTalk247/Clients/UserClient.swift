@@ -112,7 +112,7 @@ extension UserClient {
     }
     
     public func deleteUserNotificationByEventId(_ request: UserRequest.DeleteUserNotificationByChatEventId, completionHandler: @escaping Completion<UserNotification>) {
-        makeRequest(URLPath.User.SetNotifRead(userid: request.userid, eventid: request.eventid), withData: request.toDictionary(), requestType: .DELETE, expectation: UserNotification.self, append: true) { (response) in
+        makeRequest(URLPath.User.DeleteNotif(userid: request.userid, eventid: request.eventid), withData: request.toDictionary(), requestType: .DELETE, expectation: UserNotification.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
