@@ -1049,8 +1049,7 @@ Creates a new chat room
 
 .. code-block:: swift
 
-        open class ChatRoom: Codable {
-            public var kind: String?
+        public var kind: String?
             public var id: String?
             public var appid: String?
             public var ownerid: String?
@@ -1072,6 +1071,8 @@ Creates a new chat room
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
+            public var bouncedusers: [String] = []
+            public var reportedusers: [ReportedUser] = []
         }
         
 Get Room Details
@@ -1102,8 +1103,7 @@ This will return all the settings for the room and the participant count but not
 
 .. code-block:: swift
 
-        open class ChatRoom: Codable {
-            public var kind: String?
+        public var kind: String?
             public var id: String?
             public var appid: String?
             public var ownerid: String?
@@ -1125,6 +1125,8 @@ This will return all the settings for the room and the participant count but not
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
+            public var bouncedusers: [String] = []
+            public var reportedusers: [ReportedUser] = []
         }
         
 Get Room Details By Custom ID
@@ -1155,8 +1157,7 @@ This will return all the settings for the room and the participant count but not
 
 .. code-block:: swift
 
-        open class ChatRoom: Codable {
-            public var kind: String?
+        public var kind: String?
             public var id: String?
             public var appid: String?
             public var ownerid: String?
@@ -1178,6 +1179,8 @@ This will return all the settings for the room and the participant count but not
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
+            public var bouncedusers: [String] = []
+            public var reportedusers: [ReportedUser] = []
         }
         
 Delete Room
@@ -1271,8 +1274,7 @@ Updates an existing room
 
 .. code-block:: swift
 
-        open class ChatRoom: Codable {
-            public var kind: String?
+        public var kind: String?
             public var id: String?
             public var appid: String?
             public var ownerid: String?
@@ -1294,6 +1296,8 @@ Updates an existing room
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
+            public var bouncedusers: [String] = []
+            public var reportedusers: [ReportedUser] = []
         }
         
 Update and Close Room
@@ -1347,8 +1351,7 @@ Response Model: ChatRoom
 
 .. code-block:: swift
 
-        open class ChatRoom: Codable {
-            public var kind: String?
+        public var kind: String?
             public var id: String?
             public var appid: String?
             public var ownerid: String?
@@ -1370,6 +1373,8 @@ Response Model: ChatRoom
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
+            public var bouncedusers: [String] = []
+            public var reportedusers: [ReportedUser] = []
         }
         
 List Rooms
@@ -2742,8 +2747,7 @@ Reports a user in the room
 
 .. code-block:: swift
 
-        open class ChatRoom: Codable {
-            public var kind: String?
+        public var kind: String?
             public var id: String?
             public var appid: String?
             public var ownerid: String?
@@ -2765,8 +2769,9 @@ Reports a user in the room
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
+            public var bouncedusers: [String] = []
+            public var reportedusers: [ReportedUser] = []
         }
-        
 Bounce User
 ============================
 .. code-block:: javascript
@@ -2848,8 +2853,7 @@ A Shadow Banned user can send messages into a chat room, however those messages 
 
 .. code-block:: swift
 
-        public struct ChatRoom: Codable {
-            public var kind: String?
+        public var kind: String?
             public var id: String?
             public var appid: String?
             public var ownerid: String?
@@ -2872,6 +2876,7 @@ A Shadow Banned user can send messages into a chat room, however those messages 
             public var added: Date?
             public var whenmodified: Date?
             public var bouncedusers: [String] = []
+            public var reportedusers: [ReportedUser] = []
         }
         
 Mute User
@@ -2912,8 +2917,7 @@ A Shadow Banned user can send messages into a chat room, however those messages 
 
 .. code-block:: swift
 
-        public struct ChatRoom: Codable {
-            public var kind: String?
+        public var kind: String?
             public var id: String?
             public var appid: String?
             public var ownerid: String?
@@ -2936,6 +2940,7 @@ A Shadow Banned user can send messages into a chat room, however those messages 
             public var added: Date?
             public var whenmodified: Date?
             public var bouncedusers: [String] = []
+            public var reportedusers: [ReportedUser] = []
         }
       
 Search Event History
