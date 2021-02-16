@@ -17,8 +17,6 @@ open class ChatRoom: Codable {
     public var enableenterandexit: Bool?
     public var open: Bool?
     public var inroom: Int?
-    var addedstring: String?
-    var whenmodifiedstring: String?
     public var moderation: String?
     public var maxreports: Int64?
     public var enableprofanityfilter: Bool?
@@ -45,8 +43,8 @@ open class ChatRoom: Codable {
         case enableenterandexit
         case open
         case inroom
-        case addedstring = "added"
-        case whenmodifiedstring = "whenmodified"
+        case added
+        case whenmodified
         case moderation
         case maxreports
         case enableprofanityfilter
@@ -81,11 +79,11 @@ open class ChatRoom: Codable {
         self.bouncedusers = try container.decodeIfPresent([String].self, forKey: .bouncedusers) ?? []
         self.reportedusers = try container.decodeIfPresent([ReportedUser].self, forKey: .reportedusers) ?? []
         
-        if let added = try container.decodeIfPresent(String.self, forKey: .addedstring) {
+        if let added = try container.decodeIfPresent(String.self, forKey: .added) {
             self.added = ISODateFormat(added)
         }
         
-        if let modified = try container.decodeIfPresent(String.self, forKey: .whenmodifiedstring) {
+        if let modified = try container.decodeIfPresent(String.self, forKey: .whenmodified) {
             self.whenmodified = ISODateFormat(modified)
         }
     }

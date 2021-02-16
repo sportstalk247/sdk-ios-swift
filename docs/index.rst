@@ -255,34 +255,37 @@ When users send messages to a room the user ID is passed as a parameter. When yo
 
 .. code-block:: swift
 
-    public class CreateUpdateUser {
-        public var userid: String?
-        public var handle: String?
-        public var displayname: String?
-        public var pictureurl: URL?
-        public var profileurl: URL?
-    }
+        public class CreateUpdateUser {
+            public var userid: String?
+            public var handle: String?
+            public var displayname: String?
+            public var pictureurl: URL?
+            public var profileurl: URL?
+        }
         
 **Response Model: User**
 
 .. code-block:: swift
 
-    open class User: NSObject, Codable {
-        public var kind: String?
-        public var userid: String?
-        public var handle: String?
-        public var profileurl: String?
-        public var banned: Bool?
-        public var shadowbanned: Bool?
-        public var shadowbanexpires: Date?
-        public var moderation: String?
-        public var displayname: String?
-        public var handlelowercase: String?
-        public var pictureurl: String?
-        public var reports: [UserReport]?
-        public var role: Role?
-        public var customtags: [String]?
-    }
+        open class User: NSObject, Codable {
+            public var kind: String?
+            public var userid: String?
+            public var handle: String?
+            public var profileurl: String?
+            public var banned: Bool?
+            public var banexpires: Date?
+            public var shadowbanned: Bool?
+            public var shadowbanexpires: Date?
+            public var muted: Bool?
+            public var muteexpires: Date?
+            public var moderation: String?
+            public var displayname: String?
+            public var handlelowercase: String?
+            public var pictureurl: String?
+            public var reports: [UserReport]?
+            public var role: Role?
+            public var customtags: [String]?
+        }
 
 Delete User
 ============================
@@ -352,8 +355,11 @@ This will return all the information about the user.
             public var handle: String?
             public var profileurl: String?
             public var banned: Bool?
+            public var banexpires: Date?
             public var shadowbanned: Bool?
             public var shadowbanexpires: Date?
+            public var muted: Bool?
+            public var muteexpires: Date?
             public var moderation: String?
             public var displayname: String?
             public var handlelowercase: String?
@@ -433,8 +439,11 @@ Will toggle the user's banned flag.
             public var handle: String?
             public var profileurl: String?
             public var banned: Bool?
+            public var banexpires: Date?
             public var shadowbanned: Bool?
             public var shadowbanexpires: Date?
+            public var muted: Bool?
+            public var muteexpires: Date?
             public var moderation: String?
             public var displayname: String?
             public var handlelowercase: String?
@@ -499,9 +508,7 @@ At least one of these parameters is required;
 - handle
 - name
     
-     **Warning** This method requires authentication
-    
-
+**Warning** This method requires authentication
     
 **Request Model: UserRequest.SearchUser**
 
@@ -523,6 +530,58 @@ At least one of these parameters is required;
             public var kind: String?
             public var cursor: String?
             public var users: [User]
+        }
+        
+Mute User
+============================
+.. code-block:: javascript
+
+    func muteUser(_ request: ChatRequest.MuteUser, completionHandler: @escaping Completion<ChatRoom>)
+    
+Will toggle the user's mute effect
+    
+A muted user is in a read-only state. The muted user can join chat rooms and observe but cannot communicate. This method applies mute on the global level (applies to all talk contexts). You can optionally specify an expiration time. If the expiration time is specified, then each time the shadow banned user tries to send a message the API will check if the shadow ban has expired and will lift the ban.
+    
+**Paramters**
+    
+- userid: (required) The applicaiton provided userid of the user to ban
+    
+- applyeffect: (required) true or false. If true, user will be set to muted state. If false, will be set to non-banned state.
+    
+- expireseconds: (optional) Duration of mute in seconds. If specified, the mute will be lifted when this time is reached. If not specified, mute effect remains until explicitly lifted. Maximum seconds is a double byte value.
+    
+**Request Model: UserRequest.MuteUser**
+
+.. code-block:: swift
+
+        public class MuteUser {
+            public var userid: String?
+            public var applyeffect: Bool?
+            public var expireseconds: Double?
+        }
+                
+**Response Model: User**
+
+.. code-block:: swift
+
+        open class User: NSObject, Codable {
+            public var kind: String?
+            public var userid: String?
+            public var handle: String?
+            public var profileurl: String?
+            public var banned: Bool?
+            public var banexpires: Date?
+            public var shadowbanned: Bool?
+            public var shadowbanexpires: Date?
+            public var muted: Bool?
+            public var muteexpires: Date?
+            public var moderation: String?
+            public var displayname: String?
+            public var handlelowercase: String?
+            public var pictureurl: String?
+            public var reports: [UserReport]?
+            public var role: Role?
+            public var customtags: [String]?
         }
         
 Report User
@@ -565,8 +624,11 @@ Report User
             public var handle: String?
             public var profileurl: String?
             public var banned: Bool?
+            public var banexpires: Date?
             public var shadowbanned: Bool?
             public var shadowbanexpires: Date?
+            public var muted: Bool?
+            public var muteexpires: Date?
             public var moderation: String?
             public var displayname: String?
             public var handlelowercase: String?
@@ -614,8 +676,11 @@ A Shadow Ban user can send messages into a chat room, however those messages are
             public var handle: String?
             public var profileurl: String?
             public var banned: Bool?
+            public var banexpires: Date?
             public var shadowbanned: Bool?
             public var shadowbanexpires: Date?
+            public var muted: Bool?
+            public var muteexpires: Date?
             public var moderation: String?
             public var displayname: String?
             public var handlelowercase: String?
@@ -2744,6 +2809,133 @@ When you bounce a user from the room, the user is removed from the room and bloc
             public var kind: String?
             public var event: Event?
             public var room: ChatRoom?
+        }
+        
+Shadowban User
+============================
+.. code-block:: javascript
+
+    func shadowbanUser(_ request: ChatRequest.ShadowbanUser, completionHandler: @escaping Completion<ChatRoom>)
+    
+Shadow Ban User (In Room Only)
+    
+Will toggle the user's shadow banned flag.
+    
+There is a user level shadow ban (global) and local room level shadow ban.
+    
+A Shadow Banned user can send messages into a chat room, however those messages are flagged as shadow banned. This enables the application to show those messags only to the shadow banned user, so that that person may not know they were shadow banned. This method shadow bans the user on the global level (or you can use this method to lift the ban). You can optionally specify an expiration time. If the expiration time is specified, then each time the shadow banned user tries to send a message the API will check if the shadow ban has expired and will lift the ban.
+    
+**Parameters**
+    
+- userid: (required) The applicaiton provided userid of the user to ban.
+    
+- applyeffect: (required) true or false. If true, user will be set to banned state. If false, will be set to non-banned state.
+    
+- expireseconds: (optional) Duration of shadowban value in seconds. If specified, the shadow ban will be lifted when this time is reached. If not specified, shadowban remains until explicitly lifted. Maximum seconds is a double byte value
+
+**Request Model: ChatRequest.ShadowbanUser**
+
+.. code-block:: swift
+
+        public class ShadowbanUser {
+            public var userid: String?
+            public var roomid: String?
+            public var applyeffect: Bool?
+            public var expireseconds: Double?
+        }
+                
+**Response Model: ChatRoom**
+
+.. code-block:: swift
+
+        public struct ChatRoom: Codable {
+            public var kind: String?
+            public var id: String?
+            public var appid: String?
+            public var ownerid: String?
+            public var name: String?
+            public var description: String?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var enableactions: Bool?
+            public var enableenterandexit: Bool?
+            public var open: Bool?
+            public var inroom: Int?
+            public var moderation: String?
+            public var maxreports: Int64?
+            public var enableprofanityfilter: Bool?
+            public var delaymessageseconds: Int64?
+            public var added: Date?
+            public var whenmodified: Date?
+            public var bouncedusers: [String] = []
+        }
+        
+Mute User
+============================
+.. code-block:: javascript
+
+    func muteUser(_ request: ChatRequest.MuteUser, completionHandler: @escaping Completion<ChatRoom>)
+    
+Mute User (In Room Only)
+    
+Will toggle the user's shadow banned flag.
+    
+There is a user level shadow ban (global) and local room level shadow ban.
+    
+A Shadow Banned user can send messages into a chat room, however those messages are flagged as shadow banned. This enables the application to show those messags only to the shadow banned user, so that that person may not know they were shadow banned. This method shadow bans the user on the global level (or you can use this method to lift the ban). You can optionally specify an expiration time. If the expiration time is specified, then each time the shadow banned user tries to send a message the API will check if the shadow ban has expired and will lift the ban.
+    
+**Parameters**
+    
+- userid: (required) The applicaiton provided userid of the user to ban.
+    
+- applyeffect: (required) true or false. If true, will have the mute affect applied. If false, mute will not be applied.
+    
+- expireseconds: (optional) Duration of shadowban value in seconds. If specified, the shadow ban will be lifted when this time is reached. If not specified, shadowban remains until explicitly lifted. Maximum seconds is a double byte value
+
+**Request Model: ChatRequest.MuteUser**
+
+.. code-block:: swift
+
+        public class MuteUser {
+            public var userid: String?
+            public var roomid: String?
+            public var applyeffect: Bool?
+            public var expireseconds: Double?
+
+        }
+                
+**Response Model: ChatRoom**
+
+.. code-block:: swift
+
+        public struct ChatRoom: Codable {
+            public var kind: String?
+            public var id: String?
+            public var appid: String?
+            public var ownerid: String?
+            public var name: String?
+            public var description: String?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var enableactions: Bool?
+            public var enableenterandexit: Bool?
+            public var open: Bool?
+            public var inroom: Int?
+            public var moderation: String?
+            public var maxreports: Int64?
+            public var enableprofanityfilter: Bool?
+            public var delaymessageseconds: Int64?
+            public var added: Date?
+            public var whenmodified: Date?
+            public var bouncedusers: [String] = []
         }
       
 Search Event History

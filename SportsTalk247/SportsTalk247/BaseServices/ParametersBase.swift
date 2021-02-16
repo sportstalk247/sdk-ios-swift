@@ -70,6 +70,10 @@ open class ParametersBase<T,S> {
     func value(forKey key: T) -> Int {
         return (dictionary[toString(key: key)] as? NSNumber)?.intValue ?? 0
     }
+    
+    func value(forKey key: T) -> Double {
+        return (dictionary[toString(key: key)] as? NSNumber)?.doubleValue ?? 0
+    }
 
     func value(forKey key: T) -> String? {
         return (dictionary[toString(key: key)] as? String)

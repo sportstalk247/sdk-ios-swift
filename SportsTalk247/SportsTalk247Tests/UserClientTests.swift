@@ -152,7 +152,7 @@ extension UserClientTests {
         
         let request = UserRequest.SetBanStatus()
         request.userid = dummyUser?.userid
-        request.banned = true
+        request.applyeffect = true
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var banned: Bool?
@@ -196,7 +196,7 @@ extension UserClientTests {
         
         let request = UserRequest.SetBanStatus()
         request.userid = dummyUser?.userid
-        request.banned = false
+        request.applyeffect = false
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var banned: Bool?
@@ -241,6 +241,29 @@ extension UserClientTests {
         XCTAssert(receivedCode == 200)
     }
     
+    func test_UserServices_MuteUser() {
+        if self.otherUser == nil {
+            createUpdateOtherUser()
+        }
+        
+        let request = UserRequest.MuteUser()
+        request.userid = otherUser?.userid
+        request.applyeffect = true
+//        request.expireseconds = 60
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.muteUser(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(receivedCode == 200)
+    }
+    
     func test_UserServices_ReportUser() {
         if self.otherUser == nil {
             createUpdateOtherUser()
@@ -270,7 +293,7 @@ extension UserClientTests {
         
         let request = UserRequest.SetShadowBanStatus()
         request.userid = dummyUser!.userid
-        request.shadowban = !(dummyUser?.shadowbanned ?? false)
+        request.applyeffect = !(dummyUser?.shadowbanned ?? false)
         request.expireseconds = 60
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))

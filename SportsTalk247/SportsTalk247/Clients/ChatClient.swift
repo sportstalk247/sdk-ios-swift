@@ -30,6 +30,8 @@ public protocol ChatClientProtocol {
     func reactToEvent(_ request: ChatRequest.ReactToEvent, completionHandler: @escaping Completion<Event>)
     func reportUserInRoom(_ request: ChatRequest.ReportUserInRoom, completionHandler: @escaping Completion<ChatRoom>)
     func bounceUser(_ request: ChatRequest.BounceUser, completionHandler: @escaping Completion<BounceUserResponse>)
+    func shadowbanUser(_ request: ChatRequest.ShadowbanUser, completionHandler: @escaping Completion<ChatRoom>)
+    func muteUser(_ request: ChatRequest.MuteUser, completionHandler: @escaping Completion<ChatRoom>)
     func searchEventHistory(_ request: ChatRequest.SearchEvent, completionHandler: @escaping Completion<ListEventsResponse>)
     func updateChatEvent(_ request: ChatRequest.UpdateChatEvent, completionHandler: @escaping Completion<Event>)
     
@@ -297,6 +299,18 @@ extension ChatClient {
     
     public func bounceUser(_ request: ChatRequest.BounceUser, completionHandler: @escaping Completion<BounceUserResponse>) {
         makeRequest(URLPath.Room.Bounce(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: BounceUserResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func shadowbanUser(_ request: ChatRequest.ShadowbanUser, completionHandler: @escaping Completion<ChatRoom>) {
+        makeRequest(URLPath.Room.Shadowban(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func muteUser(_ request: ChatRequest.MuteUser, completionHandler: @escaping Completion<ChatRoom>) {
+        makeRequest(URLPath.Room.Mute(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }

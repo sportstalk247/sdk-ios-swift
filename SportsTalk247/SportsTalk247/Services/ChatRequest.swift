@@ -2063,7 +2063,111 @@ public class ChatRequest {
             return toDictionary
         }
     }
+
+    /// Shadow Ban User (In Room Only)
+    ///
+    /// Will toggle the user's shadow banned flag.
+    ///
+    /// There is a user level shadow ban (global) and local room level shadow ban.
+    ///
+    /// A Shadow Banned user can send messages into a chat room, however those messages are flagged as shadow banned. This enables the application to show those messags only to the shadow banned user, so that that person may not know they were shadow banned. This method shadow bans the user on the global level (or you can use this method to lift the ban). You can optionally specify an expiration time. If the expiration time is specified, then each time the shadow banned user tries to send a message the API will check if the shadow ban has expired and will lift the ban.
+    ///
+    /// **Parameters**
+    ///
+    /// - userid: (required) The applicaiton provided userid of the user to ban.
+    ///
+    /// - applyeffect: (required) true or false. If true, user will be set to banned state. If false, will be set to non-banned state.
+    ///
+    /// - expireseconds: (optional) Duration of shadowban value in seconds. If specified, the shadow ban will be lifted when this time is reached. If not specified, shadowban remains until explicitly lifted. Maximum seconds is a double byte value
+    ///
+    public class ShadowbanUser: ParametersBase<ShadowbanUser.Fields, ShadowbanUser> {
+        public enum Fields {
+            case userid
+            case roomid
+            case applyeffect
+            case expireseconds
+        }
+        
+        public var userid: String?
+        public var roomid: String?
+        public var applyeffect: Bool?
+        public var expireseconds: Double?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ShadowbanUser {
+            set(dictionary: dictionary)
+            let ret = ShadowbanUser()
+            
+            ret.userid = value(forKey: .userid)
+            ret.roomid = value(forKey: .roomid)
+            ret.applyeffect = value(forKey: .applyeffect)
+            ret.expireseconds = value(forKey: .expireseconds)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .applyeffect, value: applyeffect)
+            add(key: .expireseconds, value: expireseconds)
+
+            return toDictionary
+        }
+    }
     
+    /// Mute User (In Room Only)
+    ///
+    /// Will toggle the user's shadow banned flag.
+    ///
+    /// There is a user level shadow ban (global) and local room level shadow ban.
+    ///
+    /// A Shadow Banned user can send messages into a chat room, however those messages are flagged as shadow banned. This enables the application to show those messags only to the shadow banned user, so that that person may not know they were shadow banned. This method shadow bans the user on the global level (or you can use this method to lift the ban). You can optionally specify an expiration time. If the expiration time is specified, then each time the shadow banned user tries to send a message the API will check if the shadow ban has expired and will lift the ban.
+    ///
+    /// **Parameters**
+    ///
+    /// - userid: (required) The applicaiton provided userid of the user to ban.
+    ///
+    /// - applyeffect: (required) true or false. If true, will have the mute affect applied. If false, mute will not be applied.
+    ///
+    /// - expireseconds: (optional) Duration of shadowban value in seconds. If specified, the shadow ban will be lifted when this time is reached. If not specified, shadowban remains until explicitly lifted. Maximum seconds is a double byte value
+    ///
+    public class MuteUser: ParametersBase<MuteUser.Fields, MuteUser> {
+        public enum Fields {
+            case userid
+            case roomid
+            case applyeffect
+            case expireseconds
+        }
+        
+        public var userid: String?
+        public var roomid: String?
+        public var applyeffect: Bool?
+        public var expireseconds: Double?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> MuteUser {
+            set(dictionary: dictionary)
+            let ret = MuteUser()
+            
+            ret.userid = value(forKey: .userid)
+            ret.roomid = value(forKey: .roomid)
+            ret.applyeffect = value(forKey: .applyeffect)
+            ret.expireseconds = value(forKey: .expireseconds)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .applyeffect, value: applyeffect)
+            add(key: .expireseconds, value: expireseconds)
+
+            return toDictionary
+        }
+    }
+
     /// Updates the contents of an existing chat event
     ///
     /// This API may be used to update the body of an existing Chat Event. It is used to enable the user to edit the message after it is published. This may only be used with MESSAGE event types (speech, quote, reply). When the chat event is updated another event of type "replace" will be emitted with the updated event contents, and the original event will be replaced in future calls to List Event History, Join and List Previous Events. The event will also be flagged as edited by user.

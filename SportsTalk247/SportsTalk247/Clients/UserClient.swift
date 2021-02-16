@@ -8,6 +8,7 @@ public protocol UserClientProtocol {
     func setBanStatus(_ request: UserRequest.SetBanStatus, completionHandler: @escaping Completion<User>)
     func globallyPurgeUserContent(_ request: UserRequest.GloballyPurgeUserContent, completionHandler: @escaping Completion<GlobalPurgeReponse>)
     func searchUser(_ request: UserRequest.SearchUser, completionHandler: @escaping Completion<ListUsersResponse>)
+    func muteUser(_ request: UserRequest.MuteUser, completionHandler: @escaping Completion<User>)
     func reportUser(_ request: UserRequest.ReportUser, completionHandler: @escaping Completion<User>)
     func setShadowBanStatus(_ request: UserRequest.SetShadowBanStatus, completionHandler: @escaping Completion<User>)
     func listUserNotifications(_ request: UserRequest.ListUserNotifications, completionHandler: @escaping Completion<ListNotificationResponse>)
@@ -65,6 +66,12 @@ extension UserClient {
     
     public func searchUser(_ request: UserRequest.SearchUser, completionHandler: @escaping Completion<ListUsersResponse>) {
         makeRequest(URLPath.User.Search(), withData: request.toDictionary(), requestType: .POST, expectation: ListUsersResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func muteUser(_ request: UserRequest.MuteUser, completionHandler: @escaping Completion<User>) {
+        makeRequest(URLPath.User.Mute(userid: request.userid), withData: request.toDictionary(), requestType: .POST, expectation: User.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
