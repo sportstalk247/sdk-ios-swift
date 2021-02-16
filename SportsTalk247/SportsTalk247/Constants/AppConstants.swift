@@ -33,6 +33,7 @@ struct URLPath {
         static func Ban(userid: String?) -> String                              { return u + (userid ?? "") + "/ban" }
         static func GlobalPurge(userid: String?) -> String                      { return u + (userid ?? "") + "/globalpurge"}
         static func Search() -> String                                          { return s }
+        static func Mute(userid: String?) -> String                             { return u + (userid ?? "") + "/mute" }
         static func Report(userid: String?) -> String                           { return u + (userid ?? "") + "/report" }
         static func ShadowBan(userid: String?) -> String                        { return u + (userid ?? "") + "/shadowban" }
         static func ListNotifications(userid: String?) -> String                { return u + (userid ?? "") + "/\(n)listnotifications/" }
@@ -66,6 +67,8 @@ struct URLPath {
         static func ThreadedReply(roomid: String?, eventid: String?) -> String  { return "\(r)\(roomid ?? "")/events/\(eventid ?? "")/reply" }
         static func Report(roomid: String?, userid: String?) -> String          { return "\(r)\(roomid ?? "")/users/\(userid ?? "")/report" }
         static func Bounce(roomid: String?) -> String                           { return r + (roomid ?? "") + "/bounce" }
+        static func Shadowban(roomid: String?) -> String                        { return r + (roomid ?? "") + "/shadowban" }
+        static func Mute(roomid: String?) -> String                             { return r + (roomid ?? "") + "/mute" }
         static func SearchEvent() -> String                                     { return "chat/searchevents/" }
         static func UpdateChatEvent(roomid: String?, eventid: String?) -> String{ return "\(r)\(roomid ?? "")/events/\(eventid ?? "")"}
     }
@@ -110,7 +113,7 @@ public enum EventType: String {
     case custom
 }
 
-public enum Role: String {
+public enum Role: String, Codable {
     case user
     case moderator
     case admin

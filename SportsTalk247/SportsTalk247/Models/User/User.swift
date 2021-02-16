@@ -6,14 +6,16 @@ open class User: NSObject, Codable {
     public var handle: String?
     public var profileurl: String?
     public var banned: Bool?
+    public var banexpires: Date?
     public var shadowbanned: Bool?
     public var shadowbanexpires: Date?
+    public var muted: Bool?
+    public var muteexpires: Date?
     public var moderation: String?
     public var displayname: String?
     public var handlelowercase: String?
     public var pictureurl: String?
     public var reports: [UserReport]?
-    var roleString: String?
     public var role: Role?
     public var customtags: [String]?
     
@@ -23,14 +25,17 @@ open class User: NSObject, Codable {
         case handle
         case profileurl
         case banned
+        case banexpires
         case shadowbanned
         case shadowbanexpires
+        case muted
+        case muteexpires
         case moderation
         case displayname
         case handlelowercase
         case pictureurl
         case reports
-        case roleString = "role"
+        case role
         case customtags
     }
     
@@ -43,6 +48,7 @@ open class User: NSObject, Codable {
         self.profileurl = try container.decodeIfPresent(String.self, forKey: .profileurl)
         self.banned = try container.decodeIfPresent(Bool.self, forKey: .banned)
         self.shadowbanned = try container.decodeIfPresent(Bool.self, forKey: .shadowbanned)
+        self.muted = try container.decodeIfPresent(Bool.self, forKey: .muted)
         self.displayname = try container.decodeIfPresent(String.self, forKey: .displayname)
         self.handlelowercase = try container.decodeIfPresent(String.self, forKey: .handlelowercase)
         self.pictureurl = try container.decodeIfPresent(String.self, forKey: .pictureurl)
@@ -54,12 +60,20 @@ open class User: NSObject, Codable {
             self.reports = [UserReport]()
         }
         
+        if let banexpires = try container.decodeIfPresent(String.self, forKey: .banexpires) {
+            self.banexpires = ISODateFormat(banexpires)
+        }
+        
         if let shadowbanexpires = try container.decodeIfPresent(String.self, forKey: .shadowbanexpires) {
             self.shadowbanexpires = ISODateFormat(shadowbanexpires)
         }
         
-        if let roleString = try container.decodeIfPresent(String.self, forKey: .roleString) {
-            self.role = Role(rawValue: roleString)
+        if let muteexpires = try container.decodeIfPresent(String.self, forKey: .muteexpires) {
+            self.muteexpires = ISODateFormat(muteexpires)
+        }
+        
+        if let role = try container.decodeIfPresent(String.self, forKey: .role) {
+            self.role = Role(rawValue: role)
         }
     }
 }

@@ -830,6 +830,53 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
+    func test_ChatRoomsServices_Shadowban() {
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPremoderated()
+        }
+        
+        let request = ChatRequest.ShadowbanUser()
+        request.roomid = dummyRoom?.id
+        request.userid = dummyUser?.userid
+        request.applyeffect = true
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.shadowbanUser(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_MuteUser() {
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPremoderated()
+        }
+        
+        let request = ChatRequest.MuteUser()
+        request.roomid = dummyRoom?.id
+        request.userid = dummyUser?.userid
+        request.applyeffect = true
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.muteUser(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+
+    
     func test_ChatRoomsServices_SearchEvent() {
         test_ChatRoomsServices_ExecuteChatCommand()
         

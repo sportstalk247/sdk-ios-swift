@@ -185,23 +185,23 @@ public class UserRequest {
     ///
     /// - userid: (required) The applicaiton provided userid of the user to ban
     ///
-    /// - banned: (required) Boolean. If true, user will be set to banned state. If false, will be set to non-banned state.
+    /// - applyeffect: (required) Boolean. If true, user will be set to banned state. If false, will be set to non-banned state.
     ///
     public class SetBanStatus: ParametersBase<SetBanStatus.Fields, SetBanStatus> {
         public enum Fields {
             case userid
-            case banned
+            case applyeffect
         }
 
         public var userid: String?
-        public var banned: Bool?
+        public var applyeffect: Bool?
         
         override public func from(dictionary: [AnyHashable: Any]) -> SetBanStatus {
             set(dictionary: dictionary)
             let ret = SetBanStatus()
 
             ret.userid = value(forKey: .userid)
-            ret.banned = value(forKey: .banned)
+            ret.applyeffect = value(forKey: .applyeffect)
          
             return ret
         }
@@ -209,7 +209,7 @@ public class UserRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
 
-            add(key: .banned, value: banned)
+            add(key: .applyeffect, value: applyeffect)
             
             return toDictionary
         }
@@ -314,6 +314,51 @@ public class UserRequest {
         }
     }
     
+    /// Will toggle the user's mute effect
+    ///
+    /// A muted user is in a read-only state. The muted user can join chat rooms and observe but cannot communicate. This method applies mute on the global level (applies to all talk contexts). You can optionally specify an expiration time. If the expiration time is specified, then each time the shadow banned user tries to send a message the API will check if the shadow ban has expired and will lift the ban.
+    ///
+    /// **Paramters**
+    ///
+    /// - userid: (required) The applicaiton provided userid of the user to ban
+    ///
+    /// - applyeffect: (required) true or false. If true, user will be set to muted state. If false, will be set to non-banned state.
+    ///
+    /// - expireseconds: (optional) Duration of mute in seconds. If specified, the mute will be lifted when this time is reached. If not specified, mute effect remains until explicitly lifted. Maximum seconds is a double byte value.
+    ///
+    public class MuteUser: ParametersBase<MuteUser.Fields, MuteUser> {
+        public enum Fields {
+            case userid
+            case applyeffect
+            case expireseconds
+        }
+        
+        public var userid: String?
+        public var applyeffect: Bool?
+        public var expireseconds: Double?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> MuteUser {
+            set(dictionary: dictionary)
+            let ret = MuteUser()
+            
+            ret.userid = value(forKey: .userid)
+            ret.applyeffect = value(forKey: .applyeffect)
+            ret.expireseconds = value(forKey: .applyeffect)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .applyeffect, value: applyeffect)
+            add(key: .expireseconds, value: expireseconds)
+            
+            return toDictionary
+        }
+    }
+    
     /// Reports a user to the moderation team.
     ///
     /// **Paramters**
@@ -367,19 +412,19 @@ public class UserRequest {
     ///
     /// - userid: (required) The applicaiton provided userid of the user to ban
     ///
-    /// - shadowban: (required) true or false. If true, user will be set to banned state. If false, will be set to non-banned state.
+    /// - applyeffect: (required) true or false. If true, user will be set to banned state. If false, will be set to non-banned state.
     ///
     /// - expireseconds: (optional) Duration of shadowban value in seconds. If specified, the shadow ban will be lifted when this time is reached. If not specified, shadowban remains until explicitly lifted. Maximum seconds is a double byte value.
     ///
     public class SetShadowBanStatus: ParametersBase<SetShadowBanStatus.Fields, SetShadowBanStatus> {
         public enum Fields {
             case userid
-            case shadowban
+            case applyeffect
             case expireseconds
         }
         
         public var userid: String?
-        public var shadowban: Bool?
+        public var applyeffect: Bool?
         public var expireseconds: Int?
         
         override public func from(dictionary: [AnyHashable: Any]) -> SetShadowBanStatus {
@@ -387,7 +432,7 @@ public class UserRequest {
             let ret = SetShadowBanStatus()
             
             ret.userid = value(forKey: .userid)
-            ret.shadowban = value(forKey: .shadowban)
+            ret.applyeffect = value(forKey: .applyeffect)
             ret.expireseconds = value(forKey: .expireseconds)
             
             return ret
@@ -396,7 +441,7 @@ public class UserRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .shadowban, value: shadowban)
+            addRequired(key: .applyeffect, value: applyeffect)
             add(key: .expireseconds, value: expireseconds)
             
             return toDictionary
