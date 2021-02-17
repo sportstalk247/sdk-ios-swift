@@ -177,14 +177,19 @@ This requires that the action command dance is on the approved list of commands 
 
     func send(message: String, to room: ChatRoom, as user: User) {
         // See for list of commands
-        let request = ChatRequest.ExecuteChatCommand()
-        request.roomId = room.id
-        request.command = "SAY \(message)"
-        request.userid = user.userid
+        
+        do {
+            let request = ChatRequest.ExecuteChatCommand()
+            request.roomId = room.id
+            request.command = "SAY \(message)"
+            request.userid = user.userid
 
-        client.executeChatCommand(request) { (code, message, _, response) in
-            // where response is model ExecuteChatCommandResponse
-            // Process response
+            client.executeChatCommand(request) { (code, message, _, response) in
+                // where response is model ExecuteChatCommandResponse
+                // Process response
+            }
+        } catch {
+          // Handle errors
         }
     }
 
@@ -2008,7 +2013,7 @@ Execute Command
 ============================
 .. code-block:: javascript
 
-    func executeChatCommand(_ request: ChatRequest.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
+    func executeChatCommand(_ request: ChatRequest.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) throws
 
 Executes a command in a chat room
 
@@ -2076,11 +2081,11 @@ This requires that the action command dance is on the approved list of commands 
     
 - moderation: (optional) Use this field to override the moderation state of the chat event. Use this when you have already inspected the content. Use one of the values below.
     
-        - approved : The content has already been approved by a moderator and it should not be sent to the moderation queue if users report it since the decision was already made to approve it.
+- approved : The content has already been approved by a moderator and it should not be sent to the moderation queue if users report it since the decision was already made to approve it.
     
-        - prescreened : The content was prescreened, but not approved. This means it can still be flagged for moderation queue by the users. This state allows a data analyst to distinguish between content that was approved by a moderator and content that went through a filtering process but wasn't explicitly approved or rejected.
+- prescreened : The content was prescreened, but not approved. This means it can still be flagged for moderation queue by the users. This state allows a data analyst to distinguish between content that was approved by a moderator and content that went through a filtering process but wasn't explicitly approved or rejected.
     
-        - rejected : The content has been rejected by a moderator and it should not be broadcast into the chat stream, but it should be saved to the chat room history for future analysis or audit trail purposes.
+- rejected : The content has been rejected by a moderator and it should not be broadcast into the chat stream, but it should be saved to the chat room history for future analysis or audit trail purposes.
     
 **RESPONSE CODES**
     
@@ -2128,7 +2133,7 @@ Send Quoted Reply
 ============================
 .. code-block:: javascript
 
-    func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<Event>)
+    func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<Event>) throws
 
 Quotes an existing message and republishes it with a new message
     
@@ -2210,7 +2215,7 @@ Send Threaded Reply
 ============================
 .. code-block:: javascript
         
-    func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<Event>)
+        func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<Event>) throws
 
 Creates a threaded reply to another message event
     
