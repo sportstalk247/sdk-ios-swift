@@ -42,6 +42,7 @@
 		A86EA03F25AC8A25002B9B3F /* ListNotificationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EA03E25AC8A25002B9B3F /* ListNotificationResponse.swift */; };
 		A86EA04325AC8A6A002B9B3F /* UserNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EA04225AC8A6A002B9B3F /* UserNotification.swift */; };
 		A86EC091247484310025A5FA /* ParametersBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EC090247484310025A5FA /* ParametersBase.swift */; };
+		A8704BA425DD5D3700FA23B3 /* SDKError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8704BA325DD5D3700FA23B3 /* SDKError.swift */; };
 		A87A51D125DAC05F00655A14 /* ReportedUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87A51D025DAC05F00655A14 /* ReportedUser.swift */; };
 		A87A839625D440020096E42A /* ListEventByTimestampResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87A839525D440020096E42A /* ListEventByTimestampResponse.swift */; };
 		A8B45222250D3E5100592F9B /* DeleteEventResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */; };
@@ -101,6 +102,7 @@
 		A86EA03E25AC8A25002B9B3F /* ListNotificationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListNotificationResponse.swift; sourceTree = "<group>"; };
 		A86EA04225AC8A6A002B9B3F /* UserNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNotification.swift; sourceTree = "<group>"; };
 		A86EC090247484310025A5FA /* ParametersBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParametersBase.swift; sourceTree = "<group>"; };
+		A8704BA325DD5D3700FA23B3 /* SDKError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKError.swift; sourceTree = "<group>"; };
 		A87A51D025DAC05F00655A14 /* ReportedUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportedUser.swift; sourceTree = "<group>"; };
 		A87A839525D440020096E42A /* ListEventByTimestampResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEventByTimestampResponse.swift; sourceTree = "<group>"; };
 		A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteEventResponse.swift; sourceTree = "<group>"; };
@@ -207,6 +209,7 @@
 			isa = PBXGroup;
 			children = (
 				A84A214C25CB09440042068F /* Extensions */,
+				A8704BA325DD5D3700FA23B3 /* SDKError.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -410,6 +413,7 @@
 				A855D79E24714D4000206560 /* DeleteChatRoomResponse.swift in Sources */,
 				A8B45222250D3E5100592F9B /* DeleteEventResponse.swift in Sources */,
 				A855D7AB24714DC000206560 /* ChatClient.swift in Sources */,
+				A8704BA425DD5D3700FA23B3 /* SDKError.swift in Sources */,
 				A855D7A324714D4000206560 /* ApiResponse.swift in Sources */,
 				A86EA03F25AC8A25002B9B3F /* ListNotificationResponse.swift in Sources */,
 				8448316D2444479000C29381 /* CommentRequest.swift in Sources */,
@@ -629,7 +633,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 1.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -656,7 +660,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 1.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
