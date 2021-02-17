@@ -522,19 +522,23 @@ extension ChatClientTests {
 
      func test_ChatRoomsServices_ExecuteChatCommand() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
-        let request = ChatRequest.ExecuteChatCommand()
-        request.roomid = dummyRoom?.id
-        request.command = "Hello New Command"
-        request.userid = dummyUser?.userid
-        request.eventtype = .speech
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
     
-        client.executeChatCommand(request) { (code, message, _, response) in
-            print(message ?? "")
-            receivedCode = code
-            self.dummyEvent = response?.speech
+        do {
+            let request = ChatRequest.ExecuteChatCommand()
+            request.roomid = dummyRoom?.id
+            request.command = "Hello New Command"
+            request.userid = dummyUser?.userid
+            request.eventtype = .speech
+            
+            try client.executeChatCommand(request, completionHandler: { (code, message, _, response) in
+                print(message)
+                receivedCode = code
+                expectation.fulfill()
+            })
+        } catch {
             expectation.fulfill()
         }
 
@@ -544,20 +548,25 @@ extension ChatClientTests {
     
     func test_ChatRoomsServices_ExecuteChatCommandWithCustomId() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
-        let request = ChatRequest.ExecuteChatCommand()
-        request.roomid = dummyRoom?.id
-        request.command = "Hello New Command"
-        request.userid = dummyUser?.userid
-        request.eventtype = .custom
-        request.customtype = "test something"
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
     
-        client.executeChatCommand(request) { (code, message, _, response) in
-            print(message ?? "")
-            receivedCode = code
-            self.dummyEvent = response?.speech
+        do {
+            let request = ChatRequest.ExecuteChatCommand()
+            request.roomid = dummyRoom?.id
+            request.command = "Hello New Command"
+            request.userid = dummyUser?.userid
+            request.eventtype = .custom
+            request.customtype = "test something"
+            
+            try client.executeChatCommand(request) { (code, message, _, response) in
+                print(message ?? "")
+                receivedCode = code
+                self.dummyEvent = response?.speech
+                expectation.fulfill()
+            }
+        } catch {
             expectation.fulfill()
         }
 
@@ -567,20 +576,25 @@ extension ChatClientTests {
     
     func test_ChatRoomsServices_SendQuotedReply() {
         test_ChatRoomsServices_ListMessagesByUsers()
-        let request = ChatRequest.SendQuotedReply()
-        request.roomid = dummyRoom?.id
-        request.eventid = dummyEvent?.id
-        request.userid = dummyUser?.userid
-        request.body = "SAY Hello SPORTSTALKSDK World!"
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
     
-        client.sendQuotedReply(request) { (code, message, _, response) in
-            print(message ?? "")
-            print("With Command: \(String(describing: request.body))")
-            receivedCode = code
-            self.dummyEvent = response
+        do {
+            let request = ChatRequest.SendQuotedReply()
+            request.roomid = dummyRoom?.id
+            request.eventid = dummyEvent?.id
+            request.userid = dummyUser?.userid
+            request.body = "SAY Hello SPORTSTALKSDK World!"
+            
+            try client.sendQuotedReply(request) { (code, message, _, response) in
+                print(message ?? "")
+                print("With Command: \(String(describing: request.body))")
+                receivedCode = code
+                self.dummyEvent = response
+                expectation.fulfill()
+            }
+        } catch {
             expectation.fulfill()
         }
 
@@ -590,20 +604,26 @@ extension ChatClientTests {
     
     func test_ChatRoomsServices_SendThreadedReply() {
         test_ChatRoomsServices_ListMessagesByUsers()
-        let request = ChatRequest.SendThreadedReply()
-        request.roomid = dummyRoom?.id
-        request.eventid = dummyEvent?.id
-        request.userid = dummyUser?.userid
-        request.body = "SAY Hello SPORTSTALKSDK World!"
+        
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
     
-        client.sendThreadedReply(request) { (code, message, _, response) in
-            print(message ?? "")
-            print("With Command: \(String(describing: request.body))")
-            receivedCode = code
-            self.dummyEvent = response
+        do {
+            let request = ChatRequest.SendThreadedReply()
+            request.roomid = dummyRoom?.id
+            request.eventid = dummyEvent?.id
+            request.userid = dummyUser?.userid
+            request.body = "SAY Hello SPORTSTALKSDK World!"
+            
+            try client.sendThreadedReply(request) { (code, message, _, response) in
+                print(message ?? "")
+                print("With Command: \(String(describing: request.body))")
+                receivedCode = code
+                self.dummyEvent = response
+                expectation.fulfill()
+            }
+        } catch {
             expectation.fulfill()
         }
 
@@ -1088,20 +1108,27 @@ extension ChatClientTests {
         ]
         
         func executeCommand() {
-            let request = ChatRequest.ExecuteChatCommand()
-            request.roomid = dummyRoom?.id
-            request.command = randomMessages[Int.random(in: 0..<randomMessages.count)]
-//            request.command = "Hello New Command"
-            request.userid = dummyUser?.userid
-            request.eventtype = .speech
-        
-            client.executeChatCommand(request) { (code, message, _, response) in
-                print(message ?? "")
-                self.dummyEvent = response?.speech
+            do {
+                let request = ChatRequest.ExecuteChatCommand()
+                request.roomid = dummyRoom?.id
+                request.command = randomMessages[Int.random(in: 0..<randomMessages.count)]
+//                request.command = "Hello New Command"
+                request.userid = dummyUser?.userid
+                request.eventtype = .speech
+                
+                print("command: \(request.command)")
+            
+                try client.executeChatCommand(request) { (code, message, _, response) in
+                    self.dummyEvent = response?.speech
+                }
+            } catch SDKError.RequestSpam {
+                print("Spam detected")
+            } catch {
+                print("An unknown error has occured")
             }
         }
         
-        
+        SportsTalkSDK.shared.debugMode = false
         let limit = 15.0 // seconds
         var runtime = Double(0) // seconds
         
