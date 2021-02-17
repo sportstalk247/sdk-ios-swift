@@ -219,7 +219,7 @@ extension ChatClient {
     }
 
     public func executeChatCommand(_ request: ChatRequest.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) throws {
-        guard throttle(command: request.command) else { throw SDKError.RequestSpam }
+        guard throttle(command: request.command) else { throw SDKError.NotAllowed }
         
         makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             self.lastCommand = request.command
@@ -229,7 +229,7 @@ extension ChatClient {
     }
     
     public func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<Event>) throws {
-        guard throttle(command: request.body) else { throw SDKError.RequestSpam }
+        guard throttle(command: request.body) else { throw SDKError.NotAllowed }
         
         makeRequest(URLPath.Room.QuotedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             self.lastCommand = request.body
@@ -239,7 +239,7 @@ extension ChatClient {
     }
     
     public func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<Event>) throws {
-        guard throttle(command: request.body) else { throw SDKError.RequestSpam }
+        guard throttle(command: request.body) else { throw SDKError.NotAllowed }
         
         makeRequest(URLPath.Room.ThreadedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             self.lastCommand = request.body

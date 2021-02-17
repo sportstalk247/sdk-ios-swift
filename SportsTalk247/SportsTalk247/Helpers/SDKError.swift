@@ -9,7 +9,7 @@
 import Foundation
 
 public enum SDKError: Swift.Error {
-    case RequestSpam
+    case NotAllowed
     case InvalidParameters
     case Unknown
 }
@@ -17,10 +17,10 @@ public enum SDKError: Swift.Error {
 extension SDKError {}
 
 extension SDKError {
-    var localizedDescription: String {
+    public var localizedDescription: String {
         switch self {
-        case .RequestSpam:
-            return "SDK Error: Command is being sent too frequently. Please wait 3000ms until you send another"
+        case .NotAllowed:
+            return "405 - Not Allowed. Please wait to send this message again"
         case .InvalidParameters:
             return "SDK Error: Some required parameters are missing."
         case .Unknown:

@@ -1121,10 +1121,9 @@ extension ChatClientTests {
                 try client.executeChatCommand(request) { (code, message, _, response) in
                     self.dummyEvent = response?.speech
                 }
-            } catch SDKError.RequestSpam {
-                print("Spam detected")
             } catch {
-                print("An unknown error has occured")
+                let error = error as! SDKError
+                print(error.localizedDescription)
             }
         }
         
