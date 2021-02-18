@@ -1982,11 +1982,13 @@ public class ChatRequest {
         public enum Fields {
             case roomid
             case userid
+            case reporteduserid
             case reporttype
         }
         
         public var roomid: String?
         public var userid: String?
+        public var reporteduserid: String?
         public var reporttype: ReportType? = .abuse
         
         override public func from(dictionary: [AnyHashable: Any]) -> ReportUserInRoom {
@@ -1995,6 +1997,7 @@ public class ChatRequest {
             
             ret.roomid = value(forKey: .roomid)
             ret.userid = value(forKey: .userid)
+            ret.reporteduserid = value(forKey: .reporteduserid)
             ret.reporttype = value(forKey: .reporttype)
             
             return ret
