@@ -48,12 +48,13 @@ public protocol ChatClientProtocol {
 
 public class ChatClient: NetworkService, ChatClientProtocol {
     var timer: Timer?
-    var firstCursor: String = ""
-    var lastCursor: String = ""
-    var lastRoomId: String?
-    var lastCommand: String?
-    var lastCommandSent: Date?
-    static let timeout = 3000 // milliseconds
+    var firstcursor: String = ""
+    var lastcursor: String = ""
+    var lastroomid: String?
+    var lastcommand: String?
+    var lastcommandsent: Date?
+    var currentuserid: String?
+    static let timeout = 5000 // milliseconds
     
     public override init(config: ClientConfig) {
         super.init(config: config)
@@ -75,7 +76,7 @@ extension ChatClient {
             return false
         }
         
-        guard let lastCommand = self.lastCommand, let lastSent = self.lastCommandSent else {
+        guard let lastCommand = self.lastcommand, let lastSent = self.lastcommandsent else {
             return true
         }
         
@@ -158,41 +159,43 @@ extension ChatClient {
     }
     
     public func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents,completionHandler: @escaping Completion<ListEventsResponse>) {
-        request.cursor = request.cursor ?? self.firstCursor
+        request.cursor = request.cursor ?? self.firstcursor
         makeRequest(URLPath.Room.PreviousEvent(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
-            self.firstCursor = response?.data?.cursor ?? ""
+            self.firstcursor = response?.data?.cursor ?? ""
         }
     }
     
     public func listEventByType(_ request: ChatRequest.ListEventByType,completionHandler: @escaping Completion<ListEventsResponse>) {
         makeRequest(URLPath.Room.EventByType(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
-            self.firstCursor = response?.data?.cursor ?? ""
+            self.firstcursor = response?.data?.cursor ?? ""
         }
     }
     
     public func listEventByTimestamp(_ request: ChatRequest.ListEventByTimestamp,completionHandler: @escaping Completion<ListEventByTimestampResponse>) {
         makeRequest(URLPath.Room.EventByTime(roomid: request.roomid, time: request.timestamp), withData: request.toDictionary(), requestType: .GET, expectation: ListEventByTimestampResponse.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
-            self.firstCursor = response?.data?.cursornewer ?? ""
+            self.firstcursor = response?.data?.cursornewer ?? ""
         }
     }
     
     public func joinRoom(_ request: ChatRequest.JoinRoom, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
         makeRequest(URLPath.Room.Join(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
-            self.lastRoomId = request.roomid
-            self.lastCursor = ""
-            self.firstCursor = response?.data?.eventscursor?.cursor ?? ""
+            self.lastroomid = request.roomid
+            self.lastcursor = ""
+            self.firstcursor = response?.data?.eventscursor?.cursor ?? ""
+            self.currentuserid = request.userid
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func joinRoomByCustomId(_ request: ChatRequest.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
         makeRequest(URLPath.Room.Join(customid: request.customid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
-            self.lastCursor = ""
-            self.firstCursor = response?.data?.eventscursor?.cursor ?? ""
-            self.lastRoomId = response?.data?.room?.id ?? ""
+            self.lastcursor = ""
+            self.firstcursor = response?.data?.eventscursor?.cursor ?? ""
+            self.lastroomid = response?.data?.room?.id ?? ""
+            self.currentuserid = request.userid
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -200,8 +203,9 @@ extension ChatClient {
     public func exitRoom(_ request: ChatRequest.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>) {
         makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { (response) in
             self.stopListeningToChatUpdates()
-            self.lastRoomId = nil
-            self.lastCursor = ""
+            self.lastroomid = nil
+            self.lastcursor = ""
+            self.currentuserid = nil
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -222,8 +226,8 @@ extension ChatClient {
         guard throttle(command: request.command) else { throw SDKError.NotAllowed }
         
         makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
-            self.lastCommand = request.command
-            self.lastCommandSent = Date()
+            self.lastcommand = request.command
+            self.lastcommandsent = Date()
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -232,8 +236,8 @@ extension ChatClient {
         guard throttle(command: request.body) else { throw SDKError.NotAllowed }
         
         makeRequest(URLPath.Room.QuotedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
-            self.lastCommand = request.body
-            self.lastCommandSent = Date()
+            self.lastcommand = request.body
+            self.lastcommandsent = Date()
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -242,8 +246,8 @@ extension ChatClient {
         guard throttle(command: request.body) else { throw SDKError.NotAllowed }
         
         makeRequest(URLPath.Room.ThreadedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
-            self.lastCommand = request.body
-            self.lastCommandSent = Date()
+            self.lastcommand = request.body
+            self.lastcommandsent = Date()
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -374,8 +378,8 @@ extension ChatClient {
     public func startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>) {
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { _ in
             let request = ChatRequest.GetMoreUpdates()
-            request.roomid = self.lastRoomId
-            request.cursor = self.lastCursor
+            request.roomid = self.lastroomid
+            request.cursor = self.lastcursor
             
             self.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
                 // Invalid timer should disregard further update results
@@ -392,11 +396,11 @@ extension ChatClient {
                     
                     if let cursor = response.cursor {
                         if !cursor.isEmpty {
-                            self.lastCursor = cursor
+                            self.lastcursor = cursor
                         }
                     }
                     
-                    emittableEvents = response.events
+                    emittableEvents = response.events.filter({ $0.shadowban == false && $0.userid != self.currentuserid })
                     
                     completionHandler(code, message, kind, emittableEvents)
                 }
