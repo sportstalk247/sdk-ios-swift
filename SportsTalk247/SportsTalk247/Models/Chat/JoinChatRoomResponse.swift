@@ -1,6 +1,6 @@
 import Foundation
 
-public struct JoinChatRoomResponse: Codable {
+public class JoinChatRoomResponse: NSObject, Codable {
     public var kind: String?
     public var user: User?
     public var room: ChatRoom?
@@ -13,7 +13,8 @@ public struct JoinChatRoomResponse: Codable {
         case eventscursor
     }
     
-    public init(from decoder: Decoder) throws {
+    required public convenience init(from decoder: Decoder) throws {
+        self.init()
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.kind = try container.decodeIfPresent(String.self, forKey: .kind)
         self.user = try container.decodeIfPresent(User.self, forKey: .user)

@@ -206,7 +206,25 @@ extension ChatClient {
             self.lastcursor = ""
             self.firstcursor = response?.data?.eventscursor?.cursor ?? ""
             self.currentuserid = request.userid
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+            
+            let newupdates = GetUpdatesResponse()
+            newupdates.kind = response?.data?.eventscursor?.kind
+            newupdates.cursor = response?.data?.eventscursor?.cursor
+            newupdates.more = response?.data?.eventscursor?.more
+            newupdates.itemcount = response?.data?.eventscursor?.itemcount
+            newupdates.room = response?.data?.eventscursor?.room
+            newupdates.events = response?.data?.eventscursor?.events ?? []
+
+            // Filter shadowbanned events that are not from user
+            newupdates.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            
+            let newdata = JoinChatRoomResponse()
+            newdata.kind = response?.data?.kind
+            newdata.user = response?.data?.user
+            newdata.room = response?.data?.room
+            newdata.eventscursor = newupdates
+            
+            completionHandler(response?.code, response?.message, response?.kind, newdata)
         }
     }
     
@@ -216,7 +234,25 @@ extension ChatClient {
             self.firstcursor = response?.data?.eventscursor?.cursor ?? ""
             self.lastroomid = response?.data?.room?.id ?? ""
             self.currentuserid = request.userid
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+            
+            let newupdates = GetUpdatesResponse()
+            newupdates.kind = response?.data?.eventscursor?.kind
+            newupdates.cursor = response?.data?.eventscursor?.cursor
+            newupdates.more = response?.data?.eventscursor?.more
+            newupdates.itemcount = response?.data?.eventscursor?.itemcount
+            newupdates.room = response?.data?.eventscursor?.room
+            newupdates.events = response?.data?.eventscursor?.events ?? []
+
+            // Filter shadowbanned events that are not from user
+            newupdates.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            
+            let newdata = JoinChatRoomResponse()
+            newdata.kind = response?.data?.kind
+            newdata.user = response?.data?.user
+            newdata.room = response?.data?.room
+            newdata.eventscursor = newupdates
+            
+            completionHandler(response?.code, response?.message, response?.kind, newdata)
         }
     }
 
@@ -234,7 +270,7 @@ extension ChatClient {
         makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { (response) in
             
             // Filter shadowbanned events that are not from user
-            var data = response?.data
+            let data = response?.data
             data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
@@ -245,7 +281,7 @@ extension ChatClient {
         makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { (response) in
             
             // Filter shadowbanned events that are not from user
-            var data = response?.data
+            let data = response?.data
             data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
