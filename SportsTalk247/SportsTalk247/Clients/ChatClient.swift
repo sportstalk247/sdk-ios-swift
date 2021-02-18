@@ -161,7 +161,12 @@ extension ChatClient {
     public func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents,completionHandler: @escaping Completion<ListEventsResponse>) {
         request.cursor = request.cursor ?? self.firstcursor
         makeRequest(URLPath.Room.PreviousEvent(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+            
+            // Filter shadowbanned events that are not from user
+            var data = response?.data
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            
+            completionHandler(response?.code, response?.message, response?.kind, data)
             self.firstcursor = response?.data?.cursor ?? ""
         }
     }
@@ -212,13 +217,23 @@ extension ChatClient {
 
     public func getUpdates(_ request: ChatRequest.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>) {
         makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+            
+            // Filter shadowbanned events that are not from user
+            var data = response?.data
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            
+            completionHandler(response?.code, response?.message, response?.kind, data)
         }
     }
     
     public func getMoreUpdates(_ request: ChatRequest.GetMoreUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>) {
         makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+            
+            // Filter shadowbanned events that are not from user
+            var data = response?.data
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            
+            completionHandler(response?.code, response?.message, response?.kind, data)
         }
     }
 
@@ -400,7 +415,7 @@ extension ChatClient {
                         }
                     }
                     
-                    emittableEvents = response.events.filter({ $0.shadowban == false && $0.userid != self.currentuserid })
+                    emittableEvents = response.events
                     
                     completionHandler(code, message, kind, emittableEvents)
                 }
