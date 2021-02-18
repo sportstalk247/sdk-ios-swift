@@ -212,7 +212,7 @@ extension UserClientTests {
     }
     
     func test_UsersServices_SearchUser() {
-        if self.dummyUser == nil {
+        if self.otherUser == nil {
             createUpdateOtherUser()
         }
         

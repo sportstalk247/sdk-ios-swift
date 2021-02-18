@@ -14,6 +14,17 @@ class ChatClientTests: XCTestCase {
         user.profileurl = "http://www.thepresidentshalloffame.com/1-george-washington"
         return user
     }()
+    
+    lazy var otherUser: User? = {
+        let user = User()
+        user.userid = "9940A8C9-2332-4824-B628-48390F367D30"
+        user.handle = "JohnWICK"
+        user.banned = true
+        user.displayname = "John Wick"
+        user.pictureurl = ""
+        user.profileurl = ""
+        return user
+    }()
 
     var dummyRoom: ChatRoom? { didSet { print("Room saved: \(String(describing: self.dummyRoom?.id))") }  }
     var dummyEvent: Event? { didSet { print("Event saved: \(String(describing: self.dummyEvent?.id))") }  }
@@ -804,6 +815,10 @@ extension ChatClientTests {
             createUpdateUser()
         }
         
+        if otherUser == nil {
+            createUpdateOtherUser()
+        }
+        
         if dummyRoom == nil {
             test_ChatRoomsServices_CreateRoomPremoderated()
         }
@@ -811,6 +826,7 @@ extension ChatClientTests {
         let request = ChatRequest.ReportUserInRoom()
         request.roomid = dummyRoom?.id
         request.userid = dummyUser?.userid
+        request.reporteduserid = otherUser?.userid
         request.reporttype = .spam
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -1166,6 +1182,24 @@ extension ChatClientTests {
         client.createOrUpdateUser(request) { (code, message, kind, user) in
             self.dummyUser = user
         }
+    }
+    
+    private func createUpdateOtherUser() {
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        
+        let request = UserRequest.CreateUpdateUser()
+        request.userid = "9940A8C9-2332-4824-B628-48390F367D30"
+        request.handle = "JohnWICK"
+        request.displayname = "John Wick"
+        request.pictureurl = nil
+        request.profileurl = nil
+        
+        let userclient = UserClient(config: ClientConfig(appId: Config.appId, authToken: Config.authToken, endpoint: Config.url))
+        userclient.createOrUpdateUser(request) { (code, message, kind, user) in
+            self.otherUser = user
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
     }
     
     private func listRooms(completion: @escaping (_ rooms: [ChatRoom]?) -> Void) {

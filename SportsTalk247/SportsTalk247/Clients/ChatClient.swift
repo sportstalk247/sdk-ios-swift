@@ -54,7 +54,7 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     var lastcommand: String?
     var lastcommandsent: Date?
     var currentuserid: String?
-    static let timeout = 5000 // milliseconds
+    static let timeout = 20000 // milliseconds
     
     public override init(config: ClientConfig) {
         super.init(config: config)
@@ -173,6 +173,11 @@ extension ChatClient {
     
     public func listEventByType(_ request: ChatRequest.ListEventByType,completionHandler: @escaping Completion<ListEventsResponse>) {
         makeRequest(URLPath.Room.EventByType(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { (response) in
+            
+            // Filter shadowbanned events that are not from user
+            var data = response?.data
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
             self.firstcursor = response?.data?.cursor ?? ""
         }
@@ -180,6 +185,11 @@ extension ChatClient {
     
     public func listEventByTimestamp(_ request: ChatRequest.ListEventByTimestamp,completionHandler: @escaping Completion<ListEventByTimestampResponse>) {
         makeRequest(URLPath.Room.EventByTime(roomid: request.roomid, time: request.timestamp), withData: request.toDictionary(), requestType: .GET, expectation: ListEventByTimestampResponse.self, append: true) { (response) in
+            
+            // Filter shadowbanned events that are not from user
+            var data = response?.data
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
             self.firstcursor = response?.data?.cursornewer ?? ""
         }
@@ -311,7 +321,7 @@ extension ChatClient {
     }
     
     public func reportUserInRoom(_ request: ChatRequest.ReportUserInRoom, completionHandler: @escaping Completion<ChatRoom>) {
-        makeRequest(URLPath.Room.Report(roomid: request.roomid, userid: request.userid), withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
+        makeRequest(URLPath.Room.Report(roomid: request.roomid, userid: request.reporteduserid), withData: request.toDictionary(), requestType: .POST, expectation: ChatRoom.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
