@@ -154,7 +154,12 @@ extension ChatClient {
     
     public func listEventHistory(_ request: ChatRequest.ListEventHistory, completionHandler: @escaping Completion<ListEventsResponse>) {
         makeRequest(URLPath.Room.EventHistory(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+            
+            // Filter shadowbanned events that are not from user
+            var data = response?.data
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            
+            completionHandler(response?.code, response?.message, response?.kind, data)
         }
     }
     
@@ -178,7 +183,7 @@ extension ChatClient {
             var data = response?.data
             data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
             
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+            completionHandler(response?.code, response?.message, response?.kind, data)
             self.firstcursor = response?.data?.cursor ?? ""
         }
     }
@@ -190,9 +195,9 @@ extension ChatClient {
             var data = response?.data
             data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
             
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+            completionHandler(response?.code, response?.message, response?.kind, data)
             self.firstcursor = response?.data?.cursornewer ?? ""
-        }
+        }   
     }
     
     public func joinRoom(_ request: ChatRequest.JoinRoom, completionHandler: @escaping Completion<JoinChatRoomResponse>) {

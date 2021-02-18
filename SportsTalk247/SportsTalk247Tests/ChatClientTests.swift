@@ -547,6 +547,7 @@ extension ChatClientTests {
             try client.executeChatCommand(request, completionHandler: { (code, message, _, response) in
                 print(message)
                 receivedCode = code
+                self.dummyEvent = response?.speech
                 expectation.fulfill()
             })
         } catch {
@@ -586,7 +587,13 @@ extension ChatClientTests {
     }
     
     func test_ChatRoomsServices_SendQuotedReply() {
-        test_ChatRoomsServices_ListMessagesByUsers()
+        if dummyUser == nil {
+            createUpdateUser()
+        }
+        
+        if dummyRoom == nil || dummyEvent == nil {
+            test_ChatRoomsServices_ExecuteChatCommand()
+        }
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -614,7 +621,13 @@ extension ChatClientTests {
     }
     
     func test_ChatRoomsServices_SendThreadedReply() {
-        test_ChatRoomsServices_ListMessagesByUsers()
+        if dummyUser == nil {
+            createUpdateUser()
+        }
+        
+        if dummyRoom == nil || dummyEvent == nil {
+            test_ChatRoomsServices_ExecuteChatCommand()
+        }
         
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -643,7 +656,6 @@ extension ChatClientTests {
     }
     
     func test_ChatRoomsServices_PurgeMessages() {
-        test_ChatRoomsServices_JoinRoom()
         test_ChatRoomsServices_ExecuteChatCommand()
         
         let request = ChatRequest.PurgeUserMessages()
