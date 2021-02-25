@@ -223,6 +223,7 @@ extension ChatClient {
             newdata.user = response?.data?.user
             newdata.room = response?.data?.room
             newdata.eventscursor = newupdates
+            newdata.previouseventscursor = response?.data?.previouseventscursor
             
             completionHandler(response?.code, response?.message, response?.kind, newdata)
         }
@@ -251,6 +252,7 @@ extension ChatClient {
             newdata.user = response?.data?.user
             newdata.room = response?.data?.room
             newdata.eventscursor = newupdates
+            newdata.previouseventscursor = response?.data?.previouseventscursor
             
             completionHandler(response?.code, response?.message, response?.kind, newdata)
         }
