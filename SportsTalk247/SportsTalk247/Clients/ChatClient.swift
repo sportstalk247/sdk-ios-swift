@@ -35,7 +35,7 @@ public protocol ChatClientProtocol {
     func searchEventHistory(_ request: ChatRequest.SearchEvent, completionHandler: @escaping Completion<ListEventsResponse>)
     func updateChatEvent(_ request: ChatRequest.UpdateChatEvent, completionHandler: @escaping Completion<Event>)
     
-    func startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>)
+    func startListeningToChatUpdates(limit: Int?, completionHandler: @escaping Completion<[Event]>)
     func stopListeningToChatUpdates()
     
     func approveEvent(_ request: ModerationRequest.ApproveEvent, completionHandler: @escaping Completion<Event>)
@@ -443,11 +443,12 @@ extension ChatClient {
 
 // MARK: - Event Subscription
 extension ChatClient {
-    public func startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>) {
+    public func startListeningToChatUpdates(limit: Int? = nil, completionHandler: @escaping Completion<[Event]>) {
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { _ in
             let request = ChatRequest.GetMoreUpdates()
             request.roomid = self.lastroomid
             request.cursor = self.lastcursor
+            request.limit = limit
             
             self.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
                 // Invalid timer should disregard further update results

@@ -1056,7 +1056,7 @@ public class ChatRequest {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .cursor, value: cursor)
-            add(key: .limit, value: limit)
+            add(key: .limit, value: limit ?? 100)
             
             return toDictionary
         }
