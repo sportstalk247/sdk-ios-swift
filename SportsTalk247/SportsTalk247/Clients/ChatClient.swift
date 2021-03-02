@@ -292,10 +292,10 @@ extension ChatClient {
 
     public func executeChatCommand(_ request: ChatRequest.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) throws {
         guard throttle(command: request.command) else { throw SDKError.NotAllowed }
-        
+        self.lastcommand = request.command
+        self.lastcommandsent = Date()
+
         makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
-            self.lastcommand = request.command
-            self.lastcommandsent = Date()
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
