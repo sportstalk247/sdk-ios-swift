@@ -296,26 +296,44 @@ extension ChatClient {
         self.lastcommandsent = Date()
 
         makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+            
+            if response?.code != 200 {
+                self.lastcommand = nil
+                self.lastcommandsent = nil
+            }
+            
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<Event>) throws {
         guard throttle(command: request.body) else { throw SDKError.NotAllowed }
+        self.lastcommand = request.body
+        self.lastcommandsent = Date()
         
         makeRequest(URLPath.Room.QuotedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
-            self.lastcommand = request.body
-            self.lastcommandsent = Date()
+            
+            if response?.code != 200 {
+                self.lastcommand = nil
+                self.lastcommandsent = nil
+            }
+            
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<Event>) throws {
         guard throttle(command: request.body) else { throw SDKError.NotAllowed }
+        self.lastcommand = request.body
+        self.lastcommandsent = Date()
         
         makeRequest(URLPath.Room.ThreadedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
-            self.lastcommand = request.body
-            self.lastcommandsent = Date()
+            
+            if response?.code != 200 {
+                self.lastcommand = nil
+                self.lastcommandsent = nil
+            }
+            
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }

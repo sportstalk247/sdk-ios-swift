@@ -20,7 +20,7 @@ extension SDKError {
     public var localizedDescription: String {
         switch self {
         case .NotAllowed:
-            return "405 - Not Allowed. Please wait to send this message again"
+            return "418 - Not Allowed. Please wait to send this message again"
         case .InvalidParameters:
             return "SDK Error: Some required parameters are missing."
         case .Unknown:
