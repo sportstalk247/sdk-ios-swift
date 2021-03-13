@@ -532,7 +532,9 @@ extension ChatClientTests {
 
 
      func test_ChatRoomsServices_ExecuteChatCommand() {
-        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        if dummyRoom == nil {
+            test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        }
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -1100,16 +1102,28 @@ extension ChatClientTests {
         
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         
-        let expectation = self.expectation(description: Constants.expectation_description(#function))
-        var receivedCode: Int?
-        
         SportsTalkSDK.shared.debugMode = false
+        
+        func executeEvents() {
+            let max = Int.random(in: 0...31)
+            print("emmitting \(max) events")
+            for _ in 0...max {
+                test_ChatRoomsServices_ExecuteChatCommand()
+            }
+        }
+        
+        executeEvents()
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var pulseCounter = 0
+        
         client.startListeningToChatUpdates() { (code, message, _, event) in
+            pulseCounter += 1
             print("------------")
             print(code == 200 ? "pulse success" : "pulse failed")
+//            print("\(pulseCounter): \(event?.body)")
             print((event?.count ?? 0) > 0 ? "received \(String(describing: event?.count)) event" : "No new events")
             print("------------")
-            receivedCode = code
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
@@ -1119,7 +1133,6 @@ extension ChatClientTests {
         }
         
         waitForExpectations(timeout: Config.TIMEOUT + 50, handler: nil)
-        XCTAssertTrue(receivedCode == 200)
     }
 }
 
