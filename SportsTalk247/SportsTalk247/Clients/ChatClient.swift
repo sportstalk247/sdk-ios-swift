@@ -54,6 +54,8 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     var lastcommand: String?
     var lastcommandsent: Date?
     var currentuserid: String?
+    var prerenderedevents = [Event]()
+    var maxeventbuffersize = 30
     static let timeout = 20000 // milliseconds
     
     public override init(config: ClientConfig) {
@@ -297,7 +299,9 @@ extension ChatClient {
 
         makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
             
-            if response?.code != 200 {
+            let code: Int = response?.code ?? 500
+            
+            if code >= 400 {
                 self.lastcommand = nil
                 self.lastcommandsent = nil
             }
@@ -313,7 +317,9 @@ extension ChatClient {
         
         makeRequest(URLPath.Room.QuotedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             
-            if response?.code != 200 {
+            let code: Int = response?.code ?? 500
+            
+            if code >= 400 {
                 self.lastcommand = nil
                 self.lastcommandsent = nil
             }
@@ -329,7 +335,9 @@ extension ChatClient {
         
         makeRequest(URLPath.Room.ThreadedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
             
-            if response?.code != 200 {
+            let code: Int = response?.code ?? 500
+            
+            if code >= 400 {
                 self.lastcommand = nil
                 self.lastcommandsent = nil
             }
@@ -463,36 +471,52 @@ extension ChatClient {
 extension ChatClient {
     public func startListeningToChatUpdates(limit: Int? = nil, completionHandler: @escaping Completion<[Event]>) {
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { _ in
-            let request = ChatRequest.GetMoreUpdates()
-            request.roomid = self.lastroomid
-            request.cursor = self.lastcursor
-            request.limit = limit
-            
-            self.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
-                // Invalid timer should disregard further update results
-                guard
-                    let self = self,
-                    let timer = self.timer,
-                    timer.isValid
-                else {
-                    return
-                }
+            if self.prerenderedevents.count > 0 {
+                completionHandler(200, "", "list.chatevents", self.emmitEventFromBucket())
+            } else {
+                let request = ChatRequest.GetMoreUpdates()
+                request.roomid = self.lastroomid
+                request.cursor = self.lastcursor
+                request.limit = limit
                 
-                if let response = response {
-                    var emittableEvents = [Event]()
-                    
-                    if let cursor = response.cursor {
-                        if !cursor.isEmpty {
-                            self.lastcursor = cursor
-                        }
+                self.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
+                    // Invalid timer should disregard further update results
+                    guard
+                        let self = self,
+                        let timer = self.timer,
+                        timer.isValid
+                    else {
+                        return
                     }
                     
-                    emittableEvents = response.events
-                    
-                    completionHandler(code, message, kind, emittableEvents)
+                    if let response = response {
+                        if let cursor = response.cursor {
+                            if !cursor.isEmpty {
+                                self.lastcursor = cursor
+                            }
+                        }
+                        
+                        self.prerenderedevents = response.events
+                        completionHandler(code, message, kind, self.emmitEventFromBucket())
+                    }
                 }
             }
         })
+    }
+    
+    func emmitEventFromBucket() -> [Event] {
+        if prerenderedevents.count >= maxeventbuffersize {
+            let dumpbucket = prerenderedevents
+            prerenderedevents.removeAll()
+            return dumpbucket
+        } else {
+            if let first = prerenderedevents.first {
+                prerenderedevents.removeFirst()
+                return [first]
+            } else {
+                return []
+            }
+        }
     }
     
     public func stopListeningToChatUpdates() {
