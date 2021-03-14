@@ -470,16 +470,24 @@ extension ChatClient {
 // MARK: - Event Subscription
 extension ChatClient {
     public func startListeningToChatUpdates(limit: Int? = nil, completionHandler: @escaping Completion<[Event]>) {
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { _ in
-            if self.prerenderedevents.count > 0 {
-                completionHandler(200, "", "list.chatevents", self.emmitEventFromBucket())
-            } else {
+//        var isLoading = false
+        var timestamp: Double = 0.00
+        let timeInterval: Double = 0.100
+        
+        timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { _ in
+            timestamp = ((timestamp + timeInterval) * 100).rounded() / 100
+            
+            // Get updates every 0.500ms
+            if timestamp.truncatingRemainder(dividingBy: 0.500) == 0 {
                 let request = ChatRequest.GetMoreUpdates()
                 request.roomid = self.lastroomid
                 request.cursor = self.lastcursor
                 request.limit = limit
+//                isLoading = true
                 
                 self.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
+//                    isLoading = false
+                    
                     // Invalid timer should disregard further update results
                     guard
                         let self = self,
@@ -500,6 +508,11 @@ extension ChatClient {
                         completionHandler(code, message, kind, self.emmitEventFromBucket())
                     }
                 }
+            } else {
+                guard self.prerenderedevents.count > 0 else {
+                    return
+                }
+                completionHandler(200, "", "list.chatevents", self.emmitEventFromBucket())
             }
         })
     }
