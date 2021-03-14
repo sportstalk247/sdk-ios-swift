@@ -470,7 +470,6 @@ extension ChatClient {
 // MARK: - Event Subscription
 extension ChatClient {
     public func startListeningToChatUpdates(limit: Int? = nil, completionHandler: @escaping Completion<[Event]>) {
-//        var isLoading = false
         var timestamp: Double = 0.00
         let timeInterval: Double = 0.100
         
@@ -478,41 +477,37 @@ extension ChatClient {
             timestamp = ((timestamp + timeInterval) * 100).rounded() / 100
             
             // Get updates every 0.500ms
-            if timestamp.truncatingRemainder(dividingBy: 0.500) == 0 {
-                let request = ChatRequest.GetMoreUpdates()
-                request.roomid = self.lastroomid
-                request.cursor = self.lastcursor
-                request.limit = limit
-//                isLoading = true
-                
-                self.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
-//                    isLoading = false
+            if self.prerenderedevents.count > 0 {
+                completionHandler(200, "", "list.chatevents", self.emmitEventFromBucket())
+            } else {
+                if timestamp.truncatingRemainder(dividingBy: 0.500) == 0 {
+                    let request = ChatRequest.GetMoreUpdates()
+                    request.roomid = self.lastroomid
+                    request.cursor = self.lastcursor
+                    request.limit = limit
                     
-                    // Invalid timer should disregard further update results
-                    guard
-                        let self = self,
-                        let timer = self.timer,
-                        timer.isValid
-                    else {
-                        return
-                    }
-                    
-                    if let response = response {
-                        if let cursor = response.cursor {
-                            if !cursor.isEmpty {
-                                self.lastcursor = cursor
-                            }
+                    self.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
+                        // Invalid timer should disregard further update results
+                        guard
+                            let self = self,
+                            let timer = self.timer,
+                            timer.isValid
+                        else {
+                            return
                         }
                         
-                        self.prerenderedevents = response.events
-                        completionHandler(code, message, kind, self.emmitEventFromBucket())
+                        if let response = response {
+                            if let cursor = response.cursor {
+                                if !cursor.isEmpty {
+                                    self.lastcursor = cursor
+                                }
+                            }
+                            
+                            self.prerenderedevents = response.events
+                            completionHandler(code, message, kind, self.emmitEventFromBucket())
+                        }
                     }
                 }
-            } else {
-                guard self.prerenderedevents.count > 0 else {
-                    return
-                }
-                completionHandler(200, "", "list.chatevents", self.emmitEventFromBucket())
             }
         })
     }
