@@ -1567,11 +1567,13 @@ List Event By Type
     
 - roomid: (required) Room id where you want previous events to be listed
     
-- eventtype: (required)
-    
 - limit: (optional) default is 10, maximum 100
     
 - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+
+- eventtype: (required) Specify the chat event type you are filtering for. If you want to filter for a custom event type, specify 'custom' and then provide a value for the *customtype parameter
+
+- customtype: (optional) If you want to filter by custom type you must first specify 'custom' for the eventtype field. This will enable you to filter to find events of a custom type
     
 **Request Model: ChatRequest.ListEventByType**
 
