@@ -329,7 +329,8 @@ extension ChatClientTests {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         let request = ChatRequest.ListEventByType()
         request.roomid = dummyRoom?.id
-        request.eventtype = .speech
+        request.eventtype = .custom
+        request.customtype = "goal"
         request.limit = 1
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -532,9 +533,7 @@ extension ChatClientTests {
 
 
      func test_ChatRoomsServices_ExecuteChatCommand() {
-        if dummyRoom == nil {
-            test_ChatRoomsServices_JoinRoomAuthenticatedUser()
-        }
+        test_ChatRoomsServices_JoinRoom()
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -542,7 +541,7 @@ extension ChatClientTests {
         do {
             let request = ChatRequest.ExecuteChatCommand()
             request.roomid = dummyRoom?.id
-            request.command = "Hello New Command"
+            request.command = randomMessage()
             request.userid = dummyUser?.userid
             request.eventtype = .speech
             
@@ -1249,5 +1248,97 @@ extension ChatClientTests {
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
         let date = Date()
         return dateFormatter.string(from: date)
+    }
+    
+    private func randomMessage() -> String {
+        // Mi ultimo adios
+        let phrases = [
+            "I.",
+            "Adiós, Patria adorada, región del sol querida",
+            "Perla del mar de oriente, nuestro perdido Edén!",
+            "A darte voy alegre la triste mustia vida,",
+            "Y fuera más brillante, más fresca, más florida",
+            "También por ti la diera, la diera por tu bien",
+            "II.",
+            "En campos de batalla, luchando con delirio,",
+            "Otros te dan sus vidas sin dudas, sin pesar;",
+            "El sitio nada importa, ciprés, laurel o lirio,",
+            "Cadalso o campo abierto, combate o cruel martirio,",
+            "Lo mismo es si lo piden la patria y el hogar.",
+            "III.",
+            "Yo muero cuando veo que el cielo se colora",
+            "Y al fin anuncia el día tras lóbrego capuz;",
+            "si grana necesitas para teñir tu aurora,",
+            "Vierte la sangre mía, derrámala en buen hora",
+            "Y dórela un reflejo de su naciente luz.",
+            "IV",
+            "Mis sueños cuando apenas muchacho adolescente,",
+            "Mis sueños cuando joven ya lleno de vigor,",
+            "Fueron el verte un día, joya del mar de oriente,",
+            "Secos los negros ojos, alta la tersa frente,",
+            "Sin ceño, sin arrugas, sin manchas de rubor",
+            "V.",
+            "Ensueño de mi vida, mi ardiente vivo anhelo,",
+            "¡Salud te grita el alma que pronto va a partir!",
+            "¡Salud! Ah, que es hermoso caer por darte vuelo,",
+            "Morir por darte vida, morir bajo tu cielo,",
+            "Y en tu encantada tierra la eternidad dormir.",
+            "VI.",
+            "Si sobre mi sepulcro vieres brotar un día",
+            "Entre la espesa yerba sencilla, humilde flor,",
+            "Acércala a tus labios y besa al alma mía,",
+            "Y sienta yo en mi frente bajo la tumba fría,",
+            "De tu ternura el soplo, de tu hálito el calor.",
+            "VII.",
+            "Deja a la luna verme con luz tranquila y suave,",
+            "Deja que el alba envíe su resplandor fugaz,",
+            "Deja gemir al viento con su murmullo grave,",
+            "Y si desciende y posa sobre mi cruz un ave,",
+            "Deja que el ave entone su cántico de paz.",
+            "VIII.",
+            "Deja que el sol, ardiendo, las lluvias evapore",
+            "Y al cielo tornen puras, con mi clamor en pos;",
+            "Deja que un ser amigo mi fin temprano llore",
+            "Y en las serenas tardes cuando por mí alguien ore,",
+            "¡Ora también, oh Patria, por mi descanso a Dios!",
+            "IX.",
+            "Ora por todos cuantos murieron sin ventura,",
+            "Por cuantos padecieron tormentos sin igual,",
+            "Por nuestras pobres madres que gimen su amargura;",
+            "Por huérfanos y viudas, por presos en tortura",
+            "Y ora por ti que veas tu redención final.",
+            "X.",
+            "Y cuando en noche oscura se envuelva el cementerio",
+            "Y solos sólo muertos queden velando allí,",
+            "No turbes su reposo, no turbes el misterio,",
+            "Tal vez accordes oigas de cítara o salterio,",
+            "Soy yo, querida Patria, yo que te canto a ti.",
+            "XI.",
+            "Y cuando ya mi tumba de todos olvidada",
+            "No tenga cruz ni piedra que marquen su lugar,",
+            "Deja que la are el hombre, la esparza con la azada,",
+            "Y mis cenizas, antes que vuelvan a la nada,",
+            "El polvo de tu alfombra que vayan a formar.",
+            "XII.",
+            "Entonces nada importa me pongas en olvido.",
+            "Tu atmósfera, tu espacio, tus valles cruzaré.",
+            "Vibrante y limpia nota seré para tu oído,",
+            "Aroma, luz, colores, rumor, canto, gemido,",
+            "Constante repitiendo la esencia de mi fe.",
+            "XIII.",
+            "Mi patria idolatrada, dolor de mis dolores,",
+            "Querida Filipinas, oye el postrer adiós.",
+            "Ahí te dejo todo, mis padres, mis amores.",
+            "Voy donde no hay esclavos, verdugos ni opresores,",
+            "Donde la fe no mata, donde el que reina es Dios.",
+            "XIII.",
+            "Adiós, padres y hermanos, trozos del alma mía,",
+            "Amigos de la infancia en el perdido hogar,",
+            "Dar gracias que descanso del fatigoso día;",
+            "Adiós, dulce extranjera, mi amiga, mi alegría,",
+            "Adiós, queridos seres, morir es descansar.",
+        ]
+        
+        return phrases[Int.random(in: 0..<phrases.count)]
     }
 }

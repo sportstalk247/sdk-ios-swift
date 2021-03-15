@@ -562,11 +562,13 @@ public class ChatRequest {
     ///
     /// - roomid: (required) Room id where you want previous events to be listed
     ///
-    /// - eventtype: (required)
-    ///
     /// - limit: (optional) default is 10, maximum 100
     ///
     /// - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///
+    /// - eventtype: (required) Specify the chat event type you are filtering for. If you want to filter for a custom event type, specify 'custom' and then provide a value for the *customtype parameter
+    ///
+    /// - customtype: (optional) If you want to filter by custom type you must first specify 'custom' for the eventtype field. This will enable you to filter to find events of a custom type
     ///
     public class ListEventByType: ParametersBase<ListEventByType.Fields, ListEventByType> {
         public enum Fields {
@@ -574,12 +576,14 @@ public class ChatRequest {
             case eventtype
             case cursor
             case limit
+            case customtype
         }
         
         public var roomid: String?
         public var eventtype: EventType?
         public var cursor: String?
         public var limit: Int? = 10
+        public var customtype: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListEventByType {
             set(dictionary: dictionary)
@@ -589,6 +593,7 @@ public class ChatRequest {
             ret.eventtype = value(forKey: .eventtype)
             ret.cursor = value(forKey: .cursor)
             ret.limit = value(forKey: .limit)
+            ret.customtype = value(forKey: .customtype)
             
             return ret
         }
@@ -599,6 +604,7 @@ public class ChatRequest {
             add(key: .eventtype, value: eventtype?.rawValue)
             add(key: .cursor, value: cursor)
             add(key: .limit, value: limit)
+            add(key: .customtype, value: customtype)
             
             return toDictionary
         }
