@@ -1090,7 +1090,6 @@ extension ChatClientTests {
 // MARK: - EventSubscription
 extension ChatClientTests {
     func test_EventSubscription() {
-        
         var selectedRoom: ChatRoom?
         listRooms { rooms in
             selectedRoom = rooms?.first
@@ -1099,8 +1098,6 @@ extension ChatClientTests {
         if selectedRoom == nil {
             createRoom()
         }
-        
-        test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         
         SportsTalkSDK.shared.debugMode = false
         
@@ -1115,13 +1112,10 @@ extension ChatClientTests {
         executeEvents()
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
-        var pulseCounter = 0
         
         client.startListeningToChatUpdates() { (code, message, _, event) in
-            pulseCounter += 1
             print("------------")
             print(code == 200 ? "pulse success" : "pulse failed")
-//            print("\(pulseCounter): \(event?.body)")
             print((event?.count ?? 0) > 0 ? "received \(String(describing: event?.count)) event" : "No new events")
             print("------------")
         }
@@ -1145,7 +1139,7 @@ extension ChatClientTests {
         test_ChatRoomsServices_JoinRoom()
         
         let randomMessages = [
-            "Hello New Command", "Hello world", "I am Mark", "What did you say?", "Dummy dum dum...", "Hollgrehenn you scum!", "Boom! I'm deds..." //addmore
+            "Hey.com", "Hello world", "Hello world", "Hello world", "Hello world", "Hello world", "Hello world" //addmore
         ]
         
         func executeCommand() {
