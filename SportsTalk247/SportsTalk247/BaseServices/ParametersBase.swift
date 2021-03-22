@@ -137,6 +137,34 @@ open class ParametersBase<T,S> {
         
         return event
     }
+    
+    func value(forKey key: T) -> RoomEntityType? {
+        guard
+            let id = dictionary[toString(key: key)] as? String,
+            let event = RoomEntityType.init(rawValue: id)
+        else {
+            return nil
+        }
+        
+        return event
+    }
+    
+    func value(forKey key: T) -> [RoomEntityType]? {
+        guard let id = dictionary[toString(key: key)] as? [String] else { return nil }
+        
+        var entities: [RoomEntityType]?
+        
+        id.forEach { item in
+            if let event = RoomEntityType.init(rawValue: item) {
+                if entities == nil {
+                    entities = [RoomEntityType]()
+                }
+                entities!.append(event)
+            }
+        }
+        return entities
+    }
+
  
     func toString(key: T) -> String {
         return "\(key)"

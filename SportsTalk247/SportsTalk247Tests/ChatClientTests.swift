@@ -143,6 +143,34 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
         XCTAssertTrue(receivedRoom != nil)
     }
+
+    func test_ChatRoomsServices_GetRoomExtendedDetails() {
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPostmoderated()
+        }
+        
+        let request = ChatRequest.GetRoomExtendedDetails()
+        request.roomid = dummyRoom?.id
+        request.entity = [.room, .lastmessagetime, .numberofparticipants, .room, .room, .room]
+        // request.entity shouldn't have duplicates.
+
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        var receivedRoom: ChatRoom?
+
+        client.getRoomExtendedDetails(request) { (code, message, _, room) in
+            print(message ?? "")
+            print("found \(String(describing: room?.name))")
+            receivedCode = code
+            receivedRoom = room
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+        XCTAssertTrue(receivedRoom != nil)
+    }
+
     
     func test_ChatRoomsServices_GetRoomDetailsByCustomId() {
         test_ChatRoomsServices_CreateRoomPostmoderated()

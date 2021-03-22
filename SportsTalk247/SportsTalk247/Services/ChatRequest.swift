@@ -123,6 +123,66 @@ public class ChatRequest {
     
     /// Get the details for a room
     ///
+    /// This method lets you specify a list of entity types to return. You can use it to get room details as well as statistics and other data associated with a room that is not part of the room entity.
+    ///
+    /// You must specify one or more roomid values or customid values. You may optionally provide both roomid and customid values. You may not request more than 20 rooms at once total. You must specify at least one entity type.
+    ///
+    /// In the future, each entity requested will count towards your API usage quota, so don't request data you will not be using.
+    ///
+    /// The response will be a list of RoomExtendedDetails objects. They contain properties such as room, mostrecentmessagetime, and inroom. These properties will be null if their entity type is not specified
+    ///
+    /// **Parameters**
+    ///
+    /// - roomid: (required) Room id of a specific room againts which you want to fetch the details
+    ///
+    /// - customid: (optional) A list of room customIDs.
+    ///
+    /// - entity: (required) Specify one or more ENTITY TYPES to include in the response. Use one or more of the types below.
+    ///
+    ///     - room: This returns the room entity.
+    ///
+    ///     - numparticipants: This returns number of active participants / room subscribers.
+    ///
+    ///     - lastmessagetime: This returns the time stamp for the most recent event that is a visible displayable message (speech, quote, threaded reply or announcement).
+    ///
+    /// **Warning** This method requires authentication
+    ///
+    public class GetRoomExtendedDetails: ParametersBase<GetRoomExtendedDetails.Fields, GetRoomExtendedDetails> {
+        public enum Fields {
+            case roomid
+            case customid
+            case entity
+        }
+        
+        public var roomid: String?
+        public var customid: String?
+        public var entity: [RoomEntityType]?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> GetRoomExtendedDetails {
+            set(dictionary: dictionary)
+            let ret = GetRoomExtendedDetails()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.customid = value(forKey: .customid)
+            ret.entity = value(forKey: .entity)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            let unique = Array<RoomEntityType>.uniqueElementsFrom(array: entity ?? [])
+            addRequired(key: .entity, value: unique.map{ $0.rawValue })
+            add(key: .roomid, value: roomid)
+            add(key: .customid, value: customid)
+            
+            return toDictionary
+        }
+    }
+    
+    /// Get the details for a room
+    ///
     /// This will return all the settings for the room and the participant count but not the participant list.
     ///
     /// **Parameters**

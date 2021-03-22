@@ -87,14 +87,18 @@ open class NetworkService {
             components.queryItems = [URLQueryItem]()
 
             for (key, value) in (data ?? [AnyHashable : Any]()) {
-                let item: URLQueryItem
                 if let v = value as? Bool {
-                    item = URLQueryItem(name: "\(key)", value: "\(v ? "true" : "false")")
+                    let item = URLQueryItem(name: "\(key)", value: "\(v ? "true" : "false")")
+                    components.queryItems?.append(item)
+                } else if let values = value as? [String] {
+                    for v in values {
+                        let item = URLQueryItem(name: "\(key)", value: "\(v)")
+                        components.queryItems?.append(item)
+                    }
                 } else {
-                    item = URLQueryItem(name: "\(key)", value: "\(value)")
+                    let item = URLQueryItem(name: "\(key)", value: "\(value)")
+                    components.queryItems?.append(item)
                 }
-                
-                components.queryItems?.append(item)
             }
 
             if let componentUrl = components.url {
