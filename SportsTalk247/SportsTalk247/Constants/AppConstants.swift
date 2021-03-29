@@ -47,6 +47,7 @@ struct URLPath {
     struct Room {
         static func Create() -> String                                          { return r }
         static func Details(roomid: String?) -> String                          { return r + (roomid ?? "")     }
+        static func DetailsExtended() -> String                                 { return r + "/batch/details"   }
         static func DetailsByCustomId(customid: String?) -> String              { return c + (customid ?? "")   }
         static func Delete(roomid: String?) -> String                           { return r + (roomid ?? "")     }
         static func Update(roomid: String?) -> String                           { return r + (roomid ?? "")     }
@@ -122,4 +123,10 @@ public enum Role: String, Codable {
 public enum ReportType: String, Codable {
     case abuse
     case spam
+}
+
+public enum RoomEntityType: String, Codable {
+    case room
+    case numberofparticipants = "numparticipants"
+    case lastmessagetime
 }

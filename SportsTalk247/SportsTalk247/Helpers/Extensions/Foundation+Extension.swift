@@ -13,3 +13,17 @@ extension Date {
         return Int(recent.timeIntervalSince1970 - earliest.timeIntervalSince1970)
     }
 }
+
+extension Array {
+    static func uniqueElementsFrom<T: Hashable>(array: [T]) -> [T] {
+        var set = Set<T>()
+        let result = array.filter {
+            guard !set.contains($0) else {
+                return false
+            }
+            set.insert($0)
+            return true
+        }
+        return result
+    }
+}

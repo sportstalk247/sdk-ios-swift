@@ -1134,6 +1134,78 @@ This will return all the settings for the room and the participant count but not
             public var reportedusers: [ReportedUser] = []
         }
         
+Get Room Extended Details
+============================
+.. code-block:: javascript
+
+    func getRoomExtendedDetails(_ request: ChatRequest.GetRoomExtendedDetails, completionHandler: @escaping Completion<ChatRoom>)
+
+Get the details for a room
+    
+This method lets you specify a list of entity types to return. You can use it to get room details as well as statistics and other data associated with a room that is not part of the room entity.
+    
+You must specify one or more roomid values or customid values. You may optionally provide both roomid and customid values. You may not request more than 20 rooms at once total. You must specify at least one entity type.
+    
+In the future, each entity requested will count towards your API usage quota, so don't request data you will not be using.
+    
+The response will be a list of RoomExtendedDetails objects. They contain properties such as room, mostrecentmessagetime, and inroom. These properties will be null if their entity type is not specified
+    
+**Parameters**
+    
+- roomid: (required) Room id of a specific room againts which you want to fetch the details
+    
+- customid: (optional) A list of room customIDs.
+    
+- entity: (required) Specify one or more ENTITY TYPES to include in the response. Use one or more of the types below.
+    
+    - room: This returns the room entity.
+    
+    - numparticipants: This returns number of active participants / room subscribers.
+    
+    - lastmessagetime: This returns the time stamp for the most recent event that is a visible displayable message (speech, quote, threaded reply or announcement).
+    
+**Warning** This method requires authentication
+
+**Request Model: ChatRequest.GetRoomExtendedDetails**
+
+.. code-block:: swift
+
+        public class GetRoomExtendedDetails {
+            public var roomid: String?
+            public var customid: String?
+            public var entity: [RoomEntityType]?
+        }
+                
+**Response Model: ChatRoom**
+
+.. code-block:: swift
+
+        public var kind: String?
+            public var id: String?
+            public var appid: String?
+            public var ownerid: String?
+            public var name: String?
+            public var description: String?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var enableactions: Bool?
+            public var enableenterandexit: Bool?
+            public var open: Bool?
+            public var inroom: Int?
+            public var moderation: String?
+            public var maxreports: Int64?
+            public var enableprofanityfilter: Bool?
+            public var delaymessageseconds: Int64?
+            public var added: Date?
+            public var whenmodified: Date?
+            public var bouncedusers: [String] = []
+            public var reportedusers: [ReportedUser] = []
+        }
+        
 Get Room Details By Custom ID
 ============================
 .. code-block:: javascript
