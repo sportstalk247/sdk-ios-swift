@@ -480,24 +480,26 @@ extension ChatClient {
         var timestamp: Double = 0.00
         let timeInterval: Double = 0.100
         
-        timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { _ in
+        timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { [weak self] _ in
+            guard let this = self else { return }
+            
             timestamp = ((timestamp + timeInterval) * 100).rounded() / 100
             
             // Get updates every 0.500ms
-            if self.prerenderedevents.count > 0 {
-                completionHandler(200, "", "list.chatevents", self.emmitEventFromBucket())
+            if this.prerenderedevents.count > 0 {
+                completionHandler(200, "", "list.chatevents", this.emmitEventFromBucket())
             } else {
                 if timestamp.truncatingRemainder(dividingBy: 0.500) == 0 {
                     let request = ChatRequest.GetMoreUpdates()
-                    request.roomid = self.lastroomid
-                    request.cursor = self.lastcursor
+                    request.roomid = this.lastroomid
+                    request.cursor = this.lastcursor
                     request.limit = limit
                     
-                    self.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
+                    this.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
                         // Invalid timer should disregard further update results
                         guard
-                            let self = self,
-                            let timer = self.timer,
+                            let this = self,
+                            let timer = this.timer,
                             timer.isValid
                         else {
                             return
@@ -506,12 +508,12 @@ extension ChatClient {
                         if let response = response {
                             if let cursor = response.cursor {
                                 if !cursor.isEmpty {
-                                    self.lastcursor = cursor
+                                    this.lastcursor = cursor
                                 }
                             }
                             
-                            self.prerenderedevents = response.events
-                            completionHandler(code, message, kind, self.emmitEventFromBucket())
+                            this.prerenderedevents = response.events
+                            completionHandler(code, message, kind, this.emmitEventFromBucket())
                         }
                     }
                 }
