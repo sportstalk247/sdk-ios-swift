@@ -491,8 +491,9 @@ extension ChatClient {
             } else {
                 if timestamp.truncatingRemainder(dividingBy: 0.500) == 0 {
                     let request = ChatRequest.GetMoreUpdates()
+                    let cursor = !this.lastcursor.isEmpty ? this.lastcursor : this.firstcursor
                     request.roomid = this.lastroomid
-                    request.cursor = this.lastcursor
+                    request.cursor = cursor
                     request.limit = limit
                     
                     this.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
