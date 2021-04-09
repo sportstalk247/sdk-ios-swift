@@ -2402,4 +2402,40 @@ public class ChatRequest {
             return toDictionary
         }
     }
+    
+    /// Used to configure the behaviour of the message flow
+    ///
+    /// **Parameters**
+    ///
+    /// - limit: (optional) Number of events to return. Default is 100, maximum is 500
+    ///
+    /// - eventSpacingMs: (optional) The frequency (in milliseconds) when events are dispatched from buffer.
+    ///
+    public class StartListeningToChatUpdates: ParametersBase<StartListeningToChatUpdates.Fields, StartListeningToChatUpdates> {
+        public enum Fields {
+            case limit
+            case eventSpacingMs
+        }
+        
+        public var limit: Int? {
+            didSet {
+                if limit != nil {
+                    let minAllowed = 100
+                    if eventSpacingMs < minAllowed {
+                        eventSpacingMs = minAllowed
+                    }
+                }
+            }
+        }
+        
+        
+        public var eventSpacingMs: Int = 200 {
+            didSet {
+                let minAllowed = 100
+                if eventSpacingMs < minAllowed {
+                    eventSpacingMs = minAllowed
+                }
+            }
+        }
+    }
 }

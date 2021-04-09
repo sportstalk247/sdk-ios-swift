@@ -36,7 +36,7 @@ public protocol ChatClientProtocol {
     func searchEventHistory(_ request: ChatRequest.SearchEvent, completionHandler: @escaping Completion<ListEventsResponse>)
     func updateChatEvent(_ request: ChatRequest.UpdateChatEvent, completionHandler: @escaping Completion<Event>)
     
-    func startListeningToChatUpdates(limit: Int?, completionHandler: @escaping Completion<[Event]>)
+    func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates?, completionHandler: @escaping Completion<[Event]>)
     func stopListeningToChatUpdates()
     
     func approveEvent(_ request: ModerationRequest.ApproveEvent, completionHandler: @escaping Completion<Event>)
@@ -479,30 +479,25 @@ extension ChatClient {
 
 // MARK: - Event Subscription
 extension ChatClient {
-    public func startListeningToChatUpdates(limit: Int? = nil, completionHandler: @escaping Completion<[Event]>) {
-        var timestamp: Double = 0.00
+    public func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates? = nil, completionHandler: @escaping Completion<[Event]>) {
+        var timestamp: Int = 0
         let timeInterval: Double = 0.100
         
         timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { [weak self] _ in
             guard let this = self else { return }
             
-            timestamp = ((timestamp + timeInterval) * 100).rounded() / 100
-            
+            timestamp = timestamp + Int(timeInterval * 1000)
             if this.prerenderedevents.count > 0 {
-                // Emit event every eventSpacingMS
-                if timestamp.truncatingRemainder(dividingBy: Double((this.eventSpacingMS/1000))) == 0 {
-                    print("\(timestamp): Emit event")
+                if timestamp % (config?.eventSpacingMs ?? 200) == 0 {
                     completionHandler(200, "", "list.chatevents", this.emmitEventFromBucket())
                 }
             } else {
-                // Get updates every 0.500ms
-                if timestamp.truncatingRemainder(dividingBy: 0.500) == 0 {
-                    print("\(timestamp): Get updates")
+                if timestamp % 500 == 0 {
                     let request = ChatRequest.GetMoreUpdates()
                     let cursor = !this.lastcursor.isEmpty ? this.lastcursor : this.firstcursor
                     request.roomid = this.lastroomid
                     request.cursor = cursor
-                    request.limit = limit
+                    request.limit = config?.limit
                     
                     this.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
                         // Invalid timer should disregard further update results
