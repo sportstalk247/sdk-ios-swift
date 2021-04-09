@@ -162,11 +162,11 @@ extension ChatClient {
     }
     
     public func listEventHistory(_ request: ChatRequest.ListEventHistory, completionHandler: @escaping Completion<ListEventsResponse>) {
-        makeRequest(URLPath.Room.EventHistory(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self) { (response) in
+        makeRequest(URLPath.Room.EventHistory(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
             var data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
         }
@@ -174,47 +174,48 @@ extension ChatClient {
     
     public func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents,completionHandler: @escaping Completion<ListEventsResponse>) {
         request.cursor = request.cursor ?? self.firstcursor
-        makeRequest(URLPath.Room.PreviousEvent(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.PreviousEvent(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
             var data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
-            self.firstcursor = response?.data?.cursor ?? ""
+            self?.firstcursor = response?.data?.cursor ?? ""
         }
     }
     
     public func listEventByType(_ request: ChatRequest.ListEventByType,completionHandler: @escaping Completion<ListEventsResponse>) {
-        makeRequest(URLPath.Room.EventByType(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.EventByType(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
             var data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
-            self.firstcursor = response?.data?.cursor ?? ""
+            self?.firstcursor = response?.data?.cursor ?? ""
         }
     }
     
     public func listEventByTimestamp(_ request: ChatRequest.ListEventByTimestamp,completionHandler: @escaping Completion<ListEventByTimestampResponse>) {
-        makeRequest(URLPath.Room.EventByTime(roomid: request.roomid, time: request.timestamp), withData: request.toDictionary(), requestType: .GET, expectation: ListEventByTimestampResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.EventByTime(roomid: request.roomid, time: request.timestamp), withData: request.toDictionary(), requestType: .GET, expectation: ListEventByTimestampResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
             var data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
-            self.firstcursor = response?.data?.cursornewer ?? ""
+            self?.firstcursor = response?.data?.cursornewer ?? ""
         }   
     }
     
     public func joinRoom(_ request: ChatRequest.JoinRoom, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
-        makeRequest(URLPath.Room.Join(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
-            self.lastroomid = request.roomid
-            self.lastcursor = ""
-            self.firstcursor = response?.data?.eventscursor?.cursor ?? ""
-            self.currentuserid = request.userid
+        makeRequest(URLPath.Room.Join(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { [weak self] (response) in
+            
+            self?.lastroomid = request.roomid
+            self?.lastcursor = ""
+            self?.firstcursor = response?.data?.eventscursor?.cursor ?? ""
+            self?.currentuserid = request.userid
             
             let newupdates = GetUpdatesResponse()
             newupdates.kind = response?.data?.eventscursor?.kind
@@ -225,7 +226,7 @@ extension ChatClient {
             newupdates.events = response?.data?.eventscursor?.events ?? []
 
             // Filter shadowbanned events that are not from user
-            newupdates.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            newupdates.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             let newdata = JoinChatRoomResponse()
             newdata.kind = response?.data?.kind
@@ -239,11 +240,11 @@ extension ChatClient {
     }
     
     public func joinRoomByCustomId(_ request: ChatRequest.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
-        makeRequest(URLPath.Room.Join(customid: request.customid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
-            self.lastcursor = ""
-            self.firstcursor = response?.data?.eventscursor?.cursor ?? ""
-            self.lastroomid = response?.data?.room?.id ?? ""
-            self.currentuserid = request.userid
+        makeRequest(URLPath.Room.Join(customid: request.customid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { [weak self] (response) in
+            self?.lastcursor = ""
+            self?.firstcursor = response?.data?.eventscursor?.cursor ?? ""
+            self?.lastroomid = response?.data?.room?.id ?? ""
+            self?.currentuserid = request.userid
             
             let newupdates = GetUpdatesResponse()
             newupdates.kind = response?.data?.eventscursor?.kind
@@ -254,7 +255,7 @@ extension ChatClient {
             newupdates.events = response?.data?.eventscursor?.events ?? []
 
             // Filter shadowbanned events that are not from user
-            newupdates.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            newupdates.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             let newdata = JoinChatRoomResponse()
             newdata.kind = response?.data?.kind
@@ -268,32 +269,33 @@ extension ChatClient {
     }
 
     public func exitRoom(_ request: ChatRequest.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>) {
-        makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { (response) in
-            self.stopListeningToChatUpdates()
-            self.lastroomid = nil
-            self.lastcursor = ""
-            self.currentuserid = nil
+        makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { [weak self] (response) in
+            self?.stopListeningToChatUpdates()
+            self?.prerenderedevents.removeAll()
+            self?.lastroomid = nil
+            self?.lastcursor = ""
+            self?.currentuserid = nil
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func getUpdates(_ request: ChatRequest.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>) {
-        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
             let data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
         }
     }
     
     public func getMoreUpdates(_ request: ChatRequest.GetMoreUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>) {
-        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
             let data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
         }
@@ -304,13 +306,13 @@ extension ChatClient {
         self.lastcommand = request.command
         self.lastcommandsent = Date()
 
-        makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
+        makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { [weak self] (response) in
             
             let code: Int = response?.code ?? 500
             
             if code >= 400 {
-                self.lastcommand = nil
-                self.lastcommandsent = nil
+                self?.lastcommand = nil
+                self?.lastcommandsent = nil
             }
             
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
@@ -322,13 +324,13 @@ extension ChatClient {
         self.lastcommand = request.body
         self.lastcommandsent = Date()
         
-        makeRequest(URLPath.Room.QuotedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
+        makeRequest(URLPath.Room.QuotedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { [weak self] (response) in
             
             let code: Int = response?.code ?? 500
             
             if code >= 400 {
-                self.lastcommand = nil
-                self.lastcommandsent = nil
+                self?.lastcommand = nil
+                self?.lastcommandsent = nil
             }
             
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
@@ -340,13 +342,13 @@ extension ChatClient {
         self.lastcommand = request.body
         self.lastcommandsent = Date()
         
-        makeRequest(URLPath.Room.ThreadedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
+        makeRequest(URLPath.Room.ThreadedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { [weak self] (response) in
             
             let code: Int = response?.code ?? 500
             
             if code >= 400 {
-                self.lastcommand = nil
-                self.lastcommandsent = nil
+                self?.lastcommand = nil
+                self?.lastcommandsent = nil
             }
             
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
