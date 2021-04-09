@@ -58,6 +58,7 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     var prerenderedevents = [Event]()
     var maxeventbuffersize = 30
     static let timeout = 20000 // milliseconds
+    public var eventSpacingMS: Int = 100
     
     public override init(config: ClientConfig) {
         super.init(config: config)
@@ -487,11 +488,16 @@ extension ChatClient {
             
             timestamp = ((timestamp + timeInterval) * 100).rounded() / 100
             
-            // Get updates every 0.500ms
             if this.prerenderedevents.count > 0 {
-                completionHandler(200, "", "list.chatevents", this.emmitEventFromBucket())
+                // Emit event every eventSpacingMS
+                if timestamp.truncatingRemainder(dividingBy: Double((this.eventSpacingMS/1000))) == 0 {
+                    print("\(timestamp): Emit event")
+                    completionHandler(200, "", "list.chatevents", this.emmitEventFromBucket())
+                }
             } else {
+                // Get updates every 0.500ms
                 if timestamp.truncatingRemainder(dividingBy: 0.500) == 0 {
+                    print("\(timestamp): Get updates")
                     let request = ChatRequest.GetMoreUpdates()
                     let cursor = !this.lastcursor.isEmpty ? this.lastcursor : this.firstcursor
                     request.roomid = this.lastroomid
