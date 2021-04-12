@@ -3,8 +3,8 @@ import SportsTalk247
 
 struct Config {
     static let url = URL(string: "https://qa-talkapi.sportstalk247.com/api/v3/")
-    static let appId = "5ff056f75617e00c58a32d25"
-    static let authToken = "IxJ8QTXRekWCPyjffeplNQ0FTuAmJmWE2N1BwPUhYLAQ"
+    static let appId = "5ec0dc915617e0091844616a"
+    static let authToken = "ZPtTNX-DbUmf-L_k41RfQQz2rynOg7lkOqdpYwLqY7Rg"
     static let TIMEOUT: Double = 30
 }
 
