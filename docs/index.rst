@@ -121,12 +121,13 @@ To manually get room updates, use ``ChatClient().getUpdates(request:completionHa
 
 Start/Stop Getting Event Updates
 ------------------
-Get periodic updates from room by using ``client.startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>)``
+Get periodic updates from room by using ``func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates?, completionHandler: @escaping Completion<[Event]>)``
 Only new events will be emitted, so it is up to you to collect the new events.
 To stop getting updates, simply call ``client.stopListeningToChatUpdates()`` anytime.
 
 Note:
 Updates are received every 500 milliseconds.
+You can configure the delivery of messages by setting ChatRequest.StartListeningToChatUpdates
 Losing reference to client will stop the eventUpdates
 
 .. code-block:: swift
@@ -3181,11 +3182,24 @@ Start Listening to Chat Updates
 ============================
 .. code-block:: javascript
 
-    func startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>)
+    func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates?, completionHandler: @escaping Completion<[Event]>)
 
 Periodically calls func getUpdates(request:completionHandler:) to receive latest chat events.
 
-**Request Model: None**
+**Parameters**
+    
+- limit: (optional) Number of events to return. Default is 100, maximum is 500. Will use default if value set is below default value.
+    
+- eventSpacingMs: (optional) The frequency (in milliseconds) when events are dispatched from buffer. Will use default if value set is below default value.
+
+**Request Model: ChatRequest.StartListeningToChatUpdates**
+
+.. code-block:: swift
+
+        public class StartListeningToChatUpdates {
+            public var limit: Int?
+            public var eventSpacingMs: Int
+        }
                 
 **Response Model: Event**
 

@@ -68,7 +68,7 @@ extension ChatClientTests {
     func test_ChatRoomsServices_CreateRoomPostmoderated() {
         let request = ChatRequest.CreateRoom()
         request.name = "Test Room Post Moderated 3"
-        request.customid = "some-custom-id"
+        request.customid = "chathubcard.th.บัตรบรรณาธิการซึ่งจะปรากฏในวันอาทิตย์"
         request.description = "Chat Room Newly Created"
         request.enableactions = true
         request.moderation = "post"
@@ -473,7 +473,7 @@ extension ChatClientTests {
         let request = ChatRequest.JoinRoomByCustomId()
         request.userid = dummyUser?.userid
         request.displayname = dummyUser?.displayname
-        request.customid = dummyRoom?.customid
+        request.customid = "chathubcard.th.บัตรบรรณาธิการซึ่งจะปรากฏในวันอาทิตย์"
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?

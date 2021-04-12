@@ -68,7 +68,13 @@ open class NetworkService {
         var url:URL?
         
         if useDefaultUrl {
-            url = URL(string: "\(self.config.endpoint.absoluteString)/\(config.appId)/\(serviceName ?? "")")
+            let urlString = "\(self.config.endpoint.absoluteString)/\(config.appId)/\(serviceName ?? "")"
+            if let encodedURL = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                url = URL(string: encodedURL)
+            } else {
+                // Present error regardless if on debugMode or not.
+                print("Could not create URL using \(urlString)")
+            }
         } else {
             url = URL(string: "\(serviceName ?? emptyString)")!
         }

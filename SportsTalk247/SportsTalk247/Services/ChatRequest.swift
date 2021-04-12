@@ -2407,9 +2407,9 @@ public class ChatRequest {
     ///
     /// **Parameters**
     ///
-    /// - limit: (optional) Number of events to return. Default is 100, maximum is 500
+    /// - limit: (optional) Number of events to return. Default is 100, maximum is 500. Will use default if value set is below default value.
     ///
-    /// - eventSpacingMs: (optional) The frequency (in milliseconds) when events are dispatched from buffer.
+    /// - eventSpacingMs: (optional) The frequency (in milliseconds) when events are dispatched from buffer. Will use default if value set is below default value.
     ///
     public class StartListeningToChatUpdates: ParametersBase<StartListeningToChatUpdates.Fields, StartListeningToChatUpdates> {
         public enum Fields {
@@ -2427,7 +2427,6 @@ public class ChatRequest {
                 }
             }
         }
-        
         
         public var eventSpacingMs: Int = 200 {
             didSet {
