@@ -58,7 +58,8 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     var prerenderedevents = [Event]()
     var maxeventbuffersize = 30
     static let timeout = 20000 // milliseconds
-    public var eventSpacingMS: Int = 100
+    var shouldFetchNewEvents = true
+    var sentEvents = [String]()
     
     public override init(config: ClientConfig) {
         super.init(config: config)
@@ -311,6 +312,20 @@ extension ChatClient {
             
             let code: Int = response?.code ?? 500
             
+            if let speech = response?.data?.speech {
+                self?.prerenderedevents.insert(speech, at: 0)
+                if let id = speech.id {
+                    self?.sentEvents.append(id)
+                }
+            } else {
+                if let action = response?.data?.action {
+                    self?.prerenderedevents.insert(action, at: 0)
+                    if let id = action.id {
+                        self?.sentEvents.append(id)
+                    }
+                }
+            }
+            
             if code >= 400 {
                 self?.lastcommand = nil
                 self?.lastcommandsent = nil
@@ -329,6 +344,13 @@ extension ChatClient {
             
             let code: Int = response?.code ?? 500
             
+            if let event = response?.data {
+                self?.prerenderedevents.insert(event, at: 0)
+                if let id = event.id {
+                    self?.sentEvents.append(id)
+                }
+            }
+            
             if code >= 400 {
                 self?.lastcommand = nil
                 self?.lastcommandsent = nil
@@ -346,6 +368,13 @@ extension ChatClient {
         makeRequest(URLPath.Room.ThreadedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { [weak self] (response) in
             
             let code: Int = response?.code ?? 500
+            
+            if let event = response?.data {
+                self?.prerenderedevents.insert(event, at: 0)
+                if let id = event.id {
+                    self?.sentEvents.append(id)
+                }
+            }
             
             if code >= 400 {
                 self?.lastcommand = nil
@@ -492,32 +521,46 @@ extension ChatClient {
                     completionHandler(200, "", "list.chatevents", this.emmitEventFromBucket())
                 }
             } else {
-                if timestamp % 500 == 0 {
-                    let request = ChatRequest.GetMoreUpdates()
-                    let cursor = !this.lastcursor.isEmpty ? this.lastcursor : this.firstcursor
-                    request.roomid = this.lastroomid
-                    request.cursor = cursor
-                    request.limit = config?.limit
-                    
-                    this.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
-                        // Invalid timer should disregard further update results
-                        guard
-                            let this = self,
-                            let timer = this.timer,
-                            timer.isValid
-                        else {
-                            return
-                        }
+                if timestamp % 1000 == 0 {
+                    if this.shouldFetchNewEvents {
+                        this.shouldFetchNewEvents = false
+                        let request = ChatRequest.GetMoreUpdates()
+                        let cursor = !this.lastcursor.isEmpty ? this.lastcursor : this.firstcursor
+                        request.roomid = this.lastroomid
+                        request.cursor = cursor
+                        request.limit = config?.limit
                         
-                        if let response = response {
-                            if let cursor = response.cursor {
-                                if !cursor.isEmpty {
-                                    this.lastcursor = cursor
-                                }
+                        this.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
+                            this.shouldFetchNewEvents = true
+                            
+                            // Invalid timer should disregard further update results
+                            guard
+                                let this = self,
+                                let timer = this.timer,
+                                timer.isValid
+                            else {
+                                return
                             }
                             
-                            this.prerenderedevents = response.events
-                            completionHandler(code, message, kind, this.emmitEventFromBucket())
+                            if let response = response {
+                                if let cursor = response.cursor {
+                                    if !cursor.isEmpty {
+                                        this.lastcursor = cursor
+                                    }
+                                }
+                                
+                                // Remove if already sent
+                                var emittable = [Event]()
+                                
+                                for event in response.events {
+                                    if !this.sentEvents.contains(event.id ?? "") {
+                                        emittable.append(event)
+                                    }
+                                }
+                                
+                                this.prerenderedevents = emittable
+                                completionHandler(code, message, kind, this.emmitEventFromBucket())
+                            }
                         }
                     }
                 }

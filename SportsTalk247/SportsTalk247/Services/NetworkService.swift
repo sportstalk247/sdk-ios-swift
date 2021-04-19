@@ -82,7 +82,7 @@ open class NetworkService {
         guard let requestUrl = url else { return nil}
         
         // Create the request
-        var request = URLRequest(url: requestUrl, timeoutInterval: Double.infinity)
+        var request = URLRequest(url: requestUrl, timeoutInterval: 10)
         request.httpMethod = requestType.rawValue
         
         if (requestType == .POST && appendData) || (requestType == .PUT && appendData == false) || requestType == .DELETE {
