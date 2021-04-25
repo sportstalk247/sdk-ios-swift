@@ -569,6 +569,8 @@ extension ChatClient {
     }
     
     func emmitEventFromBucket() -> [Event] {
+        guard !prerenderedevents.isEmpty else { return [] }
+        
         if prerenderedevents.count >= maxeventbuffersize {
             let dumpbucket = prerenderedevents
             prerenderedevents.removeAll()
