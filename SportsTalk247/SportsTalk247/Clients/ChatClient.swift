@@ -55,10 +55,21 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     var lastcommand: String?
     var lastcommandsent: Date?
     var currentuserid: String?
+    
+    /// Collects events from startListeningToChatUpdates and deliver at eventSpacingMS interval
     var prerenderedevents = [Event]()
+    
+    /// Max items to be stored in prerendered events.
     var maxeventbuffersize = 30
-    static let timeout = 20000 // milliseconds
+    
+    /// Anti-flood timeout value
+    static let timeout = 20000
+    
+    /// Stops GetUpdates when startListeningToChatUpdates until it gets a response
     var shouldFetchNewEvents = true
+    
+    /// Keeps track of sent event by eventid so we can move this event at the top of the prerenderedevent list.
+    /// This allows the SDK to prioritize sending events from the logged-in user ahead of everyone else.
     var sentEvents = [String]()
     
     public override init(config: ClientConfig) {
@@ -208,7 +219,7 @@ extension ChatClient {
             
             completionHandler(response?.code, response?.message, response?.kind, data)
             self?.firstcursor = response?.data?.cursornewer ?? ""
-        }   
+        }
     }
     
     public func joinRoom(_ request: ChatRequest.JoinRoom, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
@@ -216,7 +227,7 @@ extension ChatClient {
             
             self?.lastroomid = request.roomid
             self?.lastcursor = ""
-            self?.firstcursor = response?.data?.eventscursor?.cursor ?? ""
+            self?.firstcursor = response?.data?.previouseventscursor ?? ""
             self?.currentuserid = request.userid
             
             let newupdates = GetUpdatesResponse()
@@ -244,7 +255,7 @@ extension ChatClient {
     public func joinRoomByCustomId(_ request: ChatRequest.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
         makeRequest(URLPath.Room.Join(customid: request.customid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { [weak self] (response) in
             self?.lastcursor = ""
-            self?.firstcursor = response?.data?.eventscursor?.cursor ?? ""
+            self?.firstcursor = response?.data?.previouseventscursor ?? ""
             self?.lastroomid = response?.data?.room?.id ?? ""
             self?.currentuserid = request.userid
             
@@ -276,7 +287,9 @@ extension ChatClient {
             self?.prerenderedevents.removeAll()
             self?.lastroomid = nil
             self?.lastcursor = ""
+            self?.firstcursor = ""
             self?.currentuserid = nil
+            self?.sentEvents.removeAll()
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -516,18 +529,27 @@ extension ChatClient {
             guard let this = self else { return }
             
             timestamp = timestamp + Int(timeInterval * 1000)
+            
+            // Remove items from sentEvents every minute
+            if timestamp % 60000 == 0 {
+                if !this.sentEvents.isEmpty {
+                    this.sentEvents.removeFirst()
+                }
+            }
+            
             if this.prerenderedevents.count > 0 {
+                // Call get updates every config.eventSpacing. Default 200ms
                 if timestamp % (config?.eventSpacingMs ?? 200) == 0 {
                     completionHandler(200, "", "list.chatevents", this.emmitEventFromBucket())
                 }
             } else {
+                // Call get updates every 1000ms
                 if timestamp % 1000 == 0 {
                     if this.shouldFetchNewEvents {
                         this.shouldFetchNewEvents = false
                         let request = ChatRequest.GetMoreUpdates()
-                        let cursor = !this.lastcursor.isEmpty ? this.lastcursor : this.firstcursor
                         request.roomid = this.lastroomid
-                        request.cursor = cursor
+                        request.cursor = this.lastcursor
                         request.limit = config?.limit
                         
                         this.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
@@ -566,6 +588,10 @@ extension ChatClient {
                 }
             }
         })
+        
+        // Move timing to common thread so main can be free
+        guard let timer = timer else { return }
+        RunLoop.current.add(timer, forMode: .common)
     }
     
     func emmitEventFromBucket() -> [Event] {
