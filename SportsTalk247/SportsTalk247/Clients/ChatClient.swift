@@ -226,7 +226,7 @@ extension ChatClient {
         makeRequest(URLPath.Room.Join(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { [weak self] (response) in
             
             self?.lastroomid = request.roomid
-            self?.lastcursor = ""
+            self?.lastcursor = response?.data?.eventscursor?.cursor ?? ""
             self?.firstcursor = response?.data?.previouseventscursor ?? ""
             self?.currentuserid = request.userid
             
@@ -254,7 +254,7 @@ extension ChatClient {
     
     public func joinRoomByCustomId(_ request: ChatRequest.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
         makeRequest(URLPath.Room.Join(customid: request.customid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { [weak self] (response) in
-            self?.lastcursor = ""
+            self?.lastcursor = response?.data?.eventscursor?.cursor ?? ""
             self?.firstcursor = response?.data?.previouseventscursor ?? ""
             self?.lastroomid = response?.data?.room?.id ?? ""
             self?.currentuserid = request.userid
@@ -495,6 +495,12 @@ extension ChatClient {
         guard let reports = event?.reports else { return false }
         return reports.contains(where: { $0.userid == userid })
     }
+    
+    func keepAlive(_ request: ChatRequest.KeepAlive, completionHandler: @escaping Completion<KeepAliveResponse>) {
+        makeRequest(URLPath.Room.KeepAlive(roomid: request.roomid, userid: request.userid), withData: request.toDictionary(), requestType: .POST, expectation: KeepAliveResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
 }
 
 
@@ -530,11 +536,18 @@ extension ChatClient {
             
             timestamp = timestamp + Int(timeInterval * 1000)
             
-            // Remove items from sentEvents every minute
             if timestamp % 60000 == 0 {
+                // Remove items from sentEvents every minute
                 if !this.sentEvents.isEmpty {
                     this.sentEvents.removeFirst()
                 }
+                
+                // Call KeepAlive every minute
+                let request = ChatRequest.KeepAlive()
+                request.userid = this.currentuserid
+                request.roomid = this.lastroomid
+                
+                this.keepAlive(request) { (_, _, _, _) in }
             }
             
             if this.prerenderedevents.count > 0 {

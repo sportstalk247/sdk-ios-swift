@@ -19,6 +19,7 @@ open class ChatRoom: Codable {
     public var inroom: Int?
     public var moderation: String?
     public var maxreports: Int64?
+    public var enableautoexpiresessions: Bool?
     public var enableprofanityfilter: Bool?
     public var delaymessageseconds: Int64?
     public var added: Date?
@@ -47,6 +48,7 @@ open class ChatRoom: Codable {
         case whenmodified
         case moderation
         case maxreports
+        case enableautoexpiresessions
         case enableprofanityfilter
         case delaymessageseconds
         case bouncedusers
@@ -74,6 +76,7 @@ open class ChatRoom: Codable {
         self.inroom = try container.decodeIfPresent(Int.self, forKey: .inroom)
         self.moderation = try container.decodeIfPresent(String.self, forKey: .moderation)
         self.maxreports = try container.decodeIfPresent(Int64.self, forKey: .maxreports)
+        self.enableautoexpiresessions = try container.decodeIfPresent(Bool.self, forKey: .enableautoexpiresessions)
         self.enableprofanityfilter = try container.decodeIfPresent(Bool.self, forKey: .enableprofanityfilter)
         self.delaymessageseconds = try container.decodeIfPresent(Int64.self, forKey: .delaymessageseconds)
         self.bouncedusers = try container.decodeIfPresent([String].self, forKey: .bouncedusers) ?? []

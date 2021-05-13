@@ -124,8 +124,9 @@ open class Event: Codable, Equatable {
         if let modified = try container.decodeIfPresent(String.self, forKey: .modifiedstring) {
             self.modified = ISODateFormat(modified)
         }
-        if let ts = try container.decodeIfPresent(Double.self, forKey: .tsdouble) {
-            self.ts = Date(timeIntervalSince1970: ts)
+        
+        if let ts = try container.decodeIfPresent(UInt64.self, forKey: .tsdouble) {
+            self.ts = Date(ticks: ts)
         }
         
         if let type = try container.decodeIfPresent(String.self, forKey: .eventtypestring) {

@@ -21,6 +21,8 @@ public class ChatRequest {
     ///
     /// - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
     ///
+    /// - enableautoexpiresessions: (optional) [defaulttrue / false] Enables automatically expiring idle sessions, which removes inactive users from the room
+    ///
     /// - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
     ///
     /// - maxreports: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
@@ -36,6 +38,7 @@ public class ChatRequest {
             case enableactions
             case enableenterandexit
             case enableprofanityfilter
+            case enableautoexpiresessions
             case roomisopen
             case maxreports
         }
@@ -47,6 +50,7 @@ public class ChatRequest {
         public var enableactions: Bool?
         public var enableenterandexit: Bool?
         public var enableprofanityfilter: Bool?
+        public var enableautoexpiresessions: Bool?
         public var roomisopen: Bool?
         public var maxreports: Int? = 3
         
@@ -61,6 +65,7 @@ public class ChatRequest {
             ret.enableactions = value(forKey: .enableactions)
             ret.enableenterandexit = value(forKey: .enableenterandexit)
             ret.enableprofanityfilter = value(forKey: .enableprofanityfilter)
+            ret.enableautoexpiresessions = value(forKey: .enableautoexpiresessions)
             ret.roomisopen = value(forKey: .roomisopen)
             ret.maxreports = value(forKey: .maxreports)
             
@@ -79,6 +84,7 @@ public class ChatRequest {
             add(key: .enableactions, value: enableactions)
             add(key: .enableenterandexit, value: enableenterandexit)
             add(key: .enableprofanityfilter, value: enableprofanityfilter)
+            add(key: .enableautoexpiresessions, value: enableautoexpiresessions)
             add(key: .roomisopen, value: roomisopen)
             add(key: .maxreports, value: maxreports)
             
@@ -268,6 +274,8 @@ public class ChatRequest {
     ///
     /// - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
     ///
+    /// - enableautoexpiresessions: (optional) [defaulttrue / false] Enables automatically expiring idle sessions, which removes inactive users from the room
+    ///
     /// - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling
     ///
     /// - roomisopen: (optional) [true/false] If false, users cannot perform any commands in the room, chat is suspended.
@@ -286,6 +294,7 @@ public class ChatRequest {
             case enableactions
             case enableenterandexit
             case enableprofanityfilter
+            case enableautoexpiresessions
             case delaymessageseconds
             case roomisopen
             case throttle
@@ -300,6 +309,7 @@ public class ChatRequest {
         public var enableactions: Bool?
         public var enableenterandexit: Bool?
         public var enableprofanityfilter: Bool?
+        public var enableautoexpiresessions: Bool?
         public var delaymessageseconds: Int?
         public var roomisopen: Bool?
         public var throttle: Int?
@@ -317,6 +327,7 @@ public class ChatRequest {
             ret.enableactions = value(forKey: .enableactions)
             ret.enableenterandexit = value(forKey: .enableenterandexit)
             ret.enableprofanityfilter = value(forKey: .enableprofanityfilter)
+            ret.enableautoexpiresessions = value(forKey: .enableautoexpiresessions)
             ret.roomisopen = value(forKey: .roomisopen)
             ret.delaymessageseconds = value(forKey: .delaymessageseconds)
             ret.throttle = value(forKey: .throttle)
@@ -336,6 +347,7 @@ public class ChatRequest {
             add(key: .enableactions, value: enableactions)
             add(key: .enableenterandexit, value: enableenterandexit)
             add(key: .enableprofanityfilter, value: enableprofanityfilter)
+            add(key: .enableautoexpiresessions, value: enableautoexpiresessions)
             add(key: .roomisopen, value: roomisopen)
             add(key: .delaymessageseconds, value: delaymessageseconds)
             add(key: .throttle, value: throttle)
@@ -2417,13 +2429,11 @@ public class ChatRequest {
             case eventSpacingMs
         }
         
-        public var limit: Int? {
+        public var limit: Int = 100 {
             didSet {
-                if limit != nil {
-                    let minAllowed = 100
-                    if eventSpacingMs < minAllowed {
-                        eventSpacingMs = minAllowed
-                    }
+                let minAllowed = 100
+                if limit < minAllowed {
+                    limit = minAllowed
                 }
             }
         }
@@ -2435,6 +2445,45 @@ public class ChatRequest {
                     eventSpacingMs = minAllowed
                 }
             }
+        }
+    }
+    
+    /// Users who are not active will automatically exit the room. This method lets the room know that the user is still active so the user doesn't need to rejoin. The SDKs will do this for you automatically.
+    ///
+    /// You can configure a room to not auto-expire sessions in the settings for that room
+    ///
+    /// **Parameters**
+    ///
+    /// - userid: (required) user id specific to app
+    ///
+    /// - roomid: (required) Room Id, in which you want to react
+    ///
+    public class KeepAlive: ParametersBase<KeepAlive.Fields, KeepAlive> {
+        public enum Fields {
+            case roomid
+            case userid
+        }
+        
+        public var roomid: String?
+        public var userid: String?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> KeepAlive {
+            set(dictionary: dictionary)
+            let ret = KeepAlive()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.userid = value(forKey: .userid)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .roomid, value: roomid)
+            addRequired(key: .userid, value: userid)
+
+            return toDictionary
         }
     }
 }

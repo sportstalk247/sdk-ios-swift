@@ -12,6 +12,10 @@ extension Date {
     func difference(between recent: Date, and earliest: Date) -> Int {
         return Int(recent.timeIntervalSince1970 - earliest.timeIntervalSince1970)
     }
+    
+    init(ticks: UInt64) {
+        self.init(timeIntervalSince1970: Double(ticks)/10_000_000 - 62_135_596_800)
+    }
 }
 
 extension Array {
