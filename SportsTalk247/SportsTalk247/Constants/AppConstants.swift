@@ -72,6 +72,7 @@ struct URLPath {
         static func Mute(roomid: String?) -> String                             { return r + (roomid ?? "") + "/mute" }
         static func SearchEvent() -> String                                     { return "chat/searchevents/" }
         static func UpdateChatEvent(roomid: String?, eventid: String?) -> String{ return "\(r)\(roomid ?? "")/events/\(eventid ?? "")"}
+        static func KeepAlive(roomid: String?, userid: String?) -> String       { return "\(r)\(roomid ?? "")/sessions/\(userid ?? "")/touch" }
     }
     
     struct Event {

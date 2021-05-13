@@ -1029,6 +1029,8 @@ Creates a new chat room
 
 - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
 
+- enableautoexpiresessions: (optional) [defaulttrue / false] Enables automatically expiring idle sessions, which removes inactive users from the room.
+
 - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
 
 - maxreports: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
@@ -1074,6 +1076,7 @@ Creates a new chat room
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -1128,6 +1131,7 @@ This will return all the settings for the room and the participant count but not
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -1200,6 +1204,7 @@ The response will be a list of RoomExtendedDetails objects. They contain propert
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -1254,6 +1259,7 @@ This will return all the settings for the room and the participant count but not
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -1321,6 +1327,8 @@ Updates an existing room
 
 - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
 
+- enableautoexpiresessions: (optional) [defaulttrue / false] Enables automatically expiring idle sessions, which removes inactive users from the room.
+
 - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling
 
 - roomisopen: (optional) [true/false] If false, users cannot perform any commands in the room, chat is suspended.
@@ -1371,6 +1379,7 @@ Updates an existing room
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -1448,6 +1457,7 @@ Response Model: ChatRoom
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -2846,6 +2856,7 @@ Reports a user in the room
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -2952,6 +2963,7 @@ A Shadow Banned user can send messages into a chat room, however those messages 
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -3016,6 +3028,7 @@ A Shadow Banned user can send messages into a chat room, however those messages 
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
