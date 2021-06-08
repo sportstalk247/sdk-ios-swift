@@ -158,11 +158,11 @@ extension ChatClientTests {
         var receivedCode: Int?
         var receivedRoom: ChatRoom?
 
-        client.getRoomExtendedDetails(request) { (code, message, _, room) in
+        client.getRoomExtendedDetails(request) { (code, message, _, response) in
             print(message ?? "")
-            print("found \(String(describing: room?.name))")
+//            print("found \(String(describing: details?.filter { $0.id == dummyRoom.id }))")
             receivedCode = code
-            receivedRoom = room
+            receivedRoom = response?.details?.first
             expectation.fulfill()
         }
         
@@ -1156,27 +1156,27 @@ extension ChatClientTests {
         waitForExpectations(timeout: Config.TIMEOUT + 50, handler: nil)
     }
     
-    func test_KeepAlive() {
-        if dummyRoom == nil {
-            test_ChatRoomsServices_CreateRoomPremoderated()
-        }
-        
-        let request = ChatRequest.KeepAlive()
-        request.roomid = dummyRoom?.id
-        request.userid = dummyUser?.userid
-        
-        let expectation = self.expectation(description: Constants.expectation_description(#function))
-        var receivedCode: Int?
-        
-        client.keepAlive(request) { (code, message, _, response) in
-            print(message ?? "")
-            receivedCode = code
-            expectation.fulfill()
-        }
-        
-        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-        XCTAssertTrue(receivedCode == 200)
-    }
+//    func test_KeepAlive() {
+//        if dummyRoom == nil {
+//            test_ChatRoomsServices_CreateRoomPremoderated()
+//        }
+//        
+//        let request = ChatRequest.KeepAlive()
+//        request.roomid = dummyRoom?.id
+//        request.userid = dummyUser?.userid
+//        
+//        let expectation = self.expectation(description: Constants.expectation_description(#function))
+//        var receivedCode: Int?
+//        
+//        client.keepAlive(request) { (code, message, _, response) in
+//            print(message ?? "")
+//            receivedCode = code
+//            expectation.fulfill()
+//        }
+//        
+//        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+//        XCTAssertTrue(receivedCode == 200)
+//    }
 }
 
 // MARK: - Helpers
