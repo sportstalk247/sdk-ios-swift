@@ -20,10 +20,10 @@ public struct GetRoomExtendedDetailsResponse: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.kind = try container.decodeIfPresent(String.self, forKey: .kind)
-        self.details = try container.decodeIfPresent([ChatRoom].self, forKey: .details)
+        self.details = try container.decodeIfPresent([Details].self, forKey: .details)
     }
     
-    struct Details {
+    public struct Details: Codable {
         public var room: ChatRoom?
         public var mostrecentmessagetime: Date?
         public var inroom: Int?
