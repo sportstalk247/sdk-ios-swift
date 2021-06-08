@@ -10,7 +10,7 @@ import Foundation
 
 public struct GetRoomExtendedDetailsResponse: Codable {
     public var kind: String?
-    public var details: [ChatRoom]?
+    public var details: [Details]?
     
     private enum CodingKeys: String, CodingKey {
         case kind
