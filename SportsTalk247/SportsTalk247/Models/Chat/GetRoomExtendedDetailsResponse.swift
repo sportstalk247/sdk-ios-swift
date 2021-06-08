@@ -22,4 +22,26 @@ public struct GetRoomExtendedDetailsResponse: Codable {
         self.kind = try container.decodeIfPresent(String.self, forKey: .kind)
         self.details = try container.decodeIfPresent([ChatRoom].self, forKey: .details)
     }
+    
+    struct Details {
+        public var room: ChatRoom?
+        public var mostrecentmessagetime: Date?
+        public var inroom: Int?
+        
+        private enum CodingKeys: String, CodingKey {
+            case room
+            case mostrecentmessagetime
+            case inroom
+        }
+        
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.room = try container.decodeIfPresent(ChatRoom.self, forKey: .room)
+            self.inroom = try container.decodeIfPresent(Int.self, forKey: .inroom)
+            
+            if let messageTime = try container.decodeIfPresent(String.self, forKey: .mostrecentmessagetime) {
+                mostrecentmessagetime = ISODateFormat(messageTime)
+            }
+        }
+    }
 }
