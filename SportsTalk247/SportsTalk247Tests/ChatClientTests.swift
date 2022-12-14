@@ -129,6 +129,37 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
         XCTAssertTrue(receivedRoom != nil)
     }
+    
+    func test_ChatRoomsServices_CreateRoom_WithCustomTags() {
+        let request = ChatRequest.CreateRoom()
+        request.name = "Test Room Post Moderated 3"
+        request.customid = "some-custom-id"
+        request.description = "Chat Room Newly Created"
+        request.moderation = "post"
+        request.enableactions = true
+        request.enableenterandexit = false
+        request.roomisopen = true
+        
+        let customTags = ["messenger", "whatsapp"]
+        request.customtags = customTags
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        var receivedRoom: ChatRoom?
+        
+        client.createRoom(request) { (code, message, _, room) in
+            print(message ?? "")
+            receivedCode = code
+            receivedRoom = room
+            self.dummyRoom = room
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+        XCTAssertTrue(receivedRoom != nil)
+        XCTAssertTrue(receivedRoom?.customtags == customTags)
+    }
 
     func test_ChatRoomsServices_GetRoomDetails() {
         if dummyRoom == nil {

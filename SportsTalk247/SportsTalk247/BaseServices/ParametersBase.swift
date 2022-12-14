@@ -63,6 +63,10 @@ open class ParametersBase<T,S> {
         return (dictionary[toString(key: key)] as? NSNumber)?.intValue
     }
     
+    func value(forKey key: T) -> Int64? {
+        return (dictionary[toString(key: key)] as? NSNumber)?.int64Value
+    }
+    
     func value(forKey key: T) -> Bool? {
         return (dictionary[toString(key: key)] as? NSNumber)?.boolValue
     }

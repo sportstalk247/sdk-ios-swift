@@ -38,6 +38,16 @@ public class ChatRequest {
             case enableprofanityfilter
             case roomisopen
             case maxreports
+            
+            case pictureurl
+            case enableautoexpiresessions
+            case delaymessageseconds
+            case customtype
+            case custompayload
+            case customfield1
+            case customfield2
+            case customtags
+            case `private`
         }
         
         public var name: String?
@@ -50,6 +60,15 @@ public class ChatRequest {
         public var roomisopen: Bool?
         public var maxreports: Int? = 3
         
+        public var pictureurl: String?
+        public var enableautoexpiresessions: Bool?
+        public var delaymessageseconds: Int64?
+        public var customtype: String?
+        public var custompayload: String?
+        public var customfield1: String?
+        public var customfield2: String?
+        public var customtags: [String]?  // A comma delimited list of tags
+        public var `private`: Bool?
         
         override public func from(dictionary: [AnyHashable: Any]) -> CreateRoom {
             set(dictionary: dictionary)
@@ -63,6 +82,16 @@ public class ChatRequest {
             ret.enableprofanityfilter = value(forKey: .enableprofanityfilter)
             ret.roomisopen = value(forKey: .roomisopen)
             ret.maxreports = value(forKey: .maxreports)
+            
+            ret.pictureurl = value(forKey: .pictureurl)
+            ret.enableautoexpiresessions = value(forKey: .enableautoexpiresessions)
+            ret.delaymessageseconds = value(forKey: .delaymessageseconds)
+            ret.customtype = value(forKey: .customtype)
+            ret.custompayload = value(forKey: .custompayload)
+            ret.customfield1 = value(forKey: .customfield1)
+            ret.customfield2 = value(forKey: .customfield2)
+            ret.customtags = value(forKey: .customtags)
+            ret.`private` = value(forKey: .private)
             
             return ret
         }
@@ -81,6 +110,16 @@ public class ChatRequest {
             add(key: .enableprofanityfilter, value: enableprofanityfilter)
             add(key: .roomisopen, value: roomisopen)
             add(key: .maxreports, value: maxreports)
+            
+            add(key: .pictureurl, value: pictureurl)
+            add(key: .enableautoexpiresessions, value: enableautoexpiresessions)
+            add(key: .delaymessageseconds, value: delaymessageseconds)
+            add(key: .customtype, value: customtype)
+            add(key: .custompayload, value: custompayload)
+            add(key: .customfield1, value: customfield1)
+            add(key: .customfield2, value: customfield2)
+            add(key: .customtags, value: customtags)
+            add(key: .private, value: `private`)
             
             return toDictionary
         }
