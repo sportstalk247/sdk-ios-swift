@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ClientConfig {
+public struct ClientConfig: Hashable {
     var appId: String
     var authToken: String
     var endpoint: URL
