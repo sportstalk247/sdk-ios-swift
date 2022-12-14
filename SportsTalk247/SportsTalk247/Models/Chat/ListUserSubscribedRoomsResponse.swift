@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ListUserSubscribedRoomResponse: Codable {
+public struct ListUserSubscribedRoomsResponse: Codable {
     public var kind: String?    // "list.userroomsubscriptions"
     public var cursor: String?
     public var more: Bool?
