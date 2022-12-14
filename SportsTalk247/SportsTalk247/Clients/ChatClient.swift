@@ -9,6 +9,7 @@ public protocol ChatClientProtocol {
     func updateCloseRoom(_ request: ChatRequest.UpdateRoomCloseARoom, completionHandler: @escaping Completion<ChatRoom>)
     func listRooms(_ request: ChatRequest.ListRooms, completionHandler: @escaping Completion<ListRoomsResponse>)
     func listRoomParticipants(_ request: ChatRequest.ListRoomParticipants, completionHandler: @escaping Completion<ListChatRoomParticipantsResponse>)
+    func listUserSubscribedRooms(_ request: ChatRequest.ListUserSubscribedRooms, completionHandler: @escaping Completion<ListUserSubscribedRoomResponse>)
     func listEventHistory(_ request: ChatRequest.ListEventHistory, completionHandler: @escaping Completion<ListEventsResponse>)
     func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents, completionHandler: @escaping Completion<ListEventsResponse>)
     func listEventByType(_ request: ChatRequest.ListEventByType, completionHandler: @escaping Completion<ListEventsResponse>)
@@ -148,6 +149,12 @@ extension ChatClient {
 
     public func listRoomParticipants(_ request: ChatRequest.ListRoomParticipants, completionHandler: @escaping Completion<ListChatRoomParticipantsResponse>) {
         makeRequest(URLPath.Room.Participants(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListChatRoomParticipantsResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
+    public func listUserSubscribedRooms(_ request: ChatRequest.ListUserSubscribedRooms, completionHandler: @escaping Completion<ListUserSubscribedRoomResponse>) {
+        makeRequest(URLPath.Room.UserSubscribedRooms(userid: request.userid), withData: request.toDictionary(), requestType: .GET, expectation: ListUserSubscribedRoomResponse.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }

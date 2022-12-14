@@ -288,6 +288,31 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
+    func test_ChatRoomsServices_ListUserSubscribedRooms() {
+        if dummyRoom == nil {
+            test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        }
+        
+        let request = ChatRequest.ListUserSubscribedRooms()
+        request.userid = dummyUser?.userid
+
+        var receivedCode: Int?
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+
+        client.listUserSubscribedRooms(request) { (code, message, kind, response) in
+            print(message ?? "")
+            print("found \(String(describing: response?.subscriptions.count)) subscribed rooms")
+            
+            print(response?.subscriptions ?? "")
+            
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
     func test_ChatRoomsServices_ListEventHistory() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         let request = ChatRequest.ListEventHistory()

@@ -3,6 +3,7 @@ import Foundation
 let acceptHeaderTitle = "Accept"
 let contentTypeTitle = "Content-Type"
 let tokenTitle = "x-api-token"
+let authorization = "Authorization"
 
 let acceptHeaderValue = "application/json"
 let contentTypeValue = "application/json"
@@ -22,6 +23,7 @@ struct URLPath {
     private static let s = "user/search/"
     private static let r = "chat/rooms/"
     private static let c = "chat/roomsbycustomid/"
+    private static let cu = "chat/user/"
     private static let m = "chat/moderation/queues/events/"
     private static let n = "notification/"
     
@@ -53,6 +55,7 @@ struct URLPath {
         static func Close(roomid: String?) -> String                            { return r + (roomid ?? "")     }
         static func List() -> String                                            { return r }
         static func Participants(roomid: String?) -> String                     { return r + (roomid ?? "") + "/participants" }
+        static func UserSubscribedRooms(userid: String?) -> String              { return cu + (userid ?? "") + "/subscriptions" }
         static func EventHistory(roomid: String?) -> String                     { return r + (roomid ?? "") + "/listeventshistory" }
         static func PreviousEvent(roomid: String?) -> String                    { return r + (roomid ?? "") + "/listpreviousevents" }
         static func EventByType(roomid: String?) -> String                      { return r + (roomid ?? "") + "/listeventsbytype" }

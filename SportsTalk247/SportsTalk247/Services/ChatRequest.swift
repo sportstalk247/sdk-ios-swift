@@ -455,7 +455,54 @@ public class ChatRequest {
             return toDictionary
         }
     }
-
+    
+    /// List the rooms the user is subscribed to
+    ///
+    /// Use this method to cursor through all the rooms the user is subscribed to. This will include all rooms. If you want to build a private messaging experience, you can put custom tags on the rooms to separate out which are for private messenger and which are public group rooms.
+    ///
+    /// To cursor through the results if there are many participants, invoke this function many times. Each result will return a cursor value and you can pass that value to the next invokation to get the next page of results. The result set will also include a next field with the full URL to get the next page, so you can just keep reading that and requesting that URL until you reach the end. When you reach the end, no more results will be returned or the result set will be less than maxresults and the next field will be empty.
+    ///
+    ///  **Parameters**
+    ///
+    ///  - userid: (required)
+    ///
+    ///  - cursor: (optional) you can pass that value to the next invokation to get the next page of results
+    ///
+    ///  - limit: (optional) default is 200
+    ///
+    /// **Warning** This method requires authentication
+    ///
+    public class ListUserSubscribedRooms: ParametersBase<ListUserSubscribedRooms.Fields, ListUserSubscribedRooms> {
+        public enum Fields {
+            case userid
+            case cursor
+            case limit
+        }
+        
+        public var userid: String?
+        public var cursor: String? = ""
+        public var limit: Int? = 200
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> ListUserSubscribedRooms {
+            set(dictionary: dictionary)
+            let ret = ListUserSubscribedRooms()
+            ret.userid = value(forKey: .userid)
+            ret.cursor = value(forKey: .cursor)
+            ret.limit = value(forKey: .limit)
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            add(key: .cursor, value: cursor)
+            add(key: .limit, value: limit)
+            
+            return toDictionary
+        }
+        
+    }
+    
     /// - This method enables you to download all of the events from a room in large batches. It should only be used if doing a data export.
     ///
     /// - This method returns a list of events sorted from oldest to newest.
