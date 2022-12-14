@@ -38,7 +38,6 @@ public class ChatRequest {
             case enableactions
             case enableenterandexit
             case enableprofanityfilter
-            case enableautoexpiresessions
             case roomisopen
             case maxreports
             
@@ -65,7 +64,6 @@ public class ChatRequest {
         public var maxreports: Int? = 3
         
         public var pictureurl: String?
-        public var enableautoexpiresessions: Bool?
         public var delaymessageseconds: Int64?
         public var customtype: String?
         public var custompayload: String?
@@ -89,7 +87,6 @@ public class ChatRequest {
             ret.maxreports = value(forKey: .maxreports)
             
             ret.pictureurl = value(forKey: .pictureurl)
-            ret.enableautoexpiresessions = value(forKey: .enableautoexpiresessions)
             ret.delaymessageseconds = value(forKey: .delaymessageseconds)
             ret.customtype = value(forKey: .customtype)
             ret.custompayload = value(forKey: .custompayload)
@@ -118,7 +115,6 @@ public class ChatRequest {
             add(key: .maxreports, value: maxreports)
             
             add(key: .pictureurl, value: pictureurl)
-            add(key: .enableautoexpiresessions, value: enableautoexpiresessions)
             add(key: .delaymessageseconds, value: delaymessageseconds)
             add(key: .customtype, value: customtype)
             add(key: .custompayload, value: custompayload)
