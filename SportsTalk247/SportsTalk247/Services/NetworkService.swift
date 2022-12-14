@@ -30,27 +30,60 @@ open class NetworkService {
         // Create the request
         if let request = makeURLRequest(serviceName, useDefaultUrl: useDefaultUrl, withData: data, requestType: requestType, appendData: append) {
             URLSession.shared.dataTask(with: request, completionHandler: {data, response, error -> Void in
+                // Deal with your error
+                let httpResponse = response as? HTTPURLResponse
+                let statusCode = Int(httpResponse?.statusCode ?? 0)
+                print("statusCode: \(statusCode)")
+                
                 if let error = error {
-                    // Deal with your error
-                    if (response is HTTPURLResponse) {
-                        let httpResponse = response as? HTTPURLResponse
-                        print(String(format: "\(httpError) %ld", Int(httpResponse?.statusCode ?? 0)))
-                    }
-                    
+                    print(String(format: "\(httpError) %ld", statusCode))
                     print(error)
                     completionHandler(nil)
                 } else {
-                    if let data = data {
-                        if SportsTalkSDK.shared.debugMode {
-                            print("Response(\(serviceName ?? "non service")): \(data.string ?? "")")
+                    switch statusCode {
+                    case 200...299:
+                        if let data = data {
+                            if SportsTalkSDK.shared.debugMode {
+                                print("Response(\(serviceName ?? "non service")): \(data.string ?? "")")
+                            }
+                            
+                            if let json = try? JSONDecoder().decode(ApiResponse<T>.self, from: data) {
+                                completionHandler(json)
+                                return
+                            } else {
+                                print("\(jsonParsingError) \(serviceName ?? emptyString)")
+                            }
                         }
                         
-                        if let json = try? JSONDecoder().decode(ApiResponse<T>.self, from: data) {
-                            completionHandler(json)
-                        } else {
-                            print("\(jsonParsingError) \(serviceName ?? emptyString)")
-                            completionHandler(nil)
-                        }
+                        completionHandler(nil)
+                        return
+                    case 401:
+                        completionHandler(
+                            ApiResponse(
+                                code: statusCode,
+                                message: "Unauthorized - Invalid auth token"
+                            )
+                        )
+                        return
+                        // TODO:: Handle statusCode 403
+                    case 500...599:
+                        completionHandler(
+                            ApiResponse(
+                                code: statusCode,
+                                message: "Server Error"
+                            )
+                        )
+                        
+                        return
+                    default:
+                        completionHandler(
+                            ApiResponse(
+                                code: statusCode,
+                                message: "Unknown Error"
+                            )
+                        )
+                        
+                        return
                     }
                 }
             }).resume()
@@ -115,6 +148,11 @@ open class NetworkService {
         request.addValue(acceptHeaderValue, forHTTPHeaderField: acceptHeaderTitle)
         request.addValue(contentTypeValue, forHTTPHeaderField: contentTypeTitle)
         request.addValue(config.authToken, forHTTPHeaderField: tokenTitle)
+        
+        if let jwtProvider = SportsTalkSDK.getJWTProvider(config: config),
+           let jwt = jwtProvider.getToken() {
+            request.addValue("Bearer \(jwt)", forHTTPHeaderField: authorization)
+        }
         
         if SportsTalkSDK.shared.debugMode {
             request.log()

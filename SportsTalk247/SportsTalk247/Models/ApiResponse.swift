@@ -14,6 +14,13 @@ public struct ApiResponse<T: Codable>: Codable {
         case data
     }
     
+    init(code: Int, message: String? = nil) {
+        self.kind = nil
+        self.message = message
+        self.code = code
+        self.data = nil
+    }
+    
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.kind = try container.decodeIfPresent(String.self, forKey: .kind)

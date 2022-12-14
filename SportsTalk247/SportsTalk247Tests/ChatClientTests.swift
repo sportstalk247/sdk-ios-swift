@@ -2,7 +2,15 @@ import XCTest
 import SportsTalk247
 
 class ChatClientTests: XCTestCase {
-    let client = ChatClient(config: ClientConfig(appId: Config.appId, authToken: Config.authToken, endpoint: Config.url))
+    let config = ClientConfig(appId: Config.appId, authToken: Config.authToken, endpoint: Config.url)
+    lazy var client: ChatClient = {
+        return ChatClient(config: config)
+    }()
+    let jwtProvider = JWTProvider(
+        tokenRefreshFunction: { completion in
+            completion("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJ0ZXN0dXNlcjEiLCJyb2xlIjoidXNlciJ9.H1cMH21k1m6zNFgVhvvxkG1DdTAOCyGCfxMzP-5XT7U")
+        }
+    )
 
     lazy var dummyUser: User? = {
         let user = User()
@@ -33,6 +41,9 @@ class ChatClientTests: XCTestCase {
     
     override func setUpWithError() throws {
         SportsTalkSDK.shared.debugMode = true
+        SportsTalkSDK.setJWTProvider(config: self.config, provider: self.jwtProvider)
+        
+        self.jwtProvider.refreshToken()
         createUpdateUser()
     }
 }
@@ -117,6 +128,37 @@ extension ChatClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
         XCTAssertTrue(receivedCode == 200)
         XCTAssertTrue(receivedRoom != nil)
+    }
+    
+    func test_ChatRoomsServices_CreateRoom_WithCustomTags() {
+        let request = ChatRequest.CreateRoom()
+        request.name = "Test Room Post Moderated 3"
+        request.customid = "some-custom-id"
+        request.description = "Chat Room Newly Created"
+        request.moderation = "post"
+        request.enableactions = true
+        request.enableenterandexit = false
+        request.roomisopen = true
+        
+        let customTags = ["messenger", "whatsapp"]
+        request.customtags = customTags
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        var receivedRoom: ChatRoom?
+        
+        client.createRoom(request) { (code, message, _, room) in
+            print(message ?? "")
+            receivedCode = code
+            receivedRoom = room
+            self.dummyRoom = room
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+        XCTAssertTrue(receivedRoom != nil)
+        XCTAssertTrue(receivedRoom?.customtags == customTags)
     }
 
     func test_ChatRoomsServices_GetRoomDetails() {
@@ -316,6 +358,31 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
+    func test_ChatRoomsServices_ListUserSubscribedRooms() {
+        if dummyRoom == nil {
+            test_ChatRoomsServices_JoinRoomAuthenticatedUser()
+        }
+        
+        let request = ChatRequest.ListUserSubscribedRooms()
+        request.userid = dummyUser?.userid
+
+        var receivedCode: Int?
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+
+        client.listUserSubscribedRooms(request) { (code, message, kind, response) in
+            print(message ?? "")
+            print("found \(String(describing: response?.subscriptions.count)) subscribed rooms")
+            
+            print(response?.subscriptions ?? "")
+            
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+    }
+    
     func test_ChatRoomsServices_ListEventHistory() {
         test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         let request = ChatRequest.ListEventHistory()
@@ -459,6 +526,38 @@ extension ChatClientTests {
 
         XCTAssertTrue(receivedCode == 200)
         XCTAssertTrue(receivedUser != nil)
+    }
+    
+    func test_ChatRoomsServices_JoinRoom_Invalid_Auth() {
+        if dummyUser ==  nil {
+            self.createUpdateUser()
+        }
+        
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPostmoderated()
+        }
+        
+        let request = ChatRequest.JoinRoom()
+        request.userid = dummyUser?.userid
+        request.displayname = dummyUser?.displayname
+        request.roomid = dummyRoom?.id
+
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        var receivedUser: User?
+        
+        // Set Invalid JWT
+        self.jwtProvider.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJ0ZXN0dXNlcjEiLCJyb2xlIjoidXNlciJ9.L43SmGmnKwVyPTMzLLIcY3EUb83A4YPBc0l6778Od_0")
+        
+        client.joinRoom(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+
+        XCTAssertTrue(receivedCode == 401)
     }
     
     func test_ChatRoomsServices_JoinRoomByCustomId() {

@@ -4,7 +4,7 @@ Installation
 ------------------
 The set of SDKs and source (iOS, Android, and JS) is here: `https://gitlab.com/sportstalk247/ <https://gitlab.com/sportstalk247/>`_
 
-.. code-block:: javascript
+.. code-block:: ruby
 
     pod 'SportsTalk_iOS_SDK', :git=> 'https://gitlab.com/sportstalk247/sdk-ios-swift.git'
 
@@ -27,6 +27,47 @@ Sportstalk is an EVENT DRIVEN API. When new talk events occur, the SDK will trig
     // You can set config to have your own endpoint or use the default endpoint like so
     let config = ClientConfig(appId: "YourAppId", authToken: "YourApiKey")
 
+Implement Custom JWT
+------------------
+You can instantiate a JWTProvider instance and provide a token refresh action function that returns a new token.
+
+.. code-block:: swift
+
+    import SportsTalk_iOS_SDK
+
+    // First you'll need to create a ClientConfig class that you can use later on
+    let config = ClientConfig(appId: "YourAppId", authToken: "YourApiKey", endpoint: "Your URL")
+    // Prepare JWTProvider
+    let jwtProvider = JWTProvider(
+        tokenRefreshFunction: { completion in
+            DispatchQueue.main.async {
+                let newToken = doPerformFetchNewToken() // Developer may perform a long-running operation to generate a new JWT
+                completion(newToken)
+            }
+        }
+    )
+    // Set custom JWTProvider
+    SportsTalkSDK.setJWTProvider(config: config, provider: jwtProvider)
+    
+You can also directly specify the JWT value by calling `JWTProvider.setToken(newToken)`. 
+There is also a function provided to explicitly refresh token by calling `JWTProvider.refreshToken()`, which will trigger the provided token refresh action above to fetch a new token and will automatically add that on the SDK.
+
+.. code-block:: swift
+
+    // Continuation from above
+
+    client.createRoom(request) { (code, message, kind, room) in
+        // ...
+        // Handle Unauthorized Error
+        //  - Attempt request refresh token
+        //
+        if code == 401 {
+            jwtProvider.refreshToken()
+            // Then, probably prompt for another retry attempt again after a shortwhile(this is to ensure that the token gets refreshed first before retry attempt)
+        }
+    }
+
+Once the User Token has been added to the SDK, the SDK will automatically append it to all requests.
 
 Callback Function Overview
 ------------------
@@ -222,7 +263,7 @@ User Client
 ------------------
 Create/Update User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func createOrUpdateUser(_ request: UserRequest.CreateUpdateUser, completionHandler: @escaping Completion<User>)
 
@@ -295,7 +336,7 @@ When users send messages to a room the user ID is passed as a parameter. When yo
 
 Delete User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
     
     func deleteUser(_ request: UserRequest.DeleteUser, completionHandler: @escaping Completion<DeleteUserResponse>)
 
@@ -329,7 +370,7 @@ All rooms with messages by that user will have the messages from this user purge
 
 Get User Details
 ============================
-.. code-block:: javascript
+.. code-block:: swift
         
         func getUserDetails(_ request: UserRequest.GetUserDetails, completionHandler: @escaping Completion<User>)
 
@@ -377,7 +418,7 @@ This will return all the information about the user.
 
 List Users
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func listUsers(_ request: UserRequest.ListUsers, completionHandler: @escaping Completion<ListUsersResponse>)
 
@@ -414,7 +455,7 @@ Use this method to cursor through a list of users. This method will return users
         
 Ban/Unban User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func setBanStatus(_ request: UserRequest.SetBanStatus, completionHandler: @escaping Completion<User>)
 
@@ -461,7 +502,7 @@ Will toggle the user's banned flag.
 
 Global Purge User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func globallyPurgeUserContent(_ request: UserRequest.GloballyPurgeUserContent, completionHandler: @escaping Completion<GlobalPurgeReponse>)
 
@@ -488,7 +529,7 @@ Will purge all chat content published by the specified user
         
 Search User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func searchUser(_ request: UserRequest.SearchUser, completionHandler: @escaping Completion<ListUsersResponse>)
 
@@ -540,7 +581,7 @@ At least one of these parameters is required;
         
 Mute User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func muteUser(_ request: ChatRequest.MuteUser, completionHandler: @escaping Completion<ChatRoom>)
     
@@ -592,7 +633,7 @@ A muted user is in a read-only state. The muted user can join chat rooms and obs
         
 Report User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func reportUser(_ request: UserRequest.ReportUser, completionHandler: @escaping Completion<User>)
 
@@ -646,7 +687,7 @@ Report User
         
 Shadow Ban User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func setShadowBanStatus(_ request: UserRequest.SetShadowBanStatus, completionHandler: @escaping Completion<User>)
 
@@ -698,7 +739,7 @@ A Shadow Ban user can send messages into a chat room, however those messages are
         
 List User Notifications
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func listUserNotifications(_ request: UserRequest.ListUserNotifications, completionHandler: @escaping Completion<ListNotificationResponse>)
 
@@ -756,7 +797,7 @@ Returns a list of user notifications
 
 Mark All Notification As Read
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func markAllNotificationAsRead(_ request: UserRequest.MarkAllNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
 
@@ -800,7 +841,7 @@ This marks all of the user's notifications as read with one API call only. Due t
         
 Set User Notification As Read
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
 
@@ -853,7 +894,7 @@ Calling this over and over again for an event, or calling it on events where the
         
 Set User Notification As Read (By ChatEventId)
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func setUserNotificationAsReadByEventId(_ request: UserRequest.SetUserNotificationAsReadByChatEventId, completionHandler: @escaping Completion<UserNotification>)
     
@@ -908,7 +949,7 @@ Unless your workflow must support use of read notifications, use ```func deleteU
 
 Delete User Notification
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func deleteUserNotification(_ request: UserRequest.DeleteUserNotification, completionHandler: @escaping Completion<UserNotification>)
 
@@ -954,7 +995,7 @@ Immediately deletes a user notification. Unless your workflow specifically imple
         
 Delete User Notification By ChatEventId
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func deleteUserNotificationByEventId(_ request: UserRequest.DeleteUserNotificationByChatEventId, completionHandler: @escaping Completion<UserNotification>)
 
@@ -1004,7 +1045,7 @@ Chat Client
 
 Create Room
 ============================
-.. code-block:: javascript
+.. code-block:: swift
     
     func createRoom(_ request: ChatRequest.CreateRoom, completionHandler: @escaping Completion<ChatRoom>)
 
@@ -1086,7 +1127,7 @@ Creates a new chat room
         
 Get Room Details
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func getRoomDetails(_ request: ChatRequest.GetRoomDetails, completionHandler: @escaping Completion<ChatRoom>)
 
@@ -1214,7 +1255,7 @@ The response will be a list of RoomExtendedDetails objects. They contain propert
         
 Get Room Details By Custom ID
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func getRoomDetailsByCustomId(_ request: ChatRequest.GetRoomDetailsByCustomId, completionHandler: @escaping Completion<ChatRoom>)
 
@@ -1269,7 +1310,7 @@ This will return all the settings for the room and the participant count but not
         
 Delete Room
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func deleteRoom(_ request: ChatRequest.DeleteRoom, completionHandler: @escaping Completion<DeleteChatRoomResponse>)
 
@@ -1303,7 +1344,7 @@ This cannot be reversed. This command permanently deletes the chat room and all 
 
 Update Room
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func updateRoom(_ request: ChatRequest.UpdateRoom, completionHandler: @escaping Completion<ChatRoom>)
 
@@ -1389,7 +1430,7 @@ Updates an existing room
         
 Update and Close Room
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func updateCloseRoom(_ request: ChatRequest.UpdateRoomCloseARoom, completionHandler: @escaping Completion<ChatRoom>)
 
@@ -1467,7 +1508,7 @@ Response Model: ChatRoom
         
 List Rooms
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func listRooms(_ request: ChatRequest.ListRooms, completionHandler: @escaping Completion<ListRoomsResponse>)
 
@@ -1506,7 +1547,7 @@ Response Model: ListRoomsResponse
         
 List Room Participants
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func listRoomParticipants(_ request: ChatRequest.ListRoomParticipants, completionHandler: @escaping Completion<ListChatRoomParticipantsResponse>)
 
@@ -1546,9 +1587,53 @@ To cursor through the results if there are many participants, invoke this functi
             public var participants: [ChatRoomParticipant]
         }
         
+List User Subscribed Rooms
+============================
+.. code-block:: swift
+
+    func listUserSubscribedRooms(_ request: ChatRequest.ListUserSubscribedRooms, completionHandler: @escaping Completion<ListUserSubscribedRoomResponse>) 
+
+List the rooms the user is subscribed to.
+
+Use this method to cursor through all the rooms the user is subscribed to. This will include all rooms. If you want to build a private messaging experience, you can put custom tags on the rooms to separate out which are for private messenger and which are public group rooms.
+
+To cursor through the results if there are many participants, invoke this function many times. Each result will return a cursor value and you can pass that value to the next invokation to get the next page of results. The result set will also include a next field with the full URL to get the next page, so you can just keep reading that and requesting that URL until you reach the end. When you reach the end, no more results will be returned or the result set will be less than maxresults and the next field will be empty.
+
+**Parameters**
+
+- userid: (required)
+
+- cursor: (optional) you can pass that value to the next invokation to get the next page of results
+
+- limit: (optional) default is 200
+
+**Warning** This method requires authentication
+
+**Request Model: ChatRequest.ListUserSubscribedRooms**
+
+.. code-block:: swift
+
+        public class ListUserSubscribedRooms {
+            public var userid: String?
+            public var cursor: String? = ""
+            public var limit: Int? = 200
+        }
+                
+**Response Model: ListUserSubscribedRoomsResponse**
+
+.. code-block:: swift
+
+        public struct ListUserSubscribedRoomsResponse: Codable {
+            public var kind: String?
+            public var cursor: String?
+            public var more: Bool?
+            public var itemcount: Int64?
+            public var subscriptions: [ChatSubscription] = []
+        }
+
 List Event History
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func listEventHistory(_ request: ChatRequest.ListEventHistory, completionHandler: @escaping Completion<ListEventsResponse>)
 
@@ -1590,7 +1675,7 @@ List Event History
         
 List Previous Events
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents, completionHandler: @escaping Completion<ListEventsResponse>)
 
@@ -1636,7 +1721,7 @@ This method allows you to go back in time to "scroll" in reverse through past me
         
 List Event By Type
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
             func listEventByType(_ request: ChatRequest.ListEventByType, completionHandler: @escaping Completion<ListEventsResponse>)
 
@@ -1683,7 +1768,7 @@ List Event By Type
         
 List Event By Timestamp
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
             func listEventByTimestamp(_ request: ChatRequest.ListEventByTimestamp,completionHandler: @escaping Completion<ListEventsResponse>)
 
@@ -1748,7 +1833,7 @@ If you pass in 0 for limitolder you won't get any older events than your timesta
 
 Join Room
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func joinRoom(_ request: ChatRequest.JoinRoom, completionHandler: @escaping Completion<JoinChatRoomResponse>)
 
@@ -1839,7 +1924,7 @@ When a logged in user leaves a room, an exit event is generated in the room
         
 Join Room by CustomId
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func joinRoomByCustomId(_ request: ChatRequest.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>)
 
@@ -1938,7 +2023,7 @@ When a logged in user leaves a room, an exit event is generated in the room.
         
 Exit Room
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func exitRoom(_ request: ChatRequest.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>)
 
@@ -1974,7 +2059,7 @@ This method should be called to remove a user from a room. This will cause an EX
 
 Get Updates
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func getUpdates(_ request: ChatRequest.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>)
 
@@ -2035,7 +2120,7 @@ Enter and Exit events may not be sent if the room is expected to have a very lar
         
 Get More Updates
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func getMoreUpdates(_ request: ChatRequest.GetMoreUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>)
 
@@ -2096,7 +2181,7 @@ Enter and Exit events may not be sent if the room is expected to have a very lar
         
 Execute Command
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func executeChatCommand(_ request: ChatRequest.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) throws
 
@@ -2216,7 +2301,7 @@ This requires that the action command dance is on the approved list of commands 
 
 Send Quoted Reply
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<Event>) throws
 
@@ -2298,7 +2383,7 @@ This method is provided to support a chat experience where a person wants to rep
         
 Send Threaded Reply
 ============================
-.. code-block:: javascript
+.. code-block:: swift
         
         func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<Event>) throws
 
@@ -2381,7 +2466,7 @@ Replies do not support admin or action commands
         
 List Messages By User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func listMessagesByUser(_ request: ChatRequest.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUser>)
 
@@ -2424,7 +2509,7 @@ The purpose of this method is to get a list of messages or comments by a user, w
         
 Purge Message
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func purgeMessage(_ request: ChatRequest.PurgeUserMessages, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
 
@@ -2471,7 +2556,7 @@ This does not DELETE the message. It flags the message as moderator removed.
         
 Flag Event As Locally Deleted
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func flagEventLogicallyDeleted(_ request: ChatRequest.FlagEventLogicallyDeleted, completionHandler: @escaping Completion<DeleteEventResponse>)
 
@@ -2526,7 +2611,7 @@ If you want to mark a comment as deleted, and replies are still visible, use "tr
 
 Permanently Delete Event
 ============================
-.. code-block:: javascript
+.. code-block:: swift
     
     func permanentlyDeleteEvent(_ request: ChatRequest.PermanentlyDeleteEvent, completionHandler: @escaping Completion<DeleteEventResponse>)
 
@@ -2566,7 +2651,7 @@ This does not DELETE the message. It flags the message as moderator removed.
         
 Delete All Events
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func deleteAllEvents(_ request: ChatRequest.DeleteAllEvents, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
 
@@ -2606,7 +2691,7 @@ Deletes all the events in a room.
         
 List Messages of User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func listMessagesByUser(_ request: ChatRequest.ListMessagesByUser, completionHandler: @escaping Completion<ListMessagesByUserResponse>)
 
@@ -2649,7 +2734,7 @@ The purpose of this method is to get a list of messages or comments by a user, w
         
 Report A Message
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func reportMessage(_ request: ChatRequest.ReportMessage, completionHandler: @escaping Completion<Event>)
 
@@ -2720,7 +2805,7 @@ A reported message is temporarily removed from the chat event stream until it is
         
 React to an Event
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func reactToEvent(_ request: ChatRequest.ReactToEvent, completionHandler: @escaping Completion<Event>)
 
@@ -2793,7 +2878,7 @@ After this completes, a new event appears in the stream representing the reactio
         
 Report User in Room
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func reportUserInRoom(_ request: ChatRequest.ReportUserInRoom, completionHandler: @escaping Completion<ChatRoom>)
     
@@ -2865,7 +2950,7 @@ Reports a user in the room
         }
 Bounce User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func bounceUser(_ request: ChatRequest.BounceUser, completionHandler: @escaping Completion<BounceUserRequest>)
     
@@ -2909,7 +2994,7 @@ When you bounce a user from the room, the user is removed from the room and bloc
         
 Shadowban User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func shadowbanUser(_ request: ChatRequest.ShadowbanUser, completionHandler: @escaping Completion<ChatRoom>)
     
@@ -2973,7 +3058,7 @@ A Shadow Banned user can send messages into a chat room, however those messages 
         
 Mute User
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func muteUser(_ request: ChatRequest.MuteUser, completionHandler: @escaping Completion<ChatRoom>)
     
@@ -3038,7 +3123,7 @@ A Shadow Banned user can send messages into a chat room, however those messages 
       
 Search Event History
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func searchEventHistory(_ request: ChatRequest.SearchEvent, completionHandler: @escaping Completion<ListEventsResponse>)
 
@@ -3110,7 +3195,7 @@ This returns displayable messages (for example speech, quote, threadedreply) tha
         
 Update Chat Event
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func updateChatEvent(_ request: ChatRequest.UpdateChatEvent, completionHandler: @escaping Completion<Event>)
 
@@ -3193,7 +3278,7 @@ This API may be used to update the body of an existing Chat Event. It is used to
 
 Start Listening to Chat Updates
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates?, completionHandler: @escaping Completion<[Event]>)
 
@@ -3253,7 +3338,7 @@ Periodically calls func getUpdates(request:completionHandler:) to receive latest
 
 Stop Listening to Chat Updates
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func stopListeningToChatUpdates()
 
@@ -3265,7 +3350,7 @@ Cancels listening to Chat Updates
 
 Approve Event
 ============================
-.. code-block:: javascript
+.. code-block:: swift
     
     func approveEvent(_ request: ModerationRequest.ApproveEvent, completionHandler: @escaping Completion<Event>)
 
@@ -3325,7 +3410,7 @@ If the room is set to use POST-MODERATION, messages will only be sent to the mod
         
 Reject Event
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func rejectEvent(_ request: ModerationRequest.RejectEvent, completionHandler: @escaping Completion<Event>)
 
@@ -3385,7 +3470,7 @@ If the room is set to use POST-MODERATION, messages will only be sent to the mod
         
 List All Messages In Moderation Queue
 ============================
-.. code-block:: javascript
+.. code-block:: swift
 
     func listMessagesInModerationQueue(_ request: ModerationRequest.listMessagesInModerationQueue, completionHandler: @escaping Completion<ListMessagesNeedingModerationResponse>)
 
