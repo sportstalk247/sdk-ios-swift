@@ -46,6 +46,7 @@
 		A86EA04325AC8A6A002B9B3F /* UserNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EA04225AC8A6A002B9B3F /* UserNotification.swift */; };
 		A86EC091247484310025A5FA /* ParametersBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86EC090247484310025A5FA /* ParametersBase.swift */; };
 		A8704BA425DD5D3700FA23B3 /* SDKError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8704BA325DD5D3700FA23B3 /* SDKError.swift */; };
+		A879BA66264C540000637514 /* KeepAliveResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A879BA65264C540000637514 /* KeepAliveResponse.swift */; };
 		A87A51D125DAC05F00655A14 /* ReportedUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87A51D025DAC05F00655A14 /* ReportedUser.swift */; };
 		A87A839625D440020096E42A /* ListEventByTimestampResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87A839525D440020096E42A /* ListEventByTimestampResponse.swift */; };
 		A8B45222250D3E5100592F9B /* DeleteEventResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */; };
@@ -108,6 +109,7 @@
 		A86EA04225AC8A6A002B9B3F /* UserNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNotification.swift; sourceTree = "<group>"; };
 		A86EC090247484310025A5FA /* ParametersBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParametersBase.swift; sourceTree = "<group>"; };
 		A8704BA325DD5D3700FA23B3 /* SDKError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKError.swift; sourceTree = "<group>"; };
+		A879BA65264C540000637514 /* KeepAliveResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepAliveResponse.swift; sourceTree = "<group>"; };
 		A87A51D025DAC05F00655A14 /* ReportedUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportedUser.swift; sourceTree = "<group>"; };
 		A87A839525D440020096E42A /* ListEventByTimestampResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEventByTimestampResponse.swift; sourceTree = "<group>"; };
 		A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteEventResponse.swift; sourceTree = "<group>"; };
@@ -245,6 +247,7 @@
 				A855D77C24714D4000206560 /* DeleteChatRoomResponse.swift */,
 				A8B45221250D3E5100592F9B /* DeleteEventResponse.swift */,
 				A8B7D04D2522569200CF406C /* BounceUserResponse.swift */,
+				A879BA65264C540000637514 /* KeepAliveResponse.swift */,
 				A855D77E24714D4000206560 /* Moderation */,
 				A87A51D025DAC05F00655A14 /* ReportedUser.swift */,
 				9BB7ECCF2949F96F002347E4 /* ListUserSubscribedRoomsResponse.swift */,
@@ -458,6 +461,7 @@
 				A855D79924714D4000206560 /* ExitChatRoomResponse.swift in Sources */,
 				A855D79624714D4000206560 /* JoinChatRoomResponse.swift in Sources */,
 				A855D7AD24714DD000206560 /* ClientConfig.swift in Sources */,
+				A879BA66264C540000637514 /* KeepAliveResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -643,7 +647,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.3;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -670,7 +674,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.3;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;

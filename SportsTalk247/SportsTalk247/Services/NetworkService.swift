@@ -101,7 +101,13 @@ open class NetworkService {
         var url:URL?
         
         if useDefaultUrl {
-            url = URL(string: "\(self.config.endpoint.absoluteString)/\(config.appId)/\(serviceName ?? "")")
+            let urlString = "\(self.config.endpoint.absoluteString)/\(config.appId)/\(serviceName ?? "")"
+            if let encodedURL = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                url = URL(string: encodedURL)
+            } else {
+                // Present error regardless if on debugMode or not.
+                print("Could not create URL using \(urlString)")
+            }
         } else {
             url = URL(string: "\(serviceName ?? emptyString)")!
         }
@@ -109,7 +115,7 @@ open class NetworkService {
         guard let requestUrl = url else { return nil}
         
         // Create the request
-        var request = URLRequest(url: requestUrl, timeoutInterval: Double.infinity)
+        var request = URLRequest(url: requestUrl, timeoutInterval: 10)
         request.httpMethod = requestType.rawValue
         
         if (requestType == .POST && appendData) || (requestType == .PUT && appendData == false) || requestType == .DELETE {
@@ -120,14 +126,18 @@ open class NetworkService {
             components.queryItems = [URLQueryItem]()
 
             for (key, value) in (data ?? [AnyHashable : Any]()) {
-                let item: URLQueryItem
                 if let v = value as? Bool {
-                    item = URLQueryItem(name: "\(key)", value: "\(v ? "true" : "false")")
+                    let item = URLQueryItem(name: "\(key)", value: "\(v ? "true" : "false")")
+                    components.queryItems?.append(item)
+                } else if let values = value as? [String] {
+                    for v in values {
+                        let item = URLQueryItem(name: "\(key)", value: "\(v)")
+                        components.queryItems?.append(item)
+                    }
                 } else {
-                    item = URLQueryItem(name: "\(key)", value: "\(value)")
+                    let item = URLQueryItem(name: "\(key)", value: "\(value)")
+                    components.queryItems?.append(item)
                 }
-                
-                components.queryItems?.append(item)
             }
 
             if let componentUrl = components.url {

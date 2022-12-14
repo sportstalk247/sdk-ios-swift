@@ -162,12 +162,13 @@ To manually get room updates, use ``ChatClient().getUpdates(request:completionHa
 
 Start/Stop Getting Event Updates
 ------------------
-Get periodic updates from room by using ``client.startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>)``
+Get periodic updates from room by using ``func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates?, completionHandler: @escaping Completion<[Event]>)``
 Only new events will be emitted, so it is up to you to collect the new events.
 To stop getting updates, simply call ``client.stopListeningToChatUpdates()`` anytime.
 
 Note:
 Updates are received every 500 milliseconds.
+You can configure the delivery of messages by setting ChatRequest.StartListeningToChatUpdates
 Losing reference to client will stop the eventUpdates
 
 .. code-block:: swift
@@ -1069,6 +1070,8 @@ Creates a new chat room
 
 - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
 
+- enableautoexpiresessions: (optional) [defaulttrue / false] Enables automatically expiring idle sessions, which removes inactive users from the room.
+
 - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
 
 - maxreports: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
@@ -1114,6 +1117,7 @@ Creates a new chat room
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -1168,6 +1172,80 @@ This will return all the settings for the room and the participant count but not
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
+            public var delaymessageseconds: Int64?
+            public var added: Date?
+            public var whenmodified: Date?
+            public var bouncedusers: [String] = []
+            public var reportedusers: [ReportedUser] = []
+        }
+        
+Get Room Extended Details
+============================
+.. code-block:: javascript
+
+    func getRoomExtendedDetails(_ request: ChatRequest.GetRoomExtendedDetails, completionHandler: @escaping Completion<ChatRoom>)
+
+Get the details for a room
+    
+This method lets you specify a list of entity types to return. You can use it to get room details as well as statistics and other data associated with a room that is not part of the room entity.
+    
+You must specify one or more roomid values or customid values. You may optionally provide both roomid and customid values. You may not request more than 20 rooms at once total. You must specify at least one entity type.
+    
+In the future, each entity requested will count towards your API usage quota, so don't request data you will not be using.
+    
+The response will be a list of RoomExtendedDetails objects. They contain properties such as room, mostrecentmessagetime, and inroom. These properties will be null if their entity type is not specified
+    
+**Parameters**
+    
+- roomid: (required) Room id of a specific room againts which you want to fetch the details
+    
+- customid: (optional) A list of room customIDs.
+    
+- entity: (required) Specify one or more ENTITY TYPES to include in the response. Use one or more of the types below.
+    
+    - room: This returns the room entity.
+    
+    - numparticipants: This returns number of active participants / room subscribers.
+    
+    - lastmessagetime: This returns the time stamp for the most recent event that is a visible displayable message (speech, quote, threaded reply or announcement).
+    
+**Warning** This method requires authentication
+
+**Request Model: ChatRequest.GetRoomExtendedDetails**
+
+.. code-block:: swift
+
+        public class GetRoomExtendedDetails {
+            public var roomid: String?
+            public var customid: String?
+            public var entity: [RoomEntityType]?
+        }
+                
+**Response Model: ChatRoom**
+
+.. code-block:: swift
+
+        public var kind: String?
+            public var id: String?
+            public var appid: String?
+            public var ownerid: String?
+            public var name: String?
+            public var description: String?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var enableactions: Bool?
+            public var enableenterandexit: Bool?
+            public var open: Bool?
+            public var inroom: Int?
+            public var moderation: String?
+            public var maxreports: Int64?
+            public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -1222,6 +1300,7 @@ This will return all the settings for the room and the participant count but not
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -1289,6 +1368,8 @@ Updates an existing room
 
 - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
 
+- enableautoexpiresessions: (optional) [defaulttrue / false] Enables automatically expiring idle sessions, which removes inactive users from the room.
+
 - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling
 
 - roomisopen: (optional) [true/false] If false, users cannot perform any commands in the room, chat is suspended.
@@ -1339,6 +1420,7 @@ Updates an existing room
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -1416,6 +1498,7 @@ Response Model: ChatRoom
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -1652,11 +1735,13 @@ List Event By Type
     
 - roomid: (required) Room id where you want previous events to be listed
     
-- eventtype: (required)
-    
 - limit: (optional) default is 10, maximum 100
     
 - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+
+- eventtype: (required) Specify the chat event type you are filtering for. If you want to filter for a custom event type, specify 'custom' and then provide a value for the *customtype parameter
+
+- customtype: (optional) If you want to filter by custom type you must first specify 'custom' for the eventtype field. This will enable you to filter to find events of a custom type
     
 **Request Model: ChatRequest.ListEventByType**
 
@@ -2856,6 +2941,7 @@ Reports a user in the room
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -2962,6 +3048,7 @@ A Shadow Banned user can send messages into a chat room, however those messages 
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -3026,6 +3113,7 @@ A Shadow Banned user can send messages into a chat room, however those messages 
             public var moderation: String?
             public var maxreports: Int64?
             public var enableprofanityfilter: Bool?
+            public var enableautoexpiresessions: Bool?
             public var delaymessageseconds: Int64?
             public var added: Date?
             public var whenmodified: Date?
@@ -3192,11 +3280,24 @@ Start Listening to Chat Updates
 ============================
 .. code-block:: swift
 
-    func startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>)
+    func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates?, completionHandler: @escaping Completion<[Event]>)
 
 Periodically calls func getUpdates(request:completionHandler:) to receive latest chat events.
 
-**Request Model: None**
+**Parameters**
+    
+- limit: (optional) Number of events to return. Default is 100, maximum is 500. Will use default if value set is below default value.
+    
+- eventSpacingMs: (optional) The frequency (in milliseconds) when events are dispatched from buffer. Will use default if value set is below default value.
+
+**Request Model: ChatRequest.StartListeningToChatUpdates**
+
+.. code-block:: swift
+
+        public class StartListeningToChatUpdates {
+            public var limit: Int?
+            public var eventSpacingMs: Int
+        }
                 
 **Response Model: Event**
 

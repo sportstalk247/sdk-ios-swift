@@ -21,6 +21,8 @@ public class ChatRequest {
     ///
     /// - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
     ///
+    /// - enableautoexpiresessions: (optional) [defaulttrue / false] Enables automatically expiring idle sessions, which removes inactive users from the room
+    ///
     /// - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling.
     ///
     /// - maxreports: (optiona) Default is 3. This is the maximum amount of user reported flags that can be applied to a message before it is sent to the moderation queue
@@ -36,6 +38,7 @@ public class ChatRequest {
             case enableactions
             case enableenterandexit
             case enableprofanityfilter
+            case enableautoexpiresessions
             case roomisopen
             case maxreports
             
@@ -57,6 +60,7 @@ public class ChatRequest {
         public var enableactions: Bool?
         public var enableenterandexit: Bool?
         public var enableprofanityfilter: Bool?
+        public var enableautoexpiresessions: Bool?
         public var roomisopen: Bool?
         public var maxreports: Int? = 3
         
@@ -80,6 +84,7 @@ public class ChatRequest {
             ret.enableactions = value(forKey: .enableactions)
             ret.enableenterandexit = value(forKey: .enableenterandexit)
             ret.enableprofanityfilter = value(forKey: .enableprofanityfilter)
+            ret.enableautoexpiresessions = value(forKey: .enableautoexpiresessions)
             ret.roomisopen = value(forKey: .roomisopen)
             ret.maxreports = value(forKey: .maxreports)
             
@@ -108,6 +113,7 @@ public class ChatRequest {
             add(key: .enableactions, value: enableactions)
             add(key: .enableenterandexit, value: enableenterandexit)
             add(key: .enableprofanityfilter, value: enableprofanityfilter)
+            add(key: .enableautoexpiresessions, value: enableautoexpiresessions)
             add(key: .roomisopen, value: roomisopen)
             add(key: .maxreports, value: maxreports)
             
@@ -155,6 +161,66 @@ public class ChatRequest {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .roomid, value: roomid)
+            
+            return toDictionary
+        }
+    }
+    
+    /// Get the details for a room
+    ///
+    /// This method lets you specify a list of entity types to return. You can use it to get room details as well as statistics and other data associated with a room that is not part of the room entity.
+    ///
+    /// You must specify one or more roomid values or customid values. You may optionally provide both roomid and customid values. You may not request more than 20 rooms at once total. You must specify at least one entity type.
+    ///
+    /// In the future, each entity requested will count towards your API usage quota, so don't request data you will not be using.
+    ///
+    /// The response will be a list of RoomExtendedDetails objects. They contain properties such as room, mostrecentmessagetime, and inroom. These properties will be null if their entity type is not specified
+    ///
+    /// **Parameters**
+    ///
+    /// - roomid: (required) Room id of a specific room againts which you want to fetch the details
+    ///
+    /// - customid: (optional) A list of room customIDs.
+    ///
+    /// - entity: (required) Specify one or more ENTITY TYPES to include in the response. Use one or more of the types below.
+    ///
+    ///     - room: This returns the room entity.
+    ///
+    ///     - numparticipants: This returns number of active participants / room subscribers.
+    ///
+    ///     - lastmessagetime: This returns the time stamp for the most recent event that is a visible displayable message (speech, quote, threaded reply or announcement).
+    ///
+    /// **Warning** This method requires authentication
+    ///
+    public class GetRoomExtendedDetails: ParametersBase<GetRoomExtendedDetails.Fields, GetRoomExtendedDetails> {
+        public enum Fields {
+            case roomid
+            case customid
+            case entity
+        }
+        
+        public var roomid: String?
+        public var customid: String?
+        public var entity: [RoomEntityType]?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> GetRoomExtendedDetails {
+            set(dictionary: dictionary)
+            let ret = GetRoomExtendedDetails()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.customid = value(forKey: .customid)
+            ret.entity = value(forKey: .entity)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            let unique = Array<RoomEntityType>.uniqueElementsFrom(array: entity ?? [])
+            addRequired(key: .entity, value: unique.map{ $0.rawValue })
+            add(key: .roomid, value: roomid)
+            add(key: .customid, value: customid)
             
             return toDictionary
         }
@@ -247,6 +313,8 @@ public class ChatRequest {
     ///
     /// - enableprofanityfilter: (optional) [default=true / false] Enables profanity filtering.
     ///
+    /// - enableautoexpiresessions: (optional) [defaulttrue / false] Enables automatically expiring idle sessions, which removes inactive users from the room
+    ///
     /// - delaymessageseconds: (optional) [default=0] Puts a delay on messages from when they are submitted until they show up in the chat. Used for throttling
     ///
     /// - roomisopen: (optional) [true/false] If false, users cannot perform any commands in the room, chat is suspended.
@@ -265,6 +333,7 @@ public class ChatRequest {
             case enableactions
             case enableenterandexit
             case enableprofanityfilter
+            case enableautoexpiresessions
             case delaymessageseconds
             case roomisopen
             case throttle
@@ -279,6 +348,7 @@ public class ChatRequest {
         public var enableactions: Bool?
         public var enableenterandexit: Bool?
         public var enableprofanityfilter: Bool?
+        public var enableautoexpiresessions: Bool?
         public var delaymessageseconds: Int?
         public var roomisopen: Bool?
         public var throttle: Int?
@@ -296,6 +366,7 @@ public class ChatRequest {
             ret.enableactions = value(forKey: .enableactions)
             ret.enableenterandexit = value(forKey: .enableenterandexit)
             ret.enableprofanityfilter = value(forKey: .enableprofanityfilter)
+            ret.enableautoexpiresessions = value(forKey: .enableautoexpiresessions)
             ret.roomisopen = value(forKey: .roomisopen)
             ret.delaymessageseconds = value(forKey: .delaymessageseconds)
             ret.throttle = value(forKey: .throttle)
@@ -315,6 +386,7 @@ public class ChatRequest {
             add(key: .enableactions, value: enableactions)
             add(key: .enableenterandexit, value: enableenterandexit)
             add(key: .enableprofanityfilter, value: enableprofanityfilter)
+            add(key: .enableautoexpiresessions, value: enableautoexpiresessions)
             add(key: .roomisopen, value: roomisopen)
             add(key: .delaymessageseconds, value: delaymessageseconds)
             add(key: .throttle, value: throttle)
@@ -648,11 +720,13 @@ public class ChatRequest {
     ///
     /// - roomid: (required) Room id where you want previous events to be listed
     ///
-    /// - eventtype: (required)
-    ///
     /// - limit: (optional) default is 10, maximum 100
     ///
     /// - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
+    ///
+    /// - eventtype: (required) Specify the chat event type you are filtering for. If you want to filter for a custom event type, specify 'custom' and then provide a value for the *customtype parameter
+    ///
+    /// - customtype: (optional) If you want to filter by custom type you must first specify 'custom' for the eventtype field. This will enable you to filter to find events of a custom type
     ///
     public class ListEventByType: ParametersBase<ListEventByType.Fields, ListEventByType> {
         public enum Fields {
@@ -660,12 +734,14 @@ public class ChatRequest {
             case eventtype
             case cursor
             case limit
+            case customtype
         }
         
         public var roomid: String?
         public var eventtype: EventType?
         public var cursor: String?
         public var limit: Int? = 10
+        public var customtype: String?
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListEventByType {
             set(dictionary: dictionary)
@@ -675,6 +751,7 @@ public class ChatRequest {
             ret.eventtype = value(forKey: .eventtype)
             ret.cursor = value(forKey: .cursor)
             ret.limit = value(forKey: .limit)
+            ret.customtype = value(forKey: .customtype)
             
             return ret
         }
@@ -685,6 +762,7 @@ public class ChatRequest {
             add(key: .eventtype, value: eventtype?.rawValue)
             add(key: .cursor, value: cursor)
             add(key: .limit, value: limit)
+            add(key: .customtype, value: customtype)
             
             return toDictionary
         }
@@ -1142,7 +1220,7 @@ public class ChatRequest {
             toDictionary = [AnyHashable: Any]()
             
             add(key: .cursor, value: cursor)
-            add(key: .limit, value: limit)
+            add(key: .limit, value: limit ?? 100)
             
             return toDictionary
         }
@@ -2419,6 +2497,78 @@ public class ChatRequest {
             add(key: .customid, value: customid)
             add(key: .custompayload, value: custompayload)
             
+            return toDictionary
+        }
+    }
+    
+    /// Used to configure the behaviour of the message flow
+    ///
+    /// **Parameters**
+    ///
+    /// - limit: (optional) Number of events to return. Default is 100, maximum is 500. Will use default if value set is below default value.
+    ///
+    /// - eventSpacingMs: (optional) The frequency (in milliseconds) when events are dispatched from buffer. Will use default if value set is below default value.
+    ///
+    public class StartListeningToChatUpdates: ParametersBase<StartListeningToChatUpdates.Fields, StartListeningToChatUpdates> {
+        public enum Fields {
+            case limit
+            case eventSpacingMs
+        }
+        
+        public var limit: Int = 100 {
+            didSet {
+                let minAllowed = 100
+                if limit < minAllowed {
+                    limit = minAllowed
+                }
+            }
+        }
+        
+        public var eventSpacingMs: Int = 200 {
+            didSet {
+                let minAllowed = 100
+                if eventSpacingMs < minAllowed {
+                    eventSpacingMs = minAllowed
+                }
+            }
+        }
+    }
+    
+    /// Users who are not active will automatically exit the room. This method lets the room know that the user is still active so the user doesn't need to rejoin. The SDKs will do this for you automatically.
+    ///
+    /// You can configure a room to not auto-expire sessions in the settings for that room
+    ///
+    /// **Parameters**
+    ///
+    /// - userid: (required) user id specific to app
+    ///
+    /// - roomid: (required) Room Id, in which you want to react
+    ///
+    public class KeepAlive: ParametersBase<KeepAlive.Fields, KeepAlive> {
+        public enum Fields {
+            case roomid
+            case userid
+        }
+        
+        public var roomid: String?
+        public var userid: String?
+        
+        override public func from(dictionary: [AnyHashable: Any]) -> KeepAlive {
+            set(dictionary: dictionary)
+            let ret = KeepAlive()
+            
+            ret.roomid = value(forKey: .roomid)
+            ret.userid = value(forKey: .userid)
+            
+            return ret
+        }
+        
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            
+            addRequired(key: .roomid, value: roomid)
+            addRequired(key: .userid, value: userid)
+
             return toDictionary
         }
     }

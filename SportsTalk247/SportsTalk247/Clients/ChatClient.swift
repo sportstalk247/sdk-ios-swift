@@ -3,6 +3,7 @@ import Foundation
 public protocol ChatClientProtocol {
     func createRoom(_ request: ChatRequest.CreateRoom, completionHandler: @escaping Completion<ChatRoom>)
     func getRoomDetails(_ request: ChatRequest.GetRoomDetails, completionHandler: @escaping Completion<ChatRoom>)
+    func getRoomExtendedDetails(_ request: ChatRequest.GetRoomExtendedDetails, completionHandler: @escaping Completion<ChatRoom>)
     func getRoomDetailsByCustomId(_ request: ChatRequest.GetRoomDetailsByCustomId, completionHandler: @escaping Completion<ChatRoom>)
     func deleteRoom(_ request: ChatRequest.DeleteRoom, completionHandler: @escaping Completion<DeleteChatRoomResponse>)
     func updateRoom(_ request: ChatRequest.UpdateRoom, completionHandler: @escaping Completion<ChatRoom>)
@@ -36,7 +37,7 @@ public protocol ChatClientProtocol {
     func searchEventHistory(_ request: ChatRequest.SearchEvent, completionHandler: @escaping Completion<ListEventsResponse>)
     func updateChatEvent(_ request: ChatRequest.UpdateChatEvent, completionHandler: @escaping Completion<Event>)
     
-    func startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>)
+    func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates?, completionHandler: @escaping Completion<[Event]>)
     func stopListeningToChatUpdates()
     
     func approveEvent(_ request: ModerationRequest.ApproveEvent, completionHandler: @escaping Completion<Event>)
@@ -55,7 +56,22 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     var lastcommand: String?
     var lastcommandsent: Date?
     var currentuserid: String?
-    static let timeout = 20000 // milliseconds
+    
+    /// Collects events from startListeningToChatUpdates and deliver at eventSpacingMS interval
+    var prerenderedevents = [Event]()
+    
+    /// Max items to be stored in prerendered events.
+    var maxeventbuffersize = 30
+    
+    /// Anti-flood timeout value
+    static let timeout = 20000
+    
+    /// Stops GetUpdates when startListeningToChatUpdates until it gets a response
+    var shouldFetchNewEvents = true
+    
+    /// Keeps track of sent event by eventid so we can move this event at the top of the prerenderedevent list.
+    /// This allows the SDK to prioritize sending events from the logged-in user ahead of everyone else.
+    var sentEvents = [String]()
     
     public override init(config: ClientConfig) {
         super.init(config: config)
@@ -117,6 +133,12 @@ extension ChatClient {
         }
     }
     
+    public func getRoomExtendedDetails(_ request: ChatRequest.GetRoomExtendedDetails, completionHandler: @escaping Completion<ChatRoom>) {
+        makeRequest(URLPath.Room.DetailsExtended(), withData: request.toDictionary(), requestType: .GET, expectation: ChatRoom.self, append: true) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
+    
     public func getRoomDetailsByCustomId(_ request: ChatRequest.GetRoomDetailsByCustomId, completionHandler: @escaping Completion<ChatRoom>) {
         makeRequest(URLPath.Room.DetailsByCustomId(customid: request.customid), withData: request.toDictionary(), requestType: .GET, expectation: ChatRoom.self, append: false) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
@@ -160,95 +182,142 @@ extension ChatClient {
     }
     
     public func listEventHistory(_ request: ChatRequest.ListEventHistory, completionHandler: @escaping Completion<ListEventsResponse>) {
-        makeRequest(URLPath.Room.EventHistory(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self) { (response) in
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        makeRequest(URLPath.Room.EventHistory(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self) { [weak self] (response) in
+            
+            // Filter shadowbanned events that are not from user
+            var data = response?.data
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
+            
+            completionHandler(response?.code, response?.message, response?.kind, data)
         }
     }
     
     public func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents,completionHandler: @escaping Completion<ListEventsResponse>) {
         request.cursor = request.cursor ?? self.firstcursor
-        makeRequest(URLPath.Room.PreviousEvent(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.PreviousEvent(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
             var data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
-            self.firstcursor = response?.data?.cursor ?? ""
+            self?.firstcursor = response?.data?.cursor ?? ""
         }
     }
     
     public func listEventByType(_ request: ChatRequest.ListEventByType,completionHandler: @escaping Completion<ListEventsResponse>) {
-        makeRequest(URLPath.Room.EventByType(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.EventByType(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
             var data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
-            self.firstcursor = response?.data?.cursor ?? ""
+            completionHandler(response?.code, response?.message, response?.kind, data)
+            self?.firstcursor = response?.data?.cursor ?? ""
         }
     }
     
     public func listEventByTimestamp(_ request: ChatRequest.ListEventByTimestamp,completionHandler: @escaping Completion<ListEventByTimestampResponse>) {
-        makeRequest(URLPath.Room.EventByTime(roomid: request.roomid, time: request.timestamp), withData: request.toDictionary(), requestType: .GET, expectation: ListEventByTimestampResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.EventByTime(roomid: request.roomid, time: request.timestamp), withData: request.toDictionary(), requestType: .GET, expectation: ListEventByTimestampResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
             var data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
-            self.firstcursor = response?.data?.cursornewer ?? ""
+            completionHandler(response?.code, response?.message, response?.kind, data)
+            self?.firstcursor = response?.data?.cursornewer ?? ""
         }
     }
     
     public func joinRoom(_ request: ChatRequest.JoinRoom, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
-        makeRequest(URLPath.Room.Join(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
-            self.lastroomid = request.roomid
-            self.lastcursor = ""
-            self.firstcursor = response?.data?.eventscursor?.cursor ?? ""
-            self.currentuserid = request.userid
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        makeRequest(URLPath.Room.Join(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { [weak self] (response) in
+            
+            self?.lastroomid = request.roomid
+            self?.lastcursor = response?.data?.eventscursor?.cursor ?? ""
+            self?.firstcursor = response?.data?.previouseventscursor ?? ""
+            self?.currentuserid = request.userid
+            
+            let newupdates = GetUpdatesResponse()
+            newupdates.kind = response?.data?.eventscursor?.kind
+            newupdates.cursor = response?.data?.eventscursor?.cursor
+            newupdates.more = response?.data?.eventscursor?.more
+            newupdates.itemcount = response?.data?.eventscursor?.itemcount
+            newupdates.room = response?.data?.eventscursor?.room
+            newupdates.events = response?.data?.eventscursor?.events ?? []
+
+            // Filter shadowbanned events that are not from user
+            newupdates.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
+            
+            let newdata = JoinChatRoomResponse()
+            newdata.kind = response?.data?.kind
+            newdata.user = response?.data?.user
+            newdata.room = response?.data?.room
+            newdata.eventscursor = newupdates
+            newdata.previouseventscursor = response?.data?.previouseventscursor
+            
+            completionHandler(response?.code, response?.message, response?.kind, newdata)
         }
     }
     
     public func joinRoomByCustomId(_ request: ChatRequest.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
-        makeRequest(URLPath.Room.Join(customid: request.customid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { (response) in
-            self.lastcursor = ""
-            self.firstcursor = response?.data?.eventscursor?.cursor ?? ""
-            self.lastroomid = response?.data?.room?.id ?? ""
-            self.currentuserid = request.userid
-            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        makeRequest(URLPath.Room.Join(customid: request.customid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { [weak self] (response) in
+            self?.lastcursor = response?.data?.eventscursor?.cursor ?? ""
+            self?.firstcursor = response?.data?.previouseventscursor ?? ""
+            self?.lastroomid = response?.data?.room?.id ?? ""
+            self?.currentuserid = request.userid
+            
+            let newupdates = GetUpdatesResponse()
+            newupdates.kind = response?.data?.eventscursor?.kind
+            newupdates.cursor = response?.data?.eventscursor?.cursor
+            newupdates.more = response?.data?.eventscursor?.more
+            newupdates.itemcount = response?.data?.eventscursor?.itemcount
+            newupdates.room = response?.data?.eventscursor?.room
+            newupdates.events = response?.data?.eventscursor?.events ?? []
+
+            // Filter shadowbanned events that are not from user
+            newupdates.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
+            
+            let newdata = JoinChatRoomResponse()
+            newdata.kind = response?.data?.kind
+            newdata.user = response?.data?.user
+            newdata.room = response?.data?.room
+            newdata.eventscursor = newupdates
+            newdata.previouseventscursor = response?.data?.previouseventscursor
+            
+            completionHandler(response?.code, response?.message, response?.kind, newdata)
         }
     }
 
     public func exitRoom(_ request: ChatRequest.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>) {
-        makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { (response) in
-            self.stopListeningToChatUpdates()
-            self.lastroomid = nil
-            self.lastcursor = ""
-            self.currentuserid = nil
+        makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { [weak self] (response) in
+            self?.stopListeningToChatUpdates()
+            self?.prerenderedevents.removeAll()
+            self?.lastroomid = nil
+            self?.lastcursor = ""
+            self?.firstcursor = ""
+            self?.currentuserid = nil
+            self?.sentEvents.removeAll()
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
 
     public func getUpdates(_ request: ChatRequest.GetUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>) {
-        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
-            var data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            let data = response?.data
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
         }
     }
     
     public func getMoreUpdates(_ request: ChatRequest.GetMoreUpdates, completionHandler: @escaping Completion<GetUpdatesResponse>) {
-        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { (response) in
+        makeRequest(URLPath.Room.GetUpdates(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: GetUpdatesResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
-            var data = response?.data
-            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self.currentuserid }))
+            let data = response?.data
+            data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
         }
@@ -256,30 +325,82 @@ extension ChatClient {
 
     public func executeChatCommand(_ request: ChatRequest.ExecuteChatCommand, completionHandler: @escaping Completion<ExecuteChatCommandResponse>) throws {
         guard throttle(command: request.command) else { throw SDKError.NotAllowed }
-        
-        makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { (response) in
-            self.lastcommand = request.command
-            self.lastcommandsent = Date()
+        self.lastcommand = request.command
+        self.lastcommandsent = Date()
+
+        makeRequest(URLPath.Room.ExecuteCommand(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExecuteChatCommandResponse.self) { [weak self] (response) in
+            
+            let code: Int = response?.code ?? 500
+            
+            if let speech = response?.data?.speech {
+                self?.prerenderedevents.insert(speech, at: 0)
+                if let id = speech.id {
+                    self?.sentEvents.append(id)
+                }
+            } else {
+                if let action = response?.data?.action {
+                    self?.prerenderedevents.insert(action, at: 0)
+                    if let id = action.id {
+                        self?.sentEvents.append(id)
+                    }
+                }
+            }
+            
+            if code >= 400 {
+                self?.lastcommand = nil
+                self?.lastcommandsent = nil
+            }
+            
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func sendQuotedReply(_ request: ChatRequest.SendQuotedReply, completionHandler: @escaping Completion<Event>) throws {
         guard throttle(command: request.body) else { throw SDKError.NotAllowed }
+        self.lastcommand = request.body
+        self.lastcommandsent = Date()
         
-        makeRequest(URLPath.Room.QuotedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
-            self.lastcommand = request.body
-            self.lastcommandsent = Date()
+        makeRequest(URLPath.Room.QuotedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { [weak self] (response) in
+            
+            let code: Int = response?.code ?? 500
+            
+            if let event = response?.data {
+                self?.prerenderedevents.insert(event, at: 0)
+                if let id = event.id {
+                    self?.sentEvents.append(id)
+                }
+            }
+            
+            if code >= 400 {
+                self?.lastcommand = nil
+                self?.lastcommandsent = nil
+            }
+            
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
     
     public func sendThreadedReply(_ request: ChatRequest.SendThreadedReply, completionHandler: @escaping Completion<Event>) throws {
         guard throttle(command: request.body) else { throw SDKError.NotAllowed }
+        self.lastcommand = request.body
+        self.lastcommandsent = Date()
         
-        makeRequest(URLPath.Room.ThreadedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { (response) in
-            self.lastcommand = request.body
-            self.lastcommandsent = Date()
+        makeRequest(URLPath.Room.ThreadedReply(roomid: request.roomid, eventid: request.eventid), withData: request.toDictionary(), requestType: .POST, expectation: Event.self) { [weak self] (response) in
+            
+            let code: Int = response?.code ?? 500
+            
+            if let event = response?.data {
+                self?.prerenderedevents.insert(event, at: 0)
+                if let id = event.id {
+                    self?.sentEvents.append(id)
+                }
+            }
+            
+            if code >= 400 {
+                self?.lastcommand = nil
+                self?.lastcommandsent = nil
+            }
+            
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -381,6 +502,12 @@ extension ChatClient {
         guard let reports = event?.reports else { return false }
         return reports.contains(where: { $0.userid == userid })
     }
+    
+    func keepAlive(_ request: ChatRequest.KeepAlive, completionHandler: @escaping Completion<KeepAliveResponse>) {
+        makeRequest(URLPath.Room.KeepAlive(roomid: request.roomid, userid: request.userid), withData: request.toDictionary(), requestType: .POST, expectation: KeepAliveResponse.self) { (response) in
+            completionHandler(response?.code, response?.message, response?.kind, response?.data)
+        }
+    }
 }
 
 
@@ -407,37 +534,101 @@ extension ChatClient {
 
 // MARK: - Event Subscription
 extension ChatClient {
-    public func startListeningToChatUpdates(completionHandler: @escaping Completion<[Event]>) {
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { _ in
-            let request = ChatRequest.GetMoreUpdates()
-            request.roomid = self.lastroomid
-            request.cursor = self.lastcursor
+    public func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates? = nil, completionHandler: @escaping Completion<[Event]>) {
+        var timestamp: Int = 0
+        let timeInterval: Double = 0.100
+        
+        timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { [weak self] _ in
+            guard let this = self else { return }
             
-            self.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
-                // Invalid timer should disregard further update results
-                guard
-                    let self = self,
-                    let timer = self.timer,
-                    timer.isValid
-                else {
-                    return
+            timestamp = timestamp + Int(timeInterval * 1000)
+            
+            if timestamp % 60000 == 0 {
+                // Remove items from sentEvents every minute
+                if !this.sentEvents.isEmpty {
+                    this.sentEvents.removeFirst()
                 }
                 
-                if let response = response {
-                    var emittableEvents = [Event]()
-                    
-                    if let cursor = response.cursor {
-                        if !cursor.isEmpty {
-                            self.lastcursor = cursor
+                // Call KeepAlive every minute
+                let request = ChatRequest.KeepAlive()
+                request.userid = this.currentuserid
+                request.roomid = this.lastroomid
+                
+                this.keepAlive(request) { (_, _, _, _) in }
+            }
+            
+            if this.prerenderedevents.count > 0 {
+                // Call get updates every config.eventSpacing. Default 200ms
+                if timestamp % (config?.eventSpacingMs ?? 200) == 0 {
+                    completionHandler(200, "", "list.chatevents", this.emmitEventFromBucket())
+                }
+            } else {
+                // Call get updates every 1000ms
+                if timestamp % 1000 == 0 {
+                    if this.shouldFetchNewEvents {
+                        this.shouldFetchNewEvents = false
+                        let request = ChatRequest.GetMoreUpdates()
+                        request.roomid = this.lastroomid
+                        request.cursor = this.lastcursor
+                        request.limit = config?.limit
+                        
+                        this.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
+                            this.shouldFetchNewEvents = true
+                            
+                            // Invalid timer should disregard further update results
+                            guard
+                                let this = self,
+                                let timer = this.timer,
+                                timer.isValid
+                            else {
+                                return
+                            }
+                            
+                            if let response = response {
+                                if let cursor = response.cursor {
+                                    if !cursor.isEmpty {
+                                        this.lastcursor = cursor
+                                    }
+                                }
+                                
+                                // Remove if already sent
+                                var emittable = [Event]()
+                                
+                                for event in response.events {
+                                    if !this.sentEvents.contains(event.id ?? "") {
+                                        emittable.append(event)
+                                    }
+                                }
+                                
+                                this.prerenderedevents = emittable
+                                completionHandler(code, message, kind, this.emmitEventFromBucket())
+                            }
                         }
                     }
-                    
-                    emittableEvents = response.events
-                    
-                    completionHandler(code, message, kind, emittableEvents)
                 }
             }
         })
+        
+        // Move timing to common thread so main can be free
+        guard let timer = timer else { return }
+        RunLoop.current.add(timer, forMode: .common)
+    }
+    
+    func emmitEventFromBucket() -> [Event] {
+        guard !prerenderedevents.isEmpty else { return [] }
+        
+        if prerenderedevents.count >= maxeventbuffersize {
+            let dumpbucket = prerenderedevents
+            prerenderedevents.removeAll()
+            return dumpbucket
+        } else {
+            if let first = prerenderedevents.first {
+                prerenderedevents.removeFirst()
+                return [first]
+            } else {
+                return []
+            }
+        }
     }
     
     public func stopListeningToChatUpdates() {

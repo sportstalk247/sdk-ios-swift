@@ -29,3 +29,6 @@ public struct ApiResponse<T: Codable>: Codable {
         self.data = try container.decodeIfPresent(T.self, forKey: .data)
     }
 }
+
+struct NullCodable: Codable {
+}
