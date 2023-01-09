@@ -3,7 +3,7 @@ import Foundation
 public protocol ChatClientProtocol {
     func createRoom(_ request: ChatRequest.CreateRoom, completionHandler: @escaping Completion<ChatRoom>)
     func getRoomDetails(_ request: ChatRequest.GetRoomDetails, completionHandler: @escaping Completion<ChatRoom>)
-    func getRoomExtendedDetails(_ request: ChatRequest.GetRoomExtendedDetails, completionHandler: @escaping Completion<ChatRoom>)
+    func getRoomExtendedDetails(_ request: ChatRequest.GetRoomExtendedDetails, completionHandler: @escaping Completion<GetRoomExtendedDetailsResponse>)
     func getRoomDetailsByCustomId(_ request: ChatRequest.GetRoomDetailsByCustomId, completionHandler: @escaping Completion<ChatRoom>)
     func deleteRoom(_ request: ChatRequest.DeleteRoom, completionHandler: @escaping Completion<DeleteChatRoomResponse>)
     func updateRoom(_ request: ChatRequest.UpdateRoom, completionHandler: @escaping Completion<ChatRoom>)
@@ -133,8 +133,8 @@ extension ChatClient {
         }
     }
     
-    public func getRoomExtendedDetails(_ request: ChatRequest.GetRoomExtendedDetails, completionHandler: @escaping Completion<ChatRoom>) {
-        makeRequest(URLPath.Room.DetailsExtended(), withData: request.toDictionary(), requestType: .GET, expectation: ChatRoom.self, append: true) { (response) in
+    public func getRoomExtendedDetails(_ request: ChatRequest.GetRoomExtendedDetails, completionHandler: @escaping Completion<GetRoomExtendedDetailsResponse>) {
+        makeRequest(URLPath.Room.DetailsExtended(), withData: request.toDictionary(), requestType: .GET, expectation: GetRoomExtendedDetailsResponse.self, append: true) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
