@@ -205,11 +205,11 @@ extension ChatClientTests {
         var receivedCode: Int?
         var receivedRoom: ChatRoom?
 
-        client.getRoomExtendedDetails(request) { (code, message, _, room) in
+        client.getRoomExtendedDetails(request) { (code, message, _, response) in
             print(message ?? "")
-            print("found \(String(describing: room?.name))")
+//            print("found \(String(describing: details?.filter { $0.id == dummyRoom.id }))")
             receivedCode = code
-            receivedRoom = room
+            receivedRoom = response?.details?.first?.room
             expectation.fulfill()
         }
         
