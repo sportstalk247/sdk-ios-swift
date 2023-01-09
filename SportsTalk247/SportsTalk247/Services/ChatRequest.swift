@@ -72,6 +72,26 @@ public class ChatRequest {
         public var customtags: [String]?  // A comma delimited list of tags
         public var `private`: Bool?
         
+        public init(name: String? = nil, customid: String? = nil, description: String? = nil, moderation: String? = nil, enableactions: Bool? = nil, enableenterandexit: Bool? = nil, enableprofanityfilter: Bool? = nil, enableautoexpiresessions: Bool? = nil, roomisopen: Bool? = nil, maxreports: Int? = nil, pictureurl: String? = nil, delaymessageseconds: Int64? = nil, customtype: String? = nil, custompayload: String? = nil, customfield1: String? = nil, customfield2: String? = nil, customtags: [String]? = nil) {
+            self.name = name
+            self.customid = customid
+            self.description = description
+            self.moderation = moderation
+            self.enableactions = enableactions
+            self.enableenterandexit = enableenterandexit
+            self.enableprofanityfilter = enableprofanityfilter
+            self.enableautoexpiresessions = enableautoexpiresessions
+            self.roomisopen = roomisopen
+            self.maxreports = maxreports
+            self.pictureurl = pictureurl
+            self.delaymessageseconds = delaymessageseconds
+            self.customtype = customtype
+            self.custompayload = custompayload
+            self.customfield1 = customfield1
+            self.customfield2 = customfield2
+            self.customtags = customtags
+        }
+        
         override public func from(dictionary: [AnyHashable: Any]) -> CreateRoom {
             set(dictionary: dictionary)
             let ret = CreateRoom()
@@ -142,13 +162,17 @@ public class ChatRequest {
             case roomid
         }
         
-        public var roomid: String?
+        public let roomid: String   // REQUIRED
+        
+        public init(roomid: String) {
+            self.roomid = roomid
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> GetRoomDetails {
             set(dictionary: dictionary)
-            let ret = GetRoomDetails()
-            
-            ret.roomid = value(forKey: .roomid)
+            let ret = GetRoomDetails(
+                roomid: value(forKey: .roomid) ?? ""
+            )
             
             return ret
         }
@@ -174,7 +198,7 @@ public class ChatRequest {
     ///
     /// **Parameters**
     ///
-    /// - roomid: (required) Room id of a specific room againts which you want to fetch the details
+    /// - roomid: (optional) A list of room IDs
     ///
     /// - customid: (optional) A list of room customIDs.
     ///
@@ -195,17 +219,23 @@ public class ChatRequest {
             case entity
         }
         
-        public var roomid: String?
-        public var customid: String?
-        public var entity: [RoomEntityType]?
+        public let roomid: [String]
+        public let customid: [String]
+        public let entity: [RoomEntityType]
+        
+        public init(roomid: [String] = [], customid: [String] = [], entity: [RoomEntityType]) {
+            self.roomid = roomid
+            self.customid = customid
+            self.entity = entity
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> GetRoomExtendedDetails {
             set(dictionary: dictionary)
-            let ret = GetRoomExtendedDetails()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.customid = value(forKey: .customid)
-            ret.entity = value(forKey: .entity)
+            let ret = GetRoomExtendedDetails(
+                roomid: value(forKey: .roomid) ?? [],
+                customid: value(forKey: .customid) ?? [],
+                entity: value(forKey: .entity) ?? []
+            )
             
             return ret
         }
@@ -213,10 +243,12 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            let unique = Array<RoomEntityType>.uniqueElementsFrom(array: entity ?? [])
-            addRequired(key: .entity, value: unique.map{ $0.rawValue })
-            add(key: .roomid, value: roomid)
-            add(key: .customid, value: customid)
+            let uniqueEntity = Array<RoomEntityType>.uniqueElementsFrom(array: entity)
+            addRequired(key: .entity, value: uniqueEntity.map{ $0.rawValue })
+            let uniqueRoomIds = Array<String>.uniqueElementsFrom(array: roomid)
+            add(key: .roomid, value: uniqueRoomIds)
+            let uniqueCustomIds = Array<String>.uniqueElementsFrom(array: customid)
+            add(key: .customid, value: uniqueCustomIds)
             
             return toDictionary
         }
@@ -237,13 +269,17 @@ public class ChatRequest {
             case customid
         }
         
-        public var customid: String?
+        public let customid: String // REQUIRED
+        
+        public init(customid: String) {
+            self.customid = customid
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> GetRoomDetailsByCustomId {
             set(dictionary: dictionary)
-            let ret = GetRoomDetailsByCustomId()
-            
-            ret.customid = value(forKey: .customid)
+            let ret = GetRoomDetailsByCustomId(
+                customid: value(forKey: .customid) ?? ""
+            )
             
             return ret
         }
@@ -273,12 +309,17 @@ public class ChatRequest {
             case roomid
         }
         
-        public var roomid: String?
+        public let roomid: String   // REQUIRED
+        
+        public init(roomid: String) {
+            self.roomid = roomid
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> DeleteRoom {
             set(dictionary: dictionary)
-            let ret = DeleteRoom()
-            ret.roomid = value(forKey: .roomid)
+            let ret = DeleteRoom(
+                roomid: value(forKey: .roomid) ?? ""
+            )
             
             return ret
         }
@@ -336,7 +377,7 @@ public class ChatRequest {
             case userid
         }
         
-        public var roomid: String?
+        public let roomid: String   // REQUIRED
         public var name: String?
         public var description: String?
         public var customid: String?
@@ -350,23 +391,39 @@ public class ChatRequest {
         public var throttle: Int?
         public var userid: String?
         
+        public init(roomid: String, name: String? = nil, description: String? = nil, customid: String? = nil, moderation: String? = nil, enableactions: Bool? = nil, enableenterandexit: Bool? = nil, enableprofanityfilter: Bool? = nil, enableautoexpiresessions: Bool? = nil, delaymessageseconds: Int? = nil, roomisopen: Bool? = nil, throttle: Int? = nil, userid: String? = nil) {
+            self.roomid = roomid
+            self.name = name
+            self.description = description
+            self.customid = customid
+            self.moderation = moderation
+            self.enableactions = enableactions
+            self.enableenterandexit = enableenterandexit
+            self.enableprofanityfilter = enableprofanityfilter
+            self.enableautoexpiresessions = enableautoexpiresessions
+            self.delaymessageseconds = delaymessageseconds
+            self.roomisopen = roomisopen
+            self.throttle = throttle
+            self.userid = userid
+        }
+        
         override public func from(dictionary: [AnyHashable: Any]) -> UpdateRoom {
             set(dictionary: dictionary)
-            let ret = UpdateRoom()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.name = value(forKey: .name)
-            ret.description = value(forKey: .description)
-            ret.customid = value(forKey: .customid)
-            ret.moderation = value(forKey: .moderation)
-            ret.enableactions = value(forKey: .enableactions)
-            ret.enableenterandexit = value(forKey: .enableenterandexit)
-            ret.enableprofanityfilter = value(forKey: .enableprofanityfilter)
-            ret.enableautoexpiresessions = value(forKey: .enableautoexpiresessions)
-            ret.roomisopen = value(forKey: .roomisopen)
-            ret.delaymessageseconds = value(forKey: .delaymessageseconds)
-            ret.throttle = value(forKey: .throttle)
-            ret.userid = value(forKey: .userid)
+            let ret = UpdateRoom(
+                roomid: value(forKey: .roomid) ?? "",
+                name: value(forKey: .name),
+                description: value(forKey: .description),
+                customid: value(forKey: .customid),
+                moderation: value(forKey: .moderation),
+                enableactions: value(forKey: .enableactions),
+                enableenterandexit: value(forKey: .enableenterandexit),
+                enableprofanityfilter: value(forKey: .enableprofanityfilter),
+                enableautoexpiresessions: value(forKey: .enableautoexpiresessions),
+                delaymessageseconds: value(forKey: .delaymessageseconds),
+                roomisopen: value(forKey: .roomisopen),
+                throttle: value(forKey: .throttle),
+                userid: value(forKey: .userid)
+            )
             
             return ret
         }
@@ -430,7 +487,7 @@ public class ChatRequest {
             case userid
         }
         
-        public var roomid: String?
+        public let roomid: String   // REQUIRED
         public var name: String?
         public var description: String?
         public var moderation: String?
@@ -441,19 +498,32 @@ public class ChatRequest {
         public var roomisopen: Bool? = false
         public var userid: String?
         
+        public init(roomid: String, name: String? = nil, description: String? = nil, moderation: String? = nil, enableactions: Bool? = nil, enableenterandexit: Bool? = nil, enableprofanityfilter: Bool? = nil, delaymessageseconds: Int? = nil, roomisopen: Bool? = nil, userid: String? = nil) {
+            self.roomid = roomid
+            self.name = name
+            self.description = description
+            self.moderation = moderation
+            self.enableactions = enableactions
+            self.enableenterandexit = enableenterandexit
+            self.enableprofanityfilter = enableprofanityfilter
+            self.delaymessageseconds = delaymessageseconds
+            self.roomisopen = roomisopen
+            self.userid = userid
+        }
+        
         override public func from(dictionary: [AnyHashable: Any]) -> UpdateRoomCloseARoom {
             set(dictionary: dictionary)
-            let ret = UpdateRoomCloseARoom()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.name = value(forKey: .name)
-            ret.description = value(forKey: .description)
-            ret.moderation = value(forKey: .moderation)
-            ret.enableactions = value(forKey: .enableactions)
-            ret.enableenterandexit = value(forKey: .enableenterandexit)
-            ret.enableprofanityfilter = value(forKey: .enableprofanityfilter)
-            ret.roomisopen = value(forKey: .roomisopen)
-            ret.delaymessageseconds = value(forKey: .delaymessageseconds)
+            let ret = UpdateRoomCloseARoom(
+                roomid: value(forKey: .roomid) ?? "",
+                name: value(forKey: .name),
+                description: value(forKey: .description),
+                moderation: value(forKey: .moderation),
+                enableactions: value(forKey: .enableactions),
+                enableenterandexit: value(forKey: .enableenterandexit),
+                enableprofanityfilter: value(forKey: .enableprofanityfilter),
+                delaymessageseconds: value(forKey: .delaymessageseconds),
+                roomisopen: value(forKey: .roomisopen)
+            )
             
             return ret
         }
@@ -493,14 +563,19 @@ public class ChatRequest {
         }
         
         public var cursor: String?
-        public var limit: Int =  200
+        public var limit: Int?// =  200
+        
+        public init(cursor: String? = nil, limit: Int? = nil) {
+            self.cursor = cursor
+            self.limit = limit
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListRooms {
             set(dictionary: dictionary)
-            let ret = ListRooms()
-            
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
+            let ret = ListRooms(
+                cursor: value(forKey: .cursor),
+                limit: value(forKey: .limit)
+            )
             
             return ret
         }
@@ -539,16 +614,23 @@ public class ChatRequest {
             case limit
         }
         
-        public var roomid: String?
-        public var cursor: String? = ""
-        public var limit: Int? = 200
+        public let roomid: String   // REQUIRED
+        public var cursor: String?// = ""
+        public var limit: Int?// = 200
+        
+        public init(roomid: String, cursor: String? = nil, limit: Int? = nil) {
+            self.roomid = roomid
+            self.cursor = cursor
+            self.limit = limit
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListRoomParticipants {
             set(dictionary: dictionary)
-            let ret = ListRoomParticipants()
-            ret.roomid = value(forKey: .roomid)
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
+            let ret = ListRoomParticipants(
+                roomid: value(forKey: .roomid) ?? "",
+                cursor: value(forKey: .cursor),
+                limit: value(forKey: .limit)
+            )
             
             return ret
         }
@@ -586,16 +668,23 @@ public class ChatRequest {
             case limit
         }
         
-        public var userid: String?
-        public var cursor: String? = ""
-        public var limit: Int? = 200
+        public let userid: String   // REQUIRED
+        public var cursor: String?// = ""
+        public var limit: Int?// = 200
+        
+        public init(userid: String, cursor: String? = nil, limit: Int? = nil) {
+            self.userid = userid
+            self.cursor = cursor
+            self.limit = limit
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListUserSubscribedRooms {
             set(dictionary: dictionary)
-            let ret = ListUserSubscribedRooms()
-            ret.userid = value(forKey: .userid)
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
+            let ret = ListUserSubscribedRooms(
+                userid: value(forKey: .userid) ?? "",
+                cursor: value(forKey: .cursor),
+                limit: value(forKey: .limit)
+            )
             return ret
         }
         
@@ -631,17 +720,23 @@ public class ChatRequest {
             case limit
         }
         
-        public var roomid: String?
-        public var cursor: String? = ""
-        public var limit: Int? = 100
+        public let roomid: String   // REQUIRED
+        public var cursor: String?// = ""
+        public var limit: Int?// = 100
+        
+        public init(roomid: String, cursor: String? = nil, limit: Int? = nil) {
+            self.roomid = roomid
+            self.cursor = cursor
+            self.limit = limit
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListEventHistory {
             set(dictionary: dictionary)
-            let ret = ListEventHistory()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
+            let ret = ListEventHistory(
+                roomid: value(forKey: .roomid) ?? "",
+                cursor: value(forKey: .cursor),
+                limit: value(forKey: .limit)
+            )
             
             return ret
         }
@@ -681,17 +776,23 @@ public class ChatRequest {
             case limit
         }
         
-        public var roomid: String?
+        public let roomid: String   // REQUIRED
         public var cursor: String?
-        public var limit: Int? = 100
+        public var limit: Int?// = 100
+        
+        public init(roomid: String, cursor: String? = nil, limit: Int? = nil) {
+            self.roomid = roomid
+            self.cursor = cursor
+            self.limit = limit
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListPreviousEvents {
             set(dictionary: dictionary)
-            let ret = ListPreviousEvents()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
+            let ret = ListPreviousEvents(
+                roomid: value(forKey: .roomid) ?? "",
+                cursor: value(forKey: .cursor),
+                limit: value(forKey: .limit)
+            )
             
             return ret
         }
@@ -733,21 +834,29 @@ public class ChatRequest {
             case customtype
         }
         
-        public var roomid: String?
-        public var eventtype: EventType?
+        public let roomid: String   // REQUIRED
+        public let eventtype: EventType // REQUIRED
         public var cursor: String?
-        public var limit: Int? = 10
+        public var limit: Int?// = 10
         public var customtype: String?
+        
+        public init(roomid: String, eventtype: EventType, cursor: String? = nil, limit: Int? = nil, customtype: String? = nil) {
+            self.roomid = roomid
+            self.eventtype = eventtype
+            self.cursor = cursor
+            self.limit = limit
+            self.customtype = customtype
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListEventByType {
             set(dictionary: dictionary)
-            let ret = ListEventByType()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.eventtype = value(forKey: .eventtype)
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
-            ret.customtype = value(forKey: .customtype)
+            let ret = ListEventByType(
+                roomid: value(forKey: .roomid) ?? "",
+                eventtype: value(forKey: .eventtype) ?? .speech,
+                cursor: value(forKey: .cursor),
+                limit: value(forKey: .limit),
+                customtype: value(forKey: .customtype)
+            )
             
             return ret
         }
@@ -755,7 +864,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            add(key: .eventtype, value: eventtype?.rawValue)
+            add(key: .eventtype, value: eventtype.rawValue)
             add(key: .cursor, value: cursor)
             add(key: .limit, value: limit)
             add(key: .customtype, value: customtype)
@@ -804,19 +913,26 @@ public class ChatRequest {
             case limitnewer
         }
         
-        public var roomid: String?
-        public var timestamp: Int?
-        public var limitolder: Int? = 0
-        public var limitnewer: Int? = 0
+        public let roomid: String   // REQUIRED
+        public let timestamp: Int   // REQUIRED
+        public var limitolder: Int?// = 0
+        public var limitnewer: Int?// = 0
+        
+        public init(roomid: String, timestamp: Int, limitolder: Int? = nil, limitnewer: Int? = nil) {
+            self.roomid = roomid
+            self.timestamp = timestamp
+            self.limitolder = limitolder
+            self.limitnewer = limitnewer
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListEventByTimestamp {
             set(dictionary: dictionary)
-            let ret = ListEventByTimestamp()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.timestamp = value(forKey: .ts)
-            ret.limitolder = value(forKey: .limitolder)
-            ret.limitnewer = value(forKey: .limitnewer)
+            let ret = ListEventByTimestamp(
+                roomid: value(forKey: .roomid) ?? "",
+                timestamp: value(forKey: .ts) ?? 0,
+                limitolder: value(forKey: .limitolder),
+                limitnewer: value(forKey: .limitnewer)
+            )
             
             return ret
         }
@@ -902,25 +1018,35 @@ public class ChatRequest {
             case limit
         }
         
-        public var roomid: String?
-        public var userid: String?
+        public let roomid: String   // REQUIRED
+        public let userid: String   // REQUIRED
         public var handle: String?
         public var displayname: String?
         public var pictureurl: URL?
         public var profileurl: URL?
-        public var limit: Int? = 50
+        public var limit: Int?// = 50
+        
+        public init(roomid: String, userid: String, handle: String? = nil, displayname: String? = nil, pictureurl: URL? = nil, profileurl: URL? = nil, limit: Int? = nil) {
+            self.roomid = roomid
+            self.userid = userid
+            self.handle = handle
+            self.displayname = displayname
+            self.pictureurl = pictureurl
+            self.profileurl = profileurl
+            self.limit = limit
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> JoinRoom {
             set(dictionary: dictionary)
-            let ret = JoinRoom()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.userid = value(forKey: .userid)
-            ret.handle = value(forKey: .handle)
-            ret.displayname = value(forKey: .displayname)
-            ret.pictureurl = value(forKey: .pictureurl)
-            ret.profileurl = value(forKey: .profileurl)
-            ret.limit = value(forKey: .limit)
+            let ret = JoinRoom(
+                roomid: value(forKey: .roomid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                handle: value(forKey: .handle),
+                displayname: value(forKey: .displayname),
+                pictureurl: value(forKey: .pictureurl),
+                profileurl: value(forKey: .profileurl),
+                limit: value(forKey: .limit)
+            )
             
             return ret
         }
@@ -1018,25 +1144,35 @@ public class ChatRequest {
             case limit
         }
        
-        public var customid: String?
-        public var userid: String?
+        public let customid: String // REQUIRED
+        public let userid: String   // REQUIRED
         public var handle: String?
         public var displayname: String?
         public var pictureurl: URL?
         public var profileurl: URL?
-        public var limit: Int? = 50
+        public var limit: Int?// = 50
+        
+        public init(customid: String, userid: String, handle: String? = nil, displayname: String? = nil, pictureurl: URL? = nil, profileurl: URL? = nil, limit: Int? = nil) {
+            self.customid = customid
+            self.userid = userid
+            self.handle = handle
+            self.displayname = displayname
+            self.pictureurl = pictureurl
+            self.profileurl = profileurl
+            self.limit = limit
+        }
        
         override public func from(dictionary: [AnyHashable: Any]) -> JoinRoomByCustomId {
             set(dictionary: dictionary)
-            let ret = JoinRoomByCustomId()
-            
-            ret.customid = value(forKey: .customid)
-            ret.userid = value(forKey: .userid)
-            ret.handle = value(forKey: .handle)
-            ret.displayname = value(forKey: .displayname)
-            ret.pictureurl = value(forKey: .pictureurl)
-            ret.profileurl = value(forKey: .profileurl)
-            ret.limit = value(forKey: .limit)
+            let ret = JoinRoomByCustomId(
+                customid: value(forKey: .customid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                handle: value(forKey: .handle),
+                displayname: value(forKey: .displayname),
+                pictureurl: value(forKey: .pictureurl),
+                profileurl: value(forKey: .profileurl),
+                limit: value(forKey: .limit)
+            )
             
             return ret
         }
@@ -1044,6 +1180,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
+            addRequired(key: .customid, value: customid)
             addRequired(key: .userid, value: userid)
             add(key: .handle, value: handle)
             add(key: .displayname, value: displayname)
@@ -1073,15 +1210,20 @@ public class ChatRequest {
             case userid
         }
         
-        public var roomid: String?
-        public var userid: String?
+        public let roomid: String   // REQUIRED
+        public let userid: String   // REQUIRED
+        
+        public init(roomid: String, userid: String) {
+            self.roomid = roomid
+            self.userid = userid
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ExitRoom {
             set(dictionary: dictionary)
-            let ret = ExitRoom()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.userid = value(forKey: .userid)
+            let ret = ExitRoom(
+                roomid: value(forKey: .roomid) ?? "",
+                userid: value(forKey: .userid) ?? ""
+            )
             
             return ret
         }
@@ -1135,17 +1277,23 @@ public class ChatRequest {
             case limit
         }
         
-        public var roomid: String?
+        public let roomid: String   // REQUIRED
         public var cursor: String?
-        public var limit: Int = 100
+        public var limit: Int?// = 100
+        
+        public init(roomid: String, cursor: String? = nil, limit: Int? = nil) {
+            self.roomid = roomid
+            self.cursor = cursor
+            self.limit = limit
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> GetUpdates {
             set(dictionary: dictionary)
-            let ret = GetUpdates()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
+            let ret = GetUpdates(
+                roomid: value(forKey: .roomid) ?? "",
+                cursor: value(forKey: .cursor),
+                limit: value(forKey: .limit)
+            )
             
             return ret
         }
@@ -1197,17 +1345,23 @@ public class ChatRequest {
             case cursor
         }
         
-        public var roomid: String?
-        public var limit: Int? = 100
+        public let roomid: String   // REQUIRED
+        public var limit: Int?// = 100
         public var cursor: String?
+        
+        public init(roomid: String, limit: Int? = nil, cursor: String? = nil) {
+            self.roomid = roomid
+            self.limit = limit
+            self.cursor = cursor
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> GetMoreUpdates {
             set(dictionary: dictionary)
-            let ret = GetMoreUpdates()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.limit = value(forKey: .limit)
-            ret.cursor = value(forKey: .cursor)
+            let ret = GetMoreUpdates(
+                roomid: value(forKey: .roomid) ?? "",
+                limit: value(forKey: .limit),
+                cursor: value(forKey: .cursor)
+            )
             
             return ret
         }
@@ -1320,27 +1474,38 @@ public class ChatRequest {
             case custompayload
         }
         
-        public var roomid: String?
-        public var command: String?
-        public var userid: String?
+        public let roomid: String   // REQUIRED
+        public let command: String  // REQUIRED
+        public let userid: String   // REQUIRED
         public var moderation: String?
         public var eventtype: EventType?
         public var customtype: String?
         public var customid: String?
         public var custompayload: String?
         
+        public init(roomid: String, command: String, userid: String, moderation: String? = nil, eventtype: EventType? = nil, customtype: String? = nil, customid: String? = nil, custompayload: String? = nil) {
+            self.roomid = roomid
+            self.command = command
+            self.userid = userid
+            self.moderation = moderation
+            self.eventtype = eventtype
+            self.customtype = customtype
+            self.customid = customid
+            self.custompayload = custompayload
+        }
+        
         override public func from(dictionary: [AnyHashable: Any]) -> ExecuteChatCommand {
             set(dictionary: dictionary)
-            let ret = ExecuteChatCommand()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.command = value(forKey: .command)
-            ret.userid = value(forKey: .userid)
-            ret.moderation = value(forKey: .moderation)
-            ret.eventtype = value(forKey: .eventtype)
-            ret.customtype = value(forKey: .customtype)
-            ret.customid = value(forKey: .customid)
-            ret.custompayload = value(forKey: .custompayload)
+            let ret = ExecuteChatCommand(
+                roomid: value(forKey: .roomid) ?? "",
+                command: value(forKey: .command) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                moderation: value(forKey: .moderation),
+                eventtype: value(forKey: .eventtype),
+                customtype: value(forKey: .customtype),
+                customid: value(forKey: .customid),
+                custompayload: value(forKey: .custompayload)
+            )
             
             return ret
         }
@@ -1459,24 +1624,33 @@ public class ChatRequest {
             case custompayload
         }
         
-        public var roomid: String?
-        public var command: String?
-        public var userid: String?
+        public let roomid: String   // REQUIRED
+        public let command: String  // REQUIRED
+        public let userid: String   // REQUIRED
         public var customtype: String?
         public var customid: String?
         public var custompayload: String?
         
+        public init(roomid: String, command: String, userid: String, customtype: String? = nil, customid: String? = nil, custompayload: String? = nil) {
+            self.roomid = roomid
+            self.command = command
+            self.userid = userid
+            self.customtype = customtype
+            self.customid = customid
+            self.custompayload = custompayload
+        }
+        
         override public func from(dictionary: [AnyHashable: Any]) -> ExecuteDanceAction {
             set(dictionary: dictionary)
-            let ret = ExecuteDanceAction()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.command = value(forKey: .command)
-            ret.userid = value(forKey: .userid)
-            ret.customtype = value(forKey: .customtype)
-            ret.customid = value(forKey: .customid)
-            ret.custompayload = value(forKey: .custompayload)
-            
+            let ret = ExecuteDanceAction(
+                roomid: value(forKey: .roomid) ?? "",
+                command: value(forKey: .command) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                customtype: value(forKey: .customtype),
+                customid: value(forKey: .customid),
+                custompayload: value(forKey: .custompayload)
+            )
+
             return ret
         }
         
@@ -1531,29 +1705,41 @@ public class ChatRequest {
             case customtags
         }
         
-        public var roomid: String?
-        public var eventid: String?
-        public var userid: String?
-        public var body: String?
+        public let roomid: String   // REQUIRED
+        public let eventid: String  // REQUIRED
+        public let userid: String   // REQUIRED
+        public let body: String     // REQUIRED
         public var customid: String?
         public var custompayload: String?
         public var customfield1: String?
         public var customfield2: String?
         public var customtags: String?
         
+        public init(roomid: String, eventid: String, userid: String, body: String, customid: String? = nil, custompayload: String? = nil, customfield1: String? = nil, customfield2: String? = nil, customtags: String? = nil) {
+            self.roomid = roomid
+            self.eventid = eventid
+            self.userid = userid
+            self.body = body
+            self.customid = customid
+            self.custompayload = custompayload
+            self.customfield1 = customfield1
+            self.customfield2 = customfield2
+            self.customtags = customtags
+        }
+        
         override public func from(dictionary: [AnyHashable: Any]) -> SendQuotedReply {
             set(dictionary: dictionary)
-            let ret = SendQuotedReply()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.eventid = value(forKey: .eventid)
-            ret.userid = value(forKey: .userid)
-            ret.body = value(forKey: .body)
-            ret.customid = value(forKey: .customid)
-            ret.custompayload = value(forKey: .custompayload)
-            ret.customfield1 = value(forKey: .customfield1)
-            ret.customfield2 = value(forKey: .customfield2)
-            ret.customtags = value(forKey: .customtags)
+            let ret = SendQuotedReply(
+                roomid: value(forKey: .roomid) ?? "",
+                eventid: value(forKey: .eventid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                body: value(forKey: .body) ?? "",
+                customid: value(forKey: .customid),
+                custompayload: value(forKey: .custompayload),
+                customfield1: value(forKey: .customfield1),
+                customfield2: value(forKey: .customfield2),
+                customtags: value(forKey: .customtags)
+            )
             
             return ret
         }
@@ -1611,29 +1797,41 @@ public class ChatRequest {
             case customtags
         }
         
-        public var roomid: String?
-        public var eventid: String?
-        public var userid: String?
-        public var body: String?
+        public let roomid: String       // REQUIRED
+        public let eventid: String      // REQUIRED
+        public let userid: String       // REQUIRED
+        public let body: String         // REQUIRED
         public var customid: String?
         public var custompayload: String?
         public var customfield1: String?
         public var customfield2: String?
         public var customtags: String?
         
+        public init(roomid: String, eventid: String, userid: String, body: String, customid: String? = nil, custompayload: String? = nil, customfield1: String? = nil, customfield2: String? = nil, customtags: String? = nil) {
+            self.roomid = roomid
+            self.eventid = eventid
+            self.userid = userid
+            self.body = body
+            self.customid = customid
+            self.custompayload = custompayload
+            self.customfield1 = customfield1
+            self.customfield2 = customfield2
+            self.customtags = customtags
+        }
+        
         override public func from(dictionary: [AnyHashable: Any]) -> SendThreadedReply {
             set(dictionary: dictionary)
-            let ret = SendThreadedReply()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.eventid = value(forKey: .eventid)
-            ret.userid = value(forKey: .userid)
-            ret.body = value(forKey: .body)
-            ret.customid = value(forKey: .customid)
-            ret.custompayload = value(forKey: .custompayload)
-            ret.customfield1 = value(forKey: .customfield1)
-            ret.customfield2 = value(forKey: .customfield2)
-            ret.customtags = value(forKey: .customtags)
+            let ret = SendThreadedReply(
+                roomid: value(forKey: .roomid) ?? "",
+                eventid: value(forKey: .eventid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                body: value(forKey: .body) ?? "",
+                customid: value(forKey: .customid),
+                custompayload: value(forKey: .custompayload),
+                customfield1: value(forKey: .customfield1),
+                customfield2: value(forKey: .customfield2),
+                customtags: value(forKey: .customtags)
+            )
             
             return ret
         }
@@ -1677,19 +1875,27 @@ public class ChatRequest {
             case roomid
         }
         
+        public let roomid: String   // REQUIRED
+        public let userId: String   // REQUIRED
         public var cursor: String?
-        public var limit: Int? = 200
-        public var userId: String?
-        public var roomid: String?
+        public var limit: Int?// = 200
+        
+        public init(roomid: String, userId: String, cursor: String? = nil, limit: Int? = nil) {
+            self.roomid = roomid
+            self.userId = userId
+            self.cursor = cursor
+            self.limit = limit
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListMessagesByUser {
             set(dictionary: dictionary)
-            let ret = ListMessagesByUser()
+            let ret = ListMessagesByUser(
+                roomid: value(forKey: .roomid) ?? "",
+                userId: value(forKey: .userid) ?? "",
+                cursor: value(forKey: .cursor),
+                limit: value(forKey: .limit)
+            )
             
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
-            ret.userId = value(forKey: .userid)
-            ret.roomid = value(forKey: .roomid)
             return ret
         }
         
@@ -1737,21 +1943,29 @@ public class ChatRequest {
             case permanentifnoreplies
         }
         
-        public var roomid: String?
-        public var eventid: String?
-        public var userid: String?
-        public var deleted: Bool?
+        public let roomid: String   // REQUIRED
+        public let eventid: String  // REQUIRED
+        public let userid: String   // REQUIRED
+        public let deleted: Bool    // REQUIRED
         public var permanentifnoreplies: Bool?
+        
+        public init(roomid: String, eventid: String, userid: String, deleted: Bool, permanentifnoreplies: Bool? = nil) {
+            self.roomid = roomid
+            self.eventid = eventid
+            self.userid = userid
+            self.deleted = deleted
+            self.permanentifnoreplies = permanentifnoreplies
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> FlagEventLogicallyDeleted {
             set(dictionary: dictionary)
-            let ret = FlagEventLogicallyDeleted()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.eventid = value(forKey: .eventid)
-            ret.userid = value(forKey: .userid)
-            ret.deleted = value(forKey: .deleted)
-            ret.permanentifnoreplies = value(forKey: .permanentifnoreplies)
+            let ret = FlagEventLogicallyDeleted(
+                roomid: value(forKey: .roomid) ?? "",
+                eventid: value(forKey: .eventid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                deleted: value(forKey: .deleted) ?? false,
+                permanentifnoreplies: value(forKey: .permanentifnoreplies)
+            )
             
             return ret
         }
@@ -1788,17 +2002,23 @@ public class ChatRequest {
             case userid
         }
         
-        public var roomid: String?
-        public var eventid: String?
-        public var userid: String?
+        public let roomid: String   // REQUIRED
+        public let eventid: String  // REQUIRED
+        public let userid: String   // REQUIRED
+        
+        public init(roomid: String, eventid: String, userid: String) {
+            self.roomid = roomid
+            self.eventid = eventid
+            self.userid = userid
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> PermanentlyDeleteEvent {
             set(dictionary: dictionary)
-            let ret = PermanentlyDeleteEvent()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.eventid = value(forKey: .eventid)
-            ret.userid = value(forKey: .userid)
+            let ret = PermanentlyDeleteEvent(
+                roomid: value(forKey: .roomid) ?? "",
+                eventid: value(forKey: .eventid) ?? "",
+                userid: value(forKey: .userid) ?? ""
+            )
             
             return ret
         }
@@ -1830,19 +2050,27 @@ public class ChatRequest {
             case password
         }
         
-        public var roomid: String?
-        private var command: String?
+        public let roomid: String   // REQUIRED
+        public let userid: String   // REQUIRED
         public var password: String?
-        public var userid: String?
+        
+        private let command: String // "*deleteallevents $password"
+        
+        public init(roomid: String, userid: String, password: String? = nil) {
+            self.roomid = roomid
+            self.userid = userid
+            self.password = password
+            
+            self.command = "*deleteallevents \(password ?? "")"
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> DeleteAllEvents {
             set(dictionary: dictionary)
-            let ret = DeleteAllEvents()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.command = value(forKey: .command)
-            ret.password = value(forKey: .password)
-            ret.userid = value(forKey: .userid)
+            let ret = DeleteAllEvents(
+                roomid: value(forKey: .roomid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                password: value(forKey: .password)
+            )
             
             return ret
         }
@@ -1850,7 +2078,7 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .command, value: "*deleteallevents" + " " + password!)
+            addRequired(key: .command, value: "*deleteallevents \(password ?? "")")
             addRequired(key: .userid, value: userid)
             add(key: .userid, value: userid)
             
@@ -1883,21 +2111,29 @@ public class ChatRequest {
             case handle
         }
         
-        public var roomid: String?
-        public var userid: String?
+        public let roomid: String   // REQUIRED
+        public let userid: String   // REQUIRED
         public var handle: String?
         public var password: String?
-        private var command: String!
+        
+        private let command: String // "*purge $password $handle"
+        
+        public init(roomid: String, userid: String, handle: String? = nil, password: String? = nil) {
+            self.roomid = roomid
+            self.userid = userid
+            self.handle = handle
+            self.password = password
+            self.command = String("*purge \(password!) \(handle!)")
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> PurgeUserMessages {
             set(dictionary: dictionary)
-            let ret = PurgeUserMessages()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.userid = value(forKey: .userid)
-            ret.handle = value(forKey: .handle)
-            ret.password = value(forKey: .password)
-            ret.command = value(forKey: .command)
+            let ret = PurgeUserMessages(
+                roomid: value(forKey: .roomid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                handle: value(forKey: .handle),
+                password: value(forKey: .password)
+            )
             
             return ret
         }
@@ -1937,19 +2173,26 @@ public class ChatRequest {
             case reporttype
         }
         
-        public var roomid: String?
-        public var eventid: String?
-        public var userid: String?
-        public var reporttype: ReportType? = .abuse
+        public let roomid: String   // REQUIRED
+        public let eventid: String  // REQUIRED
+        public let userid: String   // REQUIRED
+        public let reporttype: ReportType   // REQUIRED
+        
+        public init(roomid: String, eventid: String, userid: String, reporttype: ReportType) {
+            self.roomid = roomid
+            self.eventid = eventid
+            self.userid = userid
+            self.reporttype = reporttype
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ReportMessage {
             set(dictionary: dictionary)
-            let ret = ReportMessage()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.eventid = value(forKey: .eventid)
-            ret.userid = value(forKey: .userid)
-            ret.reporttype = value(forKey: .reporttype)
+            let ret = ReportMessage(
+                roomid: value(forKey: .roomid) ?? "",
+                eventid: value(forKey: .eventid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                reporttype: value(forKey: .reporttype) ?? .abuse
+            )
             
             return ret
         }
@@ -1958,7 +2201,7 @@ public class ChatRequest {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .userid, value: userid)
-            add(key: .reporttype, value: reporttype?.rawValue)
+            add(key: .reporttype, value: reporttype.rawValue)
             
             return toDictionary
         }
@@ -1991,21 +2234,29 @@ public class ChatRequest {
             case reacted
         }
         
-        public var roomid: String?
-        public var eventid: String?
-        public var userid: String?
-        public var reaction: String?
-        public var reacted: String? = "false"
+        public let roomid: String   // REQUIRED
+        public let eventid: String  // REQUIRED
+        public let userid: String   // REQUIRED
+        public let reaction: String // REQUIRED
+        public let reacted: Bool // REQUIRED
+        
+        public init(roomid: String, eventid: String, userid: String, reaction: String, reacted: Bool) {
+            self.roomid = roomid
+            self.eventid = eventid
+            self.userid = userid
+            self.reaction = reaction
+            self.reacted = reacted
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ReactToEvent {
             set(dictionary: dictionary)
-            let ret = ReactToEvent()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.eventid = value(forKey: .eventid)
-            ret.userid = value(forKey: .userid)
-            ret.reaction = value(forKey: .reaction)
-            ret.reacted = value(forKey: .reacted)
+            let ret = ReactToEvent(
+                roomid: value(forKey: .roomid) ?? "",
+                eventid: value(forKey: .eventid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                reaction: value(forKey: .reaction) ?? "like",
+                reacted: value(forKey: .reacted) ?? false
+            )
             
             return ret
         }
@@ -2146,19 +2397,26 @@ public class ChatRequest {
             case reporttype
         }
         
-        public var roomid: String?
-        public var userid: String?
-        public var reporteduserid: String?
-        public var reporttype: ReportType? = .abuse
+        public let roomid: String   // REQUIRED
+        public let userid: String   // REQUIRED
+        public let reporteduserid: String   // REQUIRED
+        public let reporttype: ReportType   // REQUIRED
+        
+        public init(roomid: String, userid: String, reporteduserid: String, reporttype: ReportType) {
+            self.roomid = roomid
+            self.userid = userid
+            self.reporteduserid = reporteduserid
+            self.reporttype = reporttype
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ReportUserInRoom {
             set(dictionary: dictionary)
-            let ret = ReportUserInRoom()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.userid = value(forKey: .userid)
-            ret.reporteduserid = value(forKey: .reporteduserid)
-            ret.reporttype = value(forKey: .reporttype)
+            let ret = ReportUserInRoom(
+                roomid: value(forKey: .roomid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                reporteduserid: value(forKey: .reporteduserid) ?? "",
+                reporttype: value(forKey: .reporttype) ?? .abuse
+            )
             
             return ret
         }
@@ -2167,7 +2425,7 @@ public class ChatRequest {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .userid, value: userid)
-            add(key: .reporttype, value: reporttype?.rawValue)
+            add(key: .reporttype, value: reporttype.rawValue)
             
             return toDictionary
         }
@@ -2199,19 +2457,26 @@ public class ChatRequest {
             case announcement
         }
         
-        public var userid: String?
-        public var bounce: Bool?
-        public var roomid: String?
+        public let roomid: String   // REQUIRED
+        public let userid: String   // REQUIRED
+        public let bounce: Bool     // REQUIRED
         public var announcement: String?
+        
+        public init(roomid: String, userid: String, bounce: Bool, announcement: String? = nil) {
+            self.roomid = roomid
+            self.userid = userid
+            self.bounce = bounce
+            self.announcement = announcement
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> BounceUser {
             set(dictionary: dictionary)
-            let ret = BounceUser()
-            
-            ret.userid = value(forKey: .userid)
-            ret.bounce = value(forKey: .bounce)
-            ret.roomid = value(forKey: .roomid)
-            ret.announcement = value(forKey: .announcement)
+            let ret = BounceUser(
+                roomid: value(forKey: .roomid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                bounce: value(forKey: .bounce) ?? false,
+                announcement: value(forKey: .announcement)
+            )
             
             return ret
         }
@@ -2251,19 +2516,26 @@ public class ChatRequest {
             case expireseconds
         }
         
-        public var userid: String?
-        public var roomid: String?
-        public var applyeffect: Bool?
+        public let roomid: String   // REQUIRED
+        public let userid: String   // REQUIRED
+        public let applyeffect: Bool    // REQUIRED
         public var expireseconds: Double?
+        
+        public init(roomid: String, userid: String, applyeffect: Bool, expireseconds: Double? = nil) {
+            self.roomid = roomid
+            self.userid = userid
+            self.applyeffect = applyeffect
+            self.expireseconds = expireseconds
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ShadowbanUser {
             set(dictionary: dictionary)
-            let ret = ShadowbanUser()
-            
-            ret.userid = value(forKey: .userid)
-            ret.roomid = value(forKey: .roomid)
-            ret.applyeffect = value(forKey: .applyeffect)
-            ret.expireseconds = value(forKey: .expireseconds)
+            let ret = ShadowbanUser(
+                roomid: value(forKey: .roomid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                applyeffect: value(forKey: .applyeffect) ?? false,
+                expireseconds: value(forKey: .expireseconds)
+            )
             
             return ret
         }
@@ -2303,19 +2575,26 @@ public class ChatRequest {
             case expireseconds
         }
         
-        public var userid: String?
-        public var roomid: String?
-        public var applyeffect: Bool?
+        public let roomid: String   // REQUIRED
+        public let userid: String   // REQUIRED
+        public let applyeffect: Bool    // REQUIRED
         public var expireseconds: Double?
+        
+        public init(roomid: String, userid: String, applyeffect: Bool, expireseconds: Double? = nil) {
+            self.roomid = roomid
+            self.userid = userid
+            self.applyeffect = applyeffect
+            self.expireseconds = expireseconds
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> MuteUser {
             set(dictionary: dictionary)
-            let ret = MuteUser()
-            
-            ret.userid = value(forKey: .userid)
-            ret.roomid = value(forKey: .roomid)
-            ret.applyeffect = value(forKey: .applyeffect)
-            ret.expireseconds = value(forKey: .expireseconds)
+            let ret = MuteUser(
+                roomid: value(forKey: .roomid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                applyeffect: value(forKey: .applyeffect) ?? false,
+                expireseconds: value(forKey: .expireseconds)
+            )
             
             return ret
         }
@@ -2368,29 +2647,41 @@ public class ChatRequest {
             case customtags
         }
         
-        public var roomid: String?
-        public var eventid: String?
-        public var userid: String?
-        public var body: String?
+        public let roomid: String   // REQUIRED
+        public let eventid: String  // REQUIRED
+        public let userid: String   // REQUIRED
+        public let body: String     // REQUIRED
         public var customid: String?
         public var custompayload: String?
         public var customfield1: String?
         public var customfield2: String?
         public var customtags: String?
         
+        public init(roomid: String, eventid: String, userid: String, body: String, customid: String? = nil, custompayload: String? = nil, customfield1: String? = nil, customfield2: String? = nil, customtags: String? = nil) {
+            self.roomid = roomid
+            self.eventid = eventid
+            self.userid = userid
+            self.body = body
+            self.customid = customid
+            self.custompayload = custompayload
+            self.customfield1 = customfield1
+            self.customfield2 = customfield2
+            self.customtags = customtags
+        }
+        
         override public func from(dictionary: [AnyHashable: Any]) -> UpdateChatEvent {
             set(dictionary: dictionary)
-            let ret = UpdateChatEvent()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.eventid = value(forKey: .eventid)
-            ret.userid = value(forKey: .userid)
-            ret.body = value(forKey: .body)
-            ret.customid = value(forKey: .customid)
-            ret.custompayload = value(forKey: .custompayload)
-            ret.customfield1 = value(forKey: .customfield1)
-            ret.customfield2 = value(forKey: .customfield2)
-            ret.customtags = value(forKey: .customtags)
+            let ret = UpdateChatEvent(
+                roomid: value(forKey: .roomid) ?? "",
+                eventid: value(forKey: .eventid) ?? "",
+                userid: value(forKey: .userid) ?? "",
+                body: value(forKey: .body) ?? "",
+                customid: value(forKey: .customid),
+                custompayload: value(forKey: .custompayload),
+                customfield1: value(forKey: .customfield1),
+                customfield2: value(forKey: .customfield2),
+                customtags: value(forKey: .customtags)
+            )
             
             return ret
         }
@@ -2546,15 +2837,20 @@ public class ChatRequest {
             case userid
         }
         
-        public var roomid: String?
-        public var userid: String?
+        public let roomid: String   // REQUIRED
+        public let userid: String   // REQUIRED
+        
+        public init(roomid: String, userid: String) {
+            self.roomid = roomid
+            self.userid = userid
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> KeepAlive {
             set(dictionary: dictionary)
-            let ret = KeepAlive()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.userid = value(forKey: .userid)
+            let ret = KeepAlive(
+                roomid: value(forKey: .roomid) ?? "",
+                userid: value(forKey: .userid) ?? ""
+            )
             
             return ret
         }

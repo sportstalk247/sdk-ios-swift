@@ -11,20 +11,23 @@ public class ModerationRequest {
     ///
     public class ApproveEvent: ParametersBase<ApproveEvent.Fields, ApproveEvent> {
         public enum Fields {
-            case roomid
             case eventid
             case approve
         }
         
-        public var roomid: String?
-        public var eventid: String?
+        public let eventid: String  // REQUIRED
+        public let approve: Bool    // REQUIRED
+        
+        public init(eventid: String) {
+            self.eventid = eventid
+            self.approve = true
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ApproveEvent {
             set(dictionary: dictionary)
-            let ret = ApproveEvent()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.eventid = value(forKey: .eventid)
+            let ret = ApproveEvent(
+                eventid: value(forKey: .eventid) ?? ""
+            )
             return ret
         }
         
@@ -47,20 +50,23 @@ public class ModerationRequest {
     ///
     public class RejectEvent: ParametersBase<RejectEvent.Fields, RejectEvent> {
         public enum Fields {
-            case roomid
             case eventid
             case approve
         }
         
-        public var roomid: String?
-        public var eventid: String?
+        public let eventid: String  // REQUIRED
+        public let approve: Bool    // REQUIRED
+        
+        public init(eventid: String) {
+            self.eventid = eventid
+            self.approve = false
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> RejectEvent {
             set(dictionary: dictionary)
-            let ret = RejectEvent()
-            
-            ret.roomid = value(forKey: .roomid)
-            ret.eventid = value(forKey: .eventid)
+            let ret = RejectEvent(
+                eventid: value(forKey: .eventid) ?? ""
+            )
             
             return ret
         }
@@ -94,27 +100,33 @@ public class ModerationRequest {
             case cursor
         }
        
-       public var limit: Int? = 200
-       public var roomId: String?
-       public var cursor: String?
+        public let roomId: String?
+        public var limit: Int?// = 200
+        public var cursor: String?
+        
+        public init(roomId: String? = nil, limit: Int? = nil, cursor: String? = nil) {
+            self.roomId = roomId
+            self.limit = limit
+            self.cursor = cursor
+        }
        
-       override public func from(dictionary: [AnyHashable: Any]) -> listMessagesInModerationQueue {
-           set(dictionary: dictionary)
-           let ret = listMessagesInModerationQueue()
-           
-           ret.limit = value(forKey: .limit)
-           ret.roomId = value(forKey: .roomId)
-           ret.cursor = value(forKey: .cursor)
-           return ret
-       }
-       
-       public func toDictionary() -> [AnyHashable: Any] {
-           toDictionary = [AnyHashable: Any]()
-           add(key: .limit, value: limit)
-           add(key: .roomId, value: roomId)
-           add(key: .cursor, value: cursor)
-           return toDictionary
-       }
+        override public func from(dictionary: [AnyHashable: Any]) -> listMessagesInModerationQueue {
+            set(dictionary: dictionary)
+            let ret = listMessagesInModerationQueue(
+                roomId: value(forKey: .roomId),
+                limit: value(forKey: .limit),
+                cursor: value(forKey: .cursor)
+            )
+            return ret
+        }
+
+        public func toDictionary() -> [AnyHashable: Any] {
+            toDictionary = [AnyHashable: Any]()
+            add(key: .limit, value: limit)
+            add(key: .roomId, value: roomId)
+            add(key: .cursor, value: cursor)
+            return toDictionary
+        }
     }
     
     /// APPROVES a message in the moderation queue
