@@ -42,21 +42,29 @@ public class UserRequest {
             case profileurl
         }
 
-        public var userid: String?
-        public var handle: String?
-        public var displayname: String?
-        public var pictureurl: URL?
-        public var profileurl: URL?
+        public let userid: String // REQUIRED
+        public private(set) var handle: String?
+        public private(set) var displayname: String?
+        public private(set) var pictureurl: URL?
+        public private(set) var profileurl: URL?
+        
+        public init(userid: String, handle: String? = nil, displayname: String? = nil, pictureurl: URL? = nil, profileurl: URL? = nil) {
+            self.userid = userid
+            self.handle = handle
+            self.displayname = displayname
+            self.pictureurl = pictureurl
+            self.profileurl = profileurl
+        }
 
         override public func from(dictionary: [AnyHashable: Any]) -> CreateUpdateUser {
             set(dictionary: dictionary)
-            let ret = CreateUpdateUser()
-
-            ret.userid = value(forKey: .userid)
-            ret.handle = value(forKey: .handle)
-            ret.displayname = value(forKey: .displayname)
-            ret.pictureurl = value(forKey: .pictureurl)
-            ret.profileurl = value(forKey: .profileurl)
+            let ret = CreateUpdateUser(
+                userid: value(forKey: .userid) ?? "",
+                handle: value(forKey: .handle),
+                displayname: value(forKey: .displayname),
+                pictureurl: value(forKey: .pictureurl),
+                profileurl: value(forKey: .profileurl)
+            )
 
             return ret
         }
@@ -89,13 +97,17 @@ public class UserRequest {
             case userid
         }
         
-        public var userid: String?
+        public let userid: String  // REQUIRED
+        
+        public init(userid: String) {
+            self.userid = userid
+        }
         
         override func from(dictionary: [AnyHashable : Any]) -> UserRequest.DeleteUser {
             set(dictionary: dictionary)
-            let ret = DeleteUser()
-            
-            ret.userid = value(forKey: .userid)
+            let ret = DeleteUser(
+                userid: value(forKey: .userid) ?? ""
+            )
             
             return ret
         }
@@ -122,12 +134,17 @@ public class UserRequest {
             case userid
         }
         
-        public var userid: String?
+        public let userid: String  // REQUIRED
+        
+        public init(userid: String) {
+            self.userid = userid
+        }
 
         override public func from(dictionary: [AnyHashable: Any]) -> GetUserDetails {
             set(dictionary: dictionary)
-            let ret = GetUserDetails()
-            ret.userid = value(forKey: .userid)
+            let ret = GetUserDetails(
+                userid: value(forKey: .userid) ?? ""
+            )
 
             return ret
         }
@@ -157,14 +174,19 @@ public class UserRequest {
         }
 
         public var cursor: String?
-        public var limit: Int? = 200
+        public var limit: Int?
+        
+        public init(cursor: String? = nil, limit: Int? = nil) {
+            self.cursor = cursor
+            self.limit = limit
+        }
 
         override public func from(dictionary: [AnyHashable: Any]) -> ListUsers {
             set(dictionary: dictionary)
-            let ret = ListUsers()
-
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
+            let ret = ListUsers(
+                cursor: value(forKey: .cursor),
+                limit: value(forKey: .limit)
+            )
 
             return ret
         }
@@ -193,15 +215,20 @@ public class UserRequest {
             case applyeffect
         }
 
-        public var userid: String?
-        public var applyeffect: Bool?
+        public let userid: String  // REQUIRED
+        public let applyeffect: Bool   // REQUIRED
+        
+        public init(userid: String, applyeffect: Bool) {
+            self.userid = userid
+            self.applyeffect = applyeffect
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> SetBanStatus {
             set(dictionary: dictionary)
-            let ret = SetBanStatus()
-
-            ret.userid = value(forKey: .userid)
-            ret.applyeffect = value(forKey: .applyeffect)
+            let ret = SetBanStatus(
+                userid: value(forKey: .userid) ?? "",
+                applyeffect: value(forKey: .applyeffect) ?? false
+            )
          
             return ret
         }
@@ -227,15 +254,20 @@ public class UserRequest {
             case banned
         }
 
-        public var userid: String?
-        public var banned: Bool?
+        public let userid: String  // REQUIRED
+        public let banned: Bool // REQUIRED
+        
+        public init(userid: String, banned: Bool) {
+            self.userid = userid
+            self.banned = banned
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> GloballyPurgeUserContent {
             set(dictionary: dictionary)
-            let ret = GloballyPurgeUserContent()
-
-            ret.userid = value(forKey: .userid)
-            ret.banned = value(forKey: .banned)
+            let ret = GloballyPurgeUserContent(
+                userid: value(forKey: .userid) ?? "",
+                banned: value(forKey: .banned) ?? false
+            )
             
             return ret
         }
@@ -282,21 +314,29 @@ public class UserRequest {
             case userid
         }
 
-        public var cursor:String?
-        public var limit:Int?
-        public var name:String?
-        public var handle:String?
-        public var userid:String?
+        public var cursor: String?
+        public var limit: Int?
+        public var name: String?
+        public var handle: String?
+        public var userid: String?
+        
+        public init(cursor: String? = nil, limit: Int? = nil, name: String? = nil, handle: String? = nil, userid: String? = nil) {
+            self.cursor = cursor
+            self.limit = limit
+            self.name = name
+            self.handle = handle
+            self.userid = userid
+        }
 
         override public func from(dictionary: [AnyHashable: Any]) -> SearchUser {
             set(dictionary: dictionary)
-            let ret = SearchUser()
-
-            ret.cursor = value(forKey: .cursor)
-            ret.limit = value(forKey: .limit)
-            ret.name = value(forKey: .name)
-            ret.userid = value(forKey: .userid)
-            ret.handle = value(forKey: .handle)
+            let ret = SearchUser(
+                cursor: value(forKey: .cursor),
+                limit: value(forKey: .limit),
+                name: value(forKey: .name),
+                handle: value(forKey: .handle),
+                userid: value(forKey: .userid)
+            )
 
             return ret
         }
@@ -333,17 +373,23 @@ public class UserRequest {
             case expireseconds
         }
         
-        public var userid: String?
-        public var applyeffect: Bool?
+        public let userid: String  // REQUIRED
+        public let applyeffect: Bool   // REQUIRED
         public var expireseconds: Double?
+        
+        public init(userid: String, applyeffect: Bool, expireseconds: Double? = nil) {
+            self.userid = userid
+            self.applyeffect = applyeffect
+            self.expireseconds = expireseconds
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> MuteUser {
             set(dictionary: dictionary)
-            let ret = MuteUser()
-            
-            ret.userid = value(forKey: .userid)
-            ret.applyeffect = value(forKey: .applyeffect)
-            ret.expireseconds = value(forKey: .applyeffect)
+            let ret = MuteUser(
+                userid: value(forKey: .userid) ?? "",
+                applyeffect: value(forKey: .applyeffect) ?? false,
+                expireseconds: value(forKey: .applyeffect)
+            )
             
             return ret
         }
@@ -381,15 +427,20 @@ public class UserRequest {
             case reporttype
         }
         
-        public var userid: String?
-        public var reporttype: ReportType? = .abuse
+        public let userid: String   // REQUIRED
+        public let reporttype: ReportType   // REQUIRED
+        
+        public init(userid: String, reporttype: ReportType) {
+            self.userid = userid
+            self.reporttype = reporttype
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ReportUser {
             set(dictionary: dictionary)
-            let ret = ReportUser()
-            
-            ret.userid = value(forKey: .userid)
-            ret.reporttype = value(forKey: .reporttype)
+            let ret = ReportUser(
+                userid: value(forKey: .userid) ?? "",
+                reporttype: value(forKey: .reporttype) ?? .abuse
+            )
             
             return ret
         }
@@ -398,7 +449,7 @@ public class UserRequest {
             toDictionary = [AnyHashable: Any]()
             
             addRequired(key: .userid, value: userid)
-            add(key: .reporttype, value: reporttype?.rawValue)
+            add(key: .reporttype, value: reporttype.rawValue)
             
             return toDictionary
         }
@@ -423,17 +474,23 @@ public class UserRequest {
             case expireseconds
         }
         
-        public var userid: String?
-        public var applyeffect: Bool?
+        public let userid: String   // REQUIRED
+        public let applyeffect: Bool   // REQUIRED
         public var expireseconds: Int?
+        
+        public init(userid: String, applyeffect: Bool, expireseconds: Int? = nil) {
+            self.userid = userid
+            self.applyeffect = applyeffect
+            self.expireseconds = expireseconds
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> SetShadowBanStatus {
             set(dictionary: dictionary)
-            let ret = SetShadowBanStatus()
-            
-            ret.userid = value(forKey: .userid)
-            ret.applyeffect = value(forKey: .applyeffect)
-            ret.expireseconds = value(forKey: .expireseconds)
+            let ret = SetShadowBanStatus(
+                userid: value(forKey: .userid) ?? "",
+                applyeffect: value(forKey: .applyeffect) ?? false,
+                expireseconds: value(forKey: .expireseconds)
+            )
             
             return ret
         }
@@ -484,26 +541,36 @@ public class UserRequest {
             case cursor
         }
         
-        public var userid: String?
+        public let userid: String   // REQUIRED
         public var filternotificationtypes: String?
         public var includeread: Bool? = false
         public var filterchatroomid: String?
         public var filterchatroomcustomid: String?
-        public var limit: Int? = 50
-        public var cursor: String? = ""
+        public var limit: Int?// = 50
+        public var cursor: String?// = ""
+        
+        public init(userid: String, filternotificationtypes: String? = nil, includeread: Bool? = nil, filterchatroomid: String? = nil, filterchatroomcustomid: String? = nil, limit: Int? = nil, cursor: String? = nil) {
+            self.userid = userid
+            self.filternotificationtypes = filternotificationtypes
+            self.includeread = includeread
+            self.filterchatroomid = filterchatroomid
+            self.filterchatroomcustomid = filterchatroomcustomid
+            self.limit = limit
+            self.cursor = cursor
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListUserNotifications {
             set(dictionary: dictionary)
-            let ret = ListUserNotifications()
+            let ret = ListUserNotifications(
+                userid: value(forKey: .userid) ?? "",
+                filternotificationtypes: value(forKey: .filternotificationtypes),
+                includeread: value(forKey: .includeread),
+                filterchatroomid: value(forKey: .filterchatroomid),
+                filterchatroomcustomid: value(forKey: .filterchatroomcustomid),
+                limit: value(forKey: .limit),
+                cursor: value(forKey: .cursor)
+            )
             
-            ret.userid = value(forKey: .userid)
-            ret.filternotificationtypes = value(forKey: .filternotificationtypes)
-            ret.includeread = value(forKey: .includeread)
-            ret.filterchatroomid = value(forKey: .filterchatroomid)
-            ret.filterchatroomcustomid = value(forKey: .filterchatroomcustomid)
-            ret.limit = value(forKey: .limit)
-            ret.cursor = value(forKey: .cursor)
-
             return ret
         }
         
@@ -529,7 +596,7 @@ public class UserRequest {
     ///
     /// - userid: (required) The ID of the user marking the notification as read.
     ///
-    /// - delete: (optional) [default=true] If true, this deletes the notification. If false, it marks it read but does not delete it.
+    /// - delete: (required)  If true, this deletes the notification. If false, it marks it read but does not delete it.
     ///
     public class MarkAllNotificationAsRead: ParametersBase<MarkAllNotificationAsRead.Fields, MarkAllNotificationAsRead> {
         public enum Fields {
@@ -537,15 +604,20 @@ public class UserRequest {
             case delete
         }
         
-        public var userid: String?
-        public var delete: Bool? = true
+        public let userid: String   // REQUIRED
+        public let delete: Bool     // REQUIRED
+        
+        public init(userid: String, delete: Bool) {
+            self.userid = userid
+            self.delete = delete
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> MarkAllNotificationAsRead {
             set(dictionary: dictionary)
-            let ret = MarkAllNotificationAsRead()
-            
-            ret.userid = value(forKey: .userid)
-            ret.delete = value(forKey: .delete)
+            let ret = MarkAllNotificationAsRead(
+                userid: value(forKey: .userid) ?? "",
+                delete: value(forKey: .delete) ?? true
+            )
             
             return ret
         }
@@ -582,17 +654,23 @@ public class UserRequest {
             case read
         }
         
-        public var userid: String?
-        public var notificationid: String?
-        public var read: Bool? = false
+        public let userid: String   // REQUIRED
+        public let notificationid: String  // REQUIRED
+        public let read: Bool   // REQUIRED
+        
+        public init(userid: String, notificationid: String, read: Bool) {
+            self.userid = userid
+            self.notificationid = notificationid
+            self.read = read
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> SetUserNotificationAsRead {
             set(dictionary: dictionary)
-            let ret = SetUserNotificationAsRead()
-            
-            ret.userid = value(forKey: .userid)
-            ret.notificationid = value(forKey: .notificationid)
-            ret.read = value(forKey: .read)
+            let ret = SetUserNotificationAsRead(
+                userid: value(forKey: .userid) ?? "",
+                notificationid: value(forKey: .notificationid) ?? "",
+                read: value(forKey: .read) ?? false
+            )
             
             return ret
         }
@@ -635,17 +713,23 @@ public class UserRequest {
             case read
         }
         
-        public var userid: String?
-        public var eventid: String?
-        public var read: Bool? = false
+        public let userid: String   // REQUIRED
+        public let eventid: String  // REQUIRED
+        public let read: Bool       // REQUIRED
+        
+        public init(userid: String, eventid: String, read: Bool) {
+            self.userid = userid
+            self.eventid = eventid
+            self.read = read
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> SetUserNotificationAsReadByChatEventId {
             set(dictionary: dictionary)
-            let ret = SetUserNotificationAsReadByChatEventId()
-            
-            ret.userid = value(forKey: .userid)
-            ret.eventid = value(forKey: .chateventid)
-            ret.read = value(forKey: .read)
+            let ret = SetUserNotificationAsReadByChatEventId(
+                userid: value(forKey: .userid) ?? "",
+                eventid: value(forKey: .chateventid) ?? "",
+                read: value(forKey: .read) ?? false
+            )
             
             return ret
         }
@@ -675,15 +759,20 @@ public class UserRequest {
             case notificationid
         }
         
-        public var userid: String?
-        public var notificationid: String?
+        public let userid: String   // REQUIRED
+        public let notificationid: String   // REQUIRED
+        
+        public init(userid: String, notificationid: String) {
+            self.userid = userid
+            self.notificationid = notificationid
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> DeleteUserNotification {
             set(dictionary: dictionary)
-            let ret = DeleteUserNotification()
-            
-            ret.userid = value(forKey: .userid)
-            ret.notificationid = value(forKey: .notificationid)
+            let ret = DeleteUserNotification(
+                userid: value(forKey: .userid) ?? "",
+                notificationid: value(forKey: .notificationid) ?? ""
+            )
             
             return ret
         }
@@ -710,15 +799,20 @@ public class UserRequest {
             case chateventid
         }
         
-        public var userid: String?
-        public var eventid: String?
+        public let userid: String   // REQUIRED
+        public let eventid: String  // REQUIRED
+        
+        public init(userid: String, eventid: String) {
+            self.userid = userid
+            self.eventid = eventid
+        }
         
         override public func from(dictionary: [AnyHashable: Any]) -> DeleteUserNotificationByChatEventId {
             set(dictionary: dictionary)
-            let ret = DeleteUserNotificationByChatEventId()
-            
-            ret.userid = value(forKey: .userid)
-            ret.eventid = value(forKey: .chateventid)
+            let ret = DeleteUserNotificationByChatEventId(
+                userid: value(forKey: .userid) ?? "",
+                eventid: value(forKey: .chateventid) ?? ""
+            )
             
             return ret
         }

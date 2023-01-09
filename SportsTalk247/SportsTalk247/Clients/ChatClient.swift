@@ -549,12 +549,16 @@ extension ChatClient {
                     this.sentEvents.removeFirst()
                 }
                 
-                // Call KeepAlive every minute
-                let request = ChatRequest.KeepAlive()
-                request.userid = this.currentuserid
-                request.roomid = this.lastroomid
-                
-                this.keepAlive(request) { (_, _, _, _) in }
+                if let lastroomid = this.lastroomid,
+                   let currentuserid = this.currentuserid {
+                    // Call KeepAlive every minute
+                    let request = ChatRequest.KeepAlive(
+                        roomid: lastroomid,
+                        userid: currentuserid
+                    )
+                    
+                    this.keepAlive(request) { (_, _, _, _) in }
+                }
             }
             
             if this.prerenderedevents.count > 0 {
@@ -567,10 +571,13 @@ extension ChatClient {
                 if timestamp % 1000 == 0 {
                     if this.shouldFetchNewEvents {
                         this.shouldFetchNewEvents = false
-                        let request = ChatRequest.GetMoreUpdates()
-                        request.roomid = this.lastroomid
-                        request.cursor = this.lastcursor
-                        request.limit = config?.limit
+                        guard let roomid = this.lastroomid else { return }
+                        
+                        let request = ChatRequest.GetMoreUpdates(
+                            roomid: roomid,
+                            limit: config?.limit,
+                            cursor: this.lastcursor
+                        )
                         
                         this.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
                             this.shouldFetchNewEvents = true
