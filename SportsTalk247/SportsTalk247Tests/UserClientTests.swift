@@ -3,8 +3,11 @@ import SportsTalk247
 
 struct Config {
     static let url = URL(string: "https://api.sportstalk247.com/api/v3")!
-    static let appId = "602e6fc50c916c171cb9a4e8"
-    static let authToken = "P1slSgD5l0yYBTWixyZ3_gGt69p5SOu0KEuGYLBXY8sw"
+    static let appId = "63c16f13c3e89411881ba085"
+    static let authToken = "cXSVhVOVYEewANzl7CuoWgw08gtq8FTUS4nxI_pHcQKg"
+//    static let url = URL(string: "https://api.sportstalk247.com/api/v3")!
+//    static let appId = "602e6fc50c916c171cb9a4e8"
+//    static let authToken = "P1slSgD5l0yYBTWixyZ3_gGt69p5SOu0KEuGYLBXY8sw"
 //    static let url = URL(string: "https://prod-api.sportstalk247.com/api/v3")!
 //    static let appId = "5ffd115386c29223e4de754c"
 //    static let authToken = "Cjh2_2VLhk2iyQUSEsfphAZkrrs6J-Vk2ELL7YzzwWJw"

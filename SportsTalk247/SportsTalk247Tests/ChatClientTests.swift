@@ -1007,7 +1007,7 @@ extension ChatClientTests {
         
         client.reportUserInRoom(request) { (code, message, _, response) in
             print(message ?? "")
-            print(response?.reportedusers.first?.added)
+            print(response?.reportedusers?.first?.added)
             receivedCode = code
             expectation.fulfill()
         }
