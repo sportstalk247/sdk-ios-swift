@@ -153,7 +153,7 @@ public enum CommentModerationState: String {
 public enum VoteType: String {
     case up
     case down
-    case none
+    case none = ""
 }
 
 public enum Ordering: String {

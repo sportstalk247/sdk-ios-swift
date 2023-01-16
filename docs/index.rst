@@ -237,6 +237,23 @@ This requires that the action command dance is on the approved list of commands 
 
 For use of these events in action, see the demo page: `https://www.sportstalk247.com/demo.html <https://www.sportstalk247.com/demo.html>`_
 
+Conversations and Comments
+------------------
+
+.. code-block:: swift
+
+     let client = CommentClient(config: config)
+
+     func getConversations() {
+        let request = CommentRequest.ListConversations()
+
+        client.listConversations(request) { (code, message, _, response) in
+            // where response is model called ListConversationsResponse
+            // Get an array of conversations from response.conversations
+        }
+    }
+
+
 The Bare Minimum
 ------------------
 The only critical events that you need to handle are ``ExecuteChatCommand`` which will be called for each new chat event and ``PurgeMessage`` which will be called when purge commands are issued to clear messages that violate content policy.
@@ -3505,6 +3522,1715 @@ List all the messages in the moderation queue
             public var events: [Event]
         }
 
+Comment Client
+------------------
+
+Create or Update Conversation
+============================
+.. code-block:: swift
+    
+    func createOrUpdateConversation(_ request: CommentRequest.CreateUpdateConversation, completionHandler: @escaping Completion<Conversation>)
+
+Creates a conversation (a context for comments)
+
+**Parameters**
+
+- **conversationid** : (required) The conversation ID. This must be a URL friendly string (cannot contain / ? or other URL delimiters). Maximum length is 250 characters.
+- **property** : (required) The property this conversation is associated with. It is any string value you want. Typically this is the domain of your website for which you want to use commenting, if you have more than one. Examples: ("dev", "uat", "stage", "prod", "site1.com", "site2.com")
+- **moderation** : (required) Specify if pre or post moderation is to be used
+    - `pre` - marks the room as Premoderated
+    - `post` - marks the room as Postmoderated
+- **maxreports** : (optional, default = 3) If this number of users flags a content item in this conversation, the item is disabled and sent to moderator queue for review
+- **enableprofanityfilter**: (optional) [default=true / false] Enables profanity filtering.
+- **title** : (optional) The title of the conversation
+- **maxcommentlen**: (optional) The maximum allowed length of a comment. Default is 256 characters. Maximum value is 10485760 (10 MB)
+- **open**: (optional, defaults to true) If the conversation is open people can add comments.
+- **added**: (optional) If this timestamp is provided then the whenadded field will be overridden. You should only use this when migrating data; data is timestamped automatically. Example value: "2020-05-02T08:51:53.8140055Z"
+- **whenmodified**: (optional)
+- **customtype** : (optional) Custom type string.
+- **customid**:  (optional) 250 characters for a custom ID for your app. This field is indexed for high performance object retrieval.
+- **customtags** : (optional) A comma delimited list of tags
+- **custompayload** : (optional) Custom payload string.
+- **customfield1** : (optional) User custom field 1. Store any string value you want here, limit 1024 bytes.
+- **customfield2** : (optional) User custom field 2. Store any string value you want here, limit 1024 bytes.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.CreateUpdateConversation**
+
+.. code-block:: swift
+
+        public class CreateUpdateConversation: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let property: String         // REQUIRED
+            public let moderation: String       // REQUIRED
+            public var maxreports: Int?
+            public var enableprofanityfilter: Bool?
+            public var title: String?
+            public var maxcommentlen: Int64?
+            public var open: Bool?
+            public var added: String?   // OPTIONAL, Example value: "2020-05-02T08:51:53.8140055Z"
+            public var whenmodified: String?   // OPTIONAL, Example value: "2020-05-02T08:51:53.8140055Z"
+            public var customtype: String?
+            public var customid: String?
+            public var customtags: [String]?
+            public var custompayload: String?
+            public var customfield1: String?
+            public var customfield2: String?
+            /// ...
+        }
+        
+**Response Model: Conversation**
+
+.. code-block:: swift
+
+        open class Conversation: Codable {
+            public var kind: String?    // "comment.conversation"
+            public var id: String?
+            public var appid: String?
+            public var owneruserid: String?
+            public var conversationid: String?
+            public var property: String?    // "sportstalk247.com/apidemo"
+            public var moderation: String?  /* "pre"/"post"/"na" */
+            public var maxreports: Int64?   // OPTIONAL, defaults to 3
+            public var enableprofanityfilter: Bool? // OPTIONAL, defaults to true
+            public var title: String?
+            public var maxcommentlen: Int64?
+            public var commentcount: Int64?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var open: Bool?  // OPTIONAL, defaults to true
+            public var added: Date?   // OPTIONAL, Example value: "2020-05-02T08:51:53.8140055Z"
+            public var whenmodified: Date?    // OPTIONAL, Example value: "2020-05-02T08:51:53.8140055Z"
+            public var customtype: String?
+            public var customid: String?
+            public var customtags: [String]?
+            public var custompayload: String?
+            public var customfield1: String?
+            public var customfield2: String?
+
+            /// ...
+        }
+        
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.CreateUpdateConversation(
+            conversationid: "demo-test-conversation-1",
+            property: "sportstalk247.com/apidemo1",
+            moderation: "post"
+        )
+        request.enableprofanityfilter = false
+        request.title = "Sample Conversation 1"
+        request.open = true
+        request.customid = "test-custom-convo-id1"
+        // Other request optional fields
+
+        // Perform operation
+        commentClient.createOrUpdateConversation(request) { (code: Int?, message: String?, kind: String?, response: Conversation?) in
+            // ... Resolve `response` from here
+        }
+
+
+Get Conversation by ID
+============================
+.. code-block:: swift
+    
+    func getConversation(_ request: CommentRequest.GetConversationById, completionHandler: @escaping Completion<Conversation>)
+
+Retrieves metadata about a conversation.
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the conversation which is a context for comments. The ID must be URL ENCODED.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.GetConversationById**
+
+.. code-block:: swift
+
+        public class GetConversationById: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            /// ...
+        }
+        
+**Response Model: Conversation**
+
+.. code-block:: swift
+
+        open class Conversation: Codable {
+            public var kind: String?    // "comment.conversation"
+            public var id: String?
+            public var appid: String?
+            public var owneruserid: String?
+            public var conversationid: String?
+            public var property: String?    // "sportstalk247.com/apidemo"
+            public var moderation: String?  /* "pre"/"post"/"na" */
+            public var maxreports: Int64?   // OPTIONAL, defaults to 3
+            public var enableprofanityfilter: Bool? // OPTIONAL, defaults to true
+            public var title: String?
+            public var maxcommentlen: Int64?
+            public var commentcount: Int64?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var open: Bool?  // OPTIONAL, defaults to true
+            public var added: Date?   // OPTIONAL, Example value: "2020-05-02T08:51:53.8140055Z"
+            public var whenmodified: Date?    // OPTIONAL, Example value: "2020-05-02T08:51:53.8140055Z"
+            public var customtype: String?
+            public var customid: String?
+            public var customtags: [String]?
+            public var custompayload: String?
+            public var customfield1: String?
+            public var customfield2: String?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.GetConversationById(conversationid: "conversation-id-1")
+
+        // Perform operation
+        commentClient.getConversation(request) { (code: Int?, message: String?, kind: String?, response: Conversation?) in
+            // ... Resolve `response` from here
+        }
+
+
+Find Conversation by CustomID
+============================
+.. code-block:: swift
+    
+    func getConversationByCustomId(_ request: CommentRequest.FindConversationByIdCustomId, completionHandler: @escaping Completion<Conversation>)
+
+Uses the CustomID for the conversation supplied by the app to retrieve the conversation object. It returns exactly one object or 404 if not found. This query is covered by an index and is performant.
+
+**Parameters**
+
+    - **customid** : (Required) Locates a conversation using the custom ID.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.FindConversationByIdCustomId**
+
+.. code-block:: swift
+
+        public class FindConversationByIdCustomId: ParametersBase</*...*/> {
+            /// ...
+            public let customid: String     // REQUIRED
+            /// ...
+        }
+        
+**Response Model: Conversation**
+
+.. code-block:: swift
+
+        open class Conversation: Codable {
+            public var kind: String?    // "comment.conversation"
+            public var id: String?
+            public var appid: String?
+            public var owneruserid: String?
+            public var conversationid: String?
+            public var property: String?    // "sportstalk247.com/apidemo"
+            public var moderation: String?  /* "pre"/"post"/"na" */
+            public var maxreports: Int64?   // OPTIONAL, defaults to 3
+            public var enableprofanityfilter: Bool? // OPTIONAL, defaults to true
+            public var title: String?
+            public var maxcommentlen: Int64?
+            public var commentcount: Int64?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var open: Bool?  // OPTIONAL, defaults to true
+            public var added: Date?   // OPTIONAL, Example value: "2020-05-02T08:51:53.8140055Z"
+            public var whenmodified: Date?    // OPTIONAL, Example value: "2020-05-02T08:51:53.8140055Z"
+            public var customtype: String?
+            public var customid: String?
+            public var customtags: [String]?
+            public var custompayload: String?
+            public var customfield1: String?
+            public var customfield2: String?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.FindConversationByIdCustomId(customid: "custom-conversation-id1")
+
+        // Perform operation
+        commentClient.getConversationByCustomId(request) { (code: Int?, message: String?, kind: String?, response: Conversation?) in
+            // ... Resolve `response` from here
+        }
+
+List Conversations
+============================
+.. code-block:: swift
+    
+    func listConversations(_ request: CommentRequest.ListConversations, completionHandler: @escaping Completion<ListConversationsResponse>)
+
+Retrieves metadata about all conversations for a property. Whenever you create a conversation, you provide a property to associate it with. This returns the metadata for all conversations associated with a property.
+
+**ABOUT CURSORING:**
+
+    - API Method returns a cursor
+    - Cursor includes a "more" field indicating if there are more results that can be read at the time this call is made
+    - Cursor includes "cursor" field, which can be passed into subsequent calls to this method to get additional results
+    - Cursor includes "itemcount" field, which is the number of items returned by the cursor not the total number of items in the database
+    - All LIST methods in the API return cursors and they all work the same way
+
+**Parameters**
+
+    - **propertyid** : Filters list of conversations by property. Exact match only, case sensitive.
+    - **cursor** : (Optional, default = ""). For cusoring, pass in cursor output from previous call to continue where you left off.
+    - **limit** : (Optional, default = 200). For cursoring, limit the number of responses for this request.
+    - **sort** : (Optional, default = "oldest").
+        - `newest` : Default. Sorts from newest created conversation to the oldest.
+        - `oldest` : Starts from oldest conversation and cursors towards the newest.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.ListConversations**
+
+.. code-block:: swift
+
+        public class ListConversations: ParametersBase</*...*/> {
+            /// ...
+            public var propertyid: String?
+            public var cursor: String?
+            public var limit: Int?
+            public var sort: SortType?
+            /// ...
+        }
+        
+**Response Model: ListConversationsResponse**
+
+.. code-block:: swift
+
+        open class ListConversationsResponse: Codable {
+            public var kind: String?    /* "list.commentconversations" */
+            public var cursor: String?
+            public var more: Bool?
+            public var conversations: [Conversation] = []
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.ListConversations()
+        // You may provide optional parameters as shown below:
+        // request.propertyid = "sportstalk247.com/apidemo"
+        // request.cursor = "63bd442ccfce070c7825639a"
+        // request.limit = 10
+        // request.sort = SortType.newest
+
+        // Perform operation
+        commentClient.listConversations(request) { (code: Int?, message: String?, kind: String?, response: ListConversationsResponse?) in
+            // ... Resolve `response` from here
+        }
+
+Batch Get Conversation Details
+============================
+.. code-block:: swift
+    
+    func batchGetConversationDetails(_ request: CommentRequest.GetBatchConversationDetails, completionHandler: @escaping Completion<BatchGetConversationDetailsResponse>)
+
+The purpose of this method is to support a use case where you start with a list of conversations and you want metadata about only those conversations so you can display things like like count or comment count making minimal requests.
+You can choose to either retrieve articles using the sportstalk ID or by using your custom IDs you associated with the conversation using our create/update conversation API.
+
+**Parameters**
+
+    - **ids** : (optional): Include one or more comma delimited Sportstalk conversation IDs.
+    - **cid** : (optional): Include one or more cid arguments. Each is a URL ENCODED string containing the customid. You can specify up to 200 at a time.
+    - **entities** (optional): By default only the conversation object data is returned. For more data (and deeper queries) provide any of these entities:
+        - `reactions`: Includes user reactions and microprofiles in the response
+        - `likecount`: Includes number of likes on the conversation in the response, otherwise returns -1 for like count.
+        - `commentcount`: Includes the number of comments in the response, otherwise returns -1 for comment count.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.GetBatchConversationDetails**
+
+.. code-block:: swift
+
+        public class GetBatchConversationDetails: ParametersBase</*...*/> {
+            /// ...
+            public var ids: [String]?
+            public var cid: [String]?
+            public var entities: [BatchGetConversationEntity]?
+            /// ...
+        }
+        
+**Response Model: BatchGetConversationDetailsResponse**
+
+.. code-block:: swift
+
+        open class BatchGetConversationDetailsResponse: Codable {
+            public var kind: String?    /* "list.comment.conversation.details" */
+            public var itemcount: Int64?
+            public var conversations: [Conversation] = []
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.GetBatchConversationDetails(
+            ids: [createdConversation1.conversationid!, createdConversation2.conversationid!]
+        )
+        //
+        // Optionally, if NOT `ids`, you may either provided customids under `cid` parameter
+        // let request = CommentRequest.GetBatchConversationDetails(
+        //     cid: [createdConversation1.conversationid!, createdConversation2.conversationid!]
+        // )
+        //
+        // Lastly, you may also provide `entities` parameter to include more data
+
+        // Perform operation
+        commentClient.batchGetConversationDetails(request) { (code: Int?, message: String?, kind: String?, response: BatchGetConversationDetailsResponse?) in
+            // ... Resolve `response` from here
+        }
+
+React to Conversation Topic
+============================
+.. code-block:: swift
+    
+    func reactToConversationTopic(_ request: CommentRequest.ReactToConversationTopic, completionHandler: @escaping Completion<Conversation>)
+
+Adds or removes a reaction to a topic
+A conversation context is mapped to your topic by using either the conversationid or the customid. You can either react to the content itself (for example to LIKE an article/video/poll) or you can use the comment react api to react to an individual comment. This method is for commenting on the conversation topic level.
+
+**Parameters**
+
+    - **userid** : (required) The ID of the user reacting to the comment. Anonymous reactions are not supported.
+    - **reaction** : (required) A string indicating the reaction you wish to capture, for example "like", or "emoji:{id}" where you can use the standard character code for your emoji.
+    - **reacted** : (required) true or false, to toggle the reaction on or off for this user.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.ReactToConversationTopic**
+
+.. code-block:: swift
+
+        public class ReactToConversationTopic: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let userid: String   // REQUIRED
+            public let reaction: String // REQUIRED
+            public let reacted: Bool    // REQUIRED
+            /// ...
+        }
+        
+**Response Model: Conversation**
+
+.. code-block:: swift
+
+        open class Conversation: Codable {
+            public var kind: String?    // "comment.conversation"
+            public var id: String?
+            public var appid: String?
+            public var owneruserid: String?
+            public var conversationid: String?
+            public var property: String?    // "sportstalk247.com/apidemo"
+            public var moderation: String?  /* "pre"/"post"/"na" */
+            public var maxreports: Int64?   // OPTIONAL, defaults to 3
+            public var enableprofanityfilter: Bool? // OPTIONAL, defaults to true
+            public var title: String?
+            public var maxcommentlen: Int64?
+            public var commentcount: Int64?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var open: Bool?  // OPTIONAL, defaults to true
+            public var added: Date?   // OPTIONAL, Example value: "2020-05-02T08:51:53.8140055Z"
+            public var whenmodified: Date?    // OPTIONAL, Example value: "2020-05-02T08:51:53.8140055Z"
+            public var customtype: String?
+            public var customid: String?
+            public var customtags: [String]?
+            public var custompayload: String?
+            public var customfield1: String?
+            public var customfield2: String?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.ReactToConversationTopic(
+            conversationid: createdConversation.conversationid!,
+            userid: createdUser.userid!,
+            reaction: "like",
+            reacted: true
+        )
+
+        // Perform operation
+        commentClient.reactToConversationTopic(request) { (code: Int?, message: String?, kind: String?, response: Conversation?) in
+            // ... Resolve `response` from here
+        }
+
+Create and Publish Comment
+============================
+.. code-block:: swift
+    
+    func createComment(_ request: CommentRequest.CreateComment, completionHandler: @escaping Completion<Comment>)
+
+Creates a comment and publishes it
+You can optionally make this comment into a reply by passing in the optional replyto field. Custom fields can be set, and can be overwritten. However, once a custom field is used it can not be set to no value (empty string).
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment stream to publish the comment to. See the Create / Update Conversation method for rules around conversationid.
+    - **userid** : (required) The application's userid representing the user who submitted the comment
+    - **displayname** : (optional). This is the desired name to display, typically the real name of the person.
+    - **body** : (required) The body of the comment (the message). Supports unicode characters including EMOJIs and international characters.
+    - **customtype** : (optional) Custom type string.
+    - **customfield1** : (optional) User custom field 1. Store any string value you want here, limit 1024 bytes.
+    - **customfield2** : (optional) User custom field 2. Store any string value you want here, limit 1024 bytes.
+    - **customtags** : (optional) A comma delimited list of tags
+    - **custompayload** : (optional) Custom payload string.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.CreateComment**
+
+.. code-block:: swift
+
+        public class CreateComment: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let userid: String   // REQUIRED
+            public var displayname: String?
+            public let body: String     // REQUIRED
+            public var customtype: String?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var customtags: [String]?
+            public var custompayload: String?
+            /// ...
+        }
+        
+**Response Model: Comment**
+
+.. code-block:: swift
+
+        open class Comment: Codable {
+            public var kind: String?    // "comment.comment"
+            public var id: String?
+            public var appid: String?
+            public var conversationid: String?
+            public var commenttype: String? // "comment"
+            public var added: Date?
+            public var modified: Date?
+            public var tsunix: Int64?
+            public var userid: String?
+            public var user: User?
+            public var body: String?
+            public var originalbody: String?
+            public var hashtags: [String]?
+            public var shadowban: Bool?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var edited: Bool?
+            public var censored: Bool?
+            public var deleted: Bool?
+            public var parentid: String?
+            public var hierarchy: [String]?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var replycount: Int64?
+            public var votecount: Int64?
+            public var votescore: Int64?
+            public var votes: [Vote]?
+            public var moderation: String?  // "approved", "pending", "rejected"
+            public var active: Bool?
+            public var reports: [Report]?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.CreateComment(
+            conversationid: "demo-conversation-id",
+            userid: "yBommvwYYNBrxPwY",
+            body: "Sample Comment 1"
+        )
+        // Optionally, you may provide more parameters
+        // request.displayname = "MyAlterEgo1"
+        // request.customtype = "type1"
+        // request.customfield1 = "/sample/userdefined1/emojis/"
+        // request.customfield2 = "/sample/userdefined2/intl/characters/"
+        // request.customtags = ["taga", "tagb"]
+        // request.custompayload = "{ num: 0 }"
+
+        // Perform operation
+        commentClient.createComment(request) { (code: Int?, message: String?, kind: String?, response: Comment?) in
+            // ... Resolve `response` from here
+        }
+
+Reply to Comment
+============================
+.. code-block:: swift
+    
+    func replyToComment(_ request: CommentRequest.ReplyToComment, completionHandler: @escaping Completion<Comment>)
+
+Creates a reply to a comment and publishes it
+
+The reply to comment method is the same as the create comment method, except you pass in the ID of the parent comment using the replyto field. See WEBHOOKS SERVICE API for information on receiving a notification when someone replies to a comment. See documentation on Create and Publish Comment
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+    - **replytocommentid** : (required) The unique ID of the comment we will reply to.
+    - **userid** : (required) The application's userid representing the user who submitted the comment
+    - **displayname** : (optional). This is the desired name to display, typically the real name of the person.
+    - **body** : (required) The body of the reply (what the user is saying). Supports unicode characters including EMOJIs and international characters.
+    - **customtype** : (optional) Custom type string.
+    - **customfield1** : (optional) User custom field 1. Store any string value you want here, limit 1024 bytes.
+    - **customfield2** : (optional) User custom field 2. Store any string value you want here, limit 1024 bytes.
+    - **customtags** : (optional) A comma delimited list of tags
+    - **custompayload** : (optional) Custom payload string.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.ReplyToComment**
+
+.. code-block:: swift
+
+        public class ReplyToComment: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let replytocommentid: String   // REQUIRED
+            public let userid: String   // REQUIRED
+            public var displayname: String?
+            public let body: String     // REQUIRED
+            public var customtype: String?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var customtags: [String]?
+            public var custompayload: String?
+            /// ...
+        }
+        
+**Response Model: Comment**
+
+.. code-block:: swift
+
+        open class Comment: Codable {
+            public var kind: String?    // "comment.comment"
+            public var id: String?
+            public var appid: String?
+            public var conversationid: String?
+            public var commenttype: String? // "comment"
+            public var added: Date?
+            public var modified: Date?
+            public var tsunix: Int64?
+            public var userid: String?
+            public var user: User?
+            public var body: String?
+            public var originalbody: String?
+            public var hashtags: [String]?
+            public var shadowban: Bool?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var edited: Bool?
+            public var censored: Bool?
+            public var deleted: Bool?
+            public var parentid: String?
+            public var hierarchy: [String]?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var replycount: Int64?
+            public var votecount: Int64?
+            public var votescore: Int64?
+            public var votes: [Vote]?
+            public var moderation: String?  // "approved", "pending", "rejected"
+            public var active: Bool?
+            public var reports: [Report]?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.ReplyToComment(
+            conversationid: "demo-conversation-id1",
+            replytocommentid: "root-comment-id1",
+            userid: "yBommvwYYNBrxPwY",
+            body: "Reply Comment"
+        )
+        // Optionally, you may provide more parameters
+        // request.displayname = "MyAlterEgo1"
+        // request.customtype = "type1"
+        // request.customfield1 = "/sample/userdefined1/emojis/"
+        // request.customfield2 = "/sample/userdefined2/intl/characters/"
+        // request.customtags = ["taga", "tagb"]
+        // request.custompayload = "{ num: 0 }"
+
+        // Perform operation
+        commentClient.replyToComment(request) { (code: Int?, message: String?, kind: String?, response: Comment?) in
+            // ... Resolve `response` from here
+        }
+
+List Replies
+============================
+.. code-block:: swift
+    
+    func listCommentReplies(_ request: CommentRequest.ListCommentReplies, completionHandler: @escaping Completion<ListCommentsResponse>)
+
+Get a list of replies to a comment
+
+This method works the same way as the List Comments method, so view the documentation on that method. The difference is that this method will filter to only include comments that have a parent.
+
+**ABOUT CURSORING:**
+
+    - API Method returns a cursor
+    - Cursor includes a "more" field indicating if there are more results that can be read at the time this call is made
+    - Cursor includes "cursor" field, which can be passed into subsequent calls to this method to get additional results
+    - Cursor includes "itemcount" field, which is the number of items returned by the cursor not the total number of items in the database
+    - All LIST methods in the API return cursors and they all work the same way
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+    - **cursor** : (optional) If provided, will get the next bundle of comments in the conversation resuming from where the cursor left off.
+    - **limit** : (Optional, default = 200). For cursoring, limit the number of responses for this request.
+    - **direction**: (optional) Default is forward. Must be forward or backward
+    - **sort** : (optional, defaults to "oldest") Specifies that sort should be done by...
+        - `oldest` : Sort by when added ascending (oldest on top)
+        - `newest` : Sort by when added ascending (newest on top)
+        - `likes` : Sort by number of likes, descending (most liked on top)
+        - `votescore` : Sort by net of adding upvotes and subtracting downvotes, descending
+        - `mostreplies` : Sort by number of replies,descending
+    - **includechildren** : (optional, default is false) If false, this returns all reply nodes that are immediate children of the provided parent id. If true, it includes all                replies under the parent id and all the children of those replies and so on.
+    - **includeinactive** : (optional, default is false) If true, return comments that are inactive (for example, disabled by moderation)
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.ListCommentReplies**
+
+.. code-block:: swift
+
+        public class ListCommentReplies: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let commentid: String    // REQUIRED
+            public var cursor: String?
+            public var limit: Int?
+            public var direction: Ordering?
+            public var sort: SortType?
+            public var includechildren: Bool?
+            public var includeinactive: Bool?
+            /// ...
+        }
+        
+**Response Model: ListCommentsResponse**
+
+.. code-block:: swift
+
+        open class ListCommentsResponse: Codable {
+            public var kind: String?    /* "list.comments" */
+            public var cursor: String?
+            public var more: Bool?
+            public var itemcount: Int64?
+            public var conversation: Conversation?
+            public var comments: [Comment] = []
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.ListCommentReplies(
+            conversationid: "demo-conversation-id1",
+            commentid: "root-comment-id1"
+        )
+        // You may provide optional parameters as shown below:
+        // request.propertyid = "sportstalk247.com/apidemo"
+        // request.cursor = "63bd442ccfce070c7825639a"
+        // request.limit = 10
+        // request.sort = SortType.newest
+
+        // Perform operation
+        commentClient.listCommentReplies(request) { (code: Int?, message: String?, kind: String?, response: ListCommentsResponse?) in
+            // ... Resolve `response` from here
+        }
+
+Get Comment by ID
+============================
+.. code-block:: swift
+    
+    func getComment(_ request: CommentRequest.GetCommentDetails, completionHandler: @escaping Completion<Comment>)
+
+The comment time stamp is stored in UTC time.
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation, URL ENCODED.
+    - **commentid** : (required) The unique ID of the comment, URL ENCODED.*
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.GetCommentDetails**
+
+.. code-block:: swift
+
+        public class GetCommentDetails: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let commentid: String    // REQUIRED
+            /// ...
+        }
+        
+**Response Model: Comment**
+
+.. code-block:: swift
+
+        open class Comment: Codable {
+            public var kind: String?    // "comment.comment"
+            public var id: String?
+            public var appid: String?
+            public var conversationid: String?
+            public var commenttype: String? // "comment"
+            public var added: Date?
+            public var modified: Date?
+            public var tsunix: Int64?
+            public var userid: String?
+            public var user: User?
+            public var body: String?
+            public var originalbody: String?
+            public var hashtags: [String]?
+            public var shadowban: Bool?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var edited: Bool?
+            public var censored: Bool?
+            public var deleted: Bool?
+            public var parentid: String?
+            public var hierarchy: [String]?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var replycount: Int64?
+            public var votecount: Int64?
+            public var votescore: Int64?
+            public var votes: [Vote]?
+            public var moderation: String?  // "approved", "pending", "rejected"
+            public var active: Bool?
+            public var reports: [Report]?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.GetCommentDetails(
+            conversationid: "demo-conversation-id1",
+            commentid: "get-comment-id1"
+        )
+
+        // Perform operation
+        commentClient.getComment(request) { (code: Int?, message: String?, kind: String?, response: Comment?) in
+            // ... Resolve `response` from here
+        }
+
+List Comments
+============================
+.. code-block:: swift
+    
+    func listComments(_ request: CommentRequest.ListComments, completionHandler: @escaping Completion<ListCommentsResponse>)
+
+Get a list of comments within a conversation
+
+**ABOUT CURSORING:**
+
+- API Method returns a cursor
+- Cursor includes a "more" field indicating if there are more results that can be read at the time this call is made
+- Cursor includes "cursor" field, which can be passed into subsequent calls to this method to get additional results
+- Cursor includes "itemcount" field, which is the number of items returned by the cursor not the total number of items in the database
+- All LIST methods in the API return cursors and they all work the same way
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+    - **cursor** : (optional) If provided, will get the next bundle of comments in the conversation resuming from where the cursor left off.
+    - **limit** : (Optional, default = 200). For cursoring, limit the number of responses for this request.
+    - **direction**: (optional) Default is forward. Must be forward or backward
+    - **sort** : (optional, defaults to "oldest") Specifies that sort should be done by...
+        - `oldest` : Sort by when added ascending (oldest on top)
+        - `newest` : Sort by when added ascending (newest on top)
+        - `likes` : Sort by number of likes, descending (most liked on top)
+        - `votescore` : Sort by net of adding upvotes and subtracting downvotes, descending
+        - `mostreplies` : Sort by number of replies,descending
+    - **includechildren** : (optional, default is false) If false, this returns all reply nodes that are immediate children of the provided parent id. If true, it includes all                replies under the parent id and all the children of those replies and so on.
+    - **includeinactive** : (optional, default is false) If true, return comments that are inactive (for example, disabled by moderation)
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.ListComments**
+
+.. code-block:: swift
+
+        public class ListComments: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public var cursor: String?
+            public var limit: Int?
+            public var direction: Ordering?
+            public var sort: SortType?
+            public var includechildren: Bool?
+            public var includeinactive: Bool?
+            /// ...
+        }
+        
+**Response Model: ListCommentsResponse**
+
+.. code-block:: swift
+
+        open class ListCommentsResponse: Codable {
+            public var kind: String?    /* "list.comments" */
+            public var cursor: String?
+            public var more: Bool?
+            public var itemcount: Int64?
+            public var conversation: Conversation?
+            public var comments: [Comment] = []
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.ListComments(
+            conversationid: "demo-conversation-id1",
+            commentid: "root-comment-id1"
+        )
+        // You may provide optional parameters as shown below:
+        // request.propertyid = "sportstalk247.com/apidemo"
+        // request.cursor = "63bd442ccfce070c7825639a"
+        // request.limit = 10
+        // request.sort = SortType.newest
+
+        // Perform operation
+        commentClient.listComments(request) { (code: Int?, message: String?, kind: String?, response: ListCommentsResponse?) in
+            // ... Resolve `response` from here
+        }
+
+List Replies Batch
+============================
+.. code-block:: swift
+    
+    func listCommentRepliesBatch(_ request: CommentRequest.GetBatchCommentReplies, completionHandler: @escaping Completion<ListCommentRepliesBatchResponse>)
+
+Get a list of replies to multiple parent Comments
+
+The purpose of this method is to support a use case where you open an app or website widget and you have just displayed up to N top level comments and you want to retrieve the replies to those comments quickly, in 1 request. You could call GetReplies for each top level parent, but if you want to get them in just one request use this method, which has more speed but some limitations:
+
+    - This method does not support cursoring.
+    - This method allows you to specify the maximum number of children to return per top level parent, but it does not apply a limit across the total number of replies across all of the top level comments.
+    - This method will always return replies sorted by when originally published timestamp ascending (oldest to newest), with replies grouped by each parent comment in the result set.
+    - This method will return the children that are direct immediate child replies to the parent only, not an entire tree under a parent.
+    - If the parentid list contains a parentid that does not exist or has no child replies it will be skipped, you will not receive 404 unless none of the parentids were found.
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+    - **childlimit** : (Optional, default = 50).
+    - **parentids** : (Required). A list of parent comment ID(s), up to 30.
+    - **includeinactive** : (optional, default is false) If true, return comments that are inactive (for example, disabled by moderation)
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.GetBatchCommentReplies**
+
+.. code-block:: swift
+
+        public class GetBatchCommentReplies: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public var childlimit: Int?
+            public let parentids: [String]  // REQUIRED
+            public var includeinactive: Bool?
+            /// ...
+        }
+        
+**Response Model: ListCommentRepliesBatchResponse**
+
+.. code-block:: swift
+
+        open class ListCommentRepliesBatchResponse: Codable {
+            public var kind: String?
+            public var repliesgroupedbyparentid: [CommentReplyGroup]
+
+            /// ...
+            
+            public struct CommentReplyGroup: Codable {
+                public var kind: String?
+                public var parentid: String?
+                public var comments: [Comment] = []
+                
+                // ...
+            }
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.GetBatchCommentReplies(
+            conversationid: "demo-conversation-id1",
+            parentids: ["root-comment-id1", "root-comment-id2", "root-comment-id3"]
+        )
+        // You may provide optional parameters as shown below:
+        // request.childlimit = 10
+        // request.includeinactive = true
+
+        // Perform operation
+        commentClient.listCommentRepliesBatch(request) { (code: Int?, message: String?, kind: String?, response: ListCommentRepliesBatchResponse?) in
+            // ... Resolve `response` from here
+        }
+
+React to Comment("Like")
+============================
+.. code-block:: swift
+    
+    func reactToComment(_ request: CommentRequest.ReactToComment, completionHandler: @escaping Completion<Comment>)
+
+Adds or removes a reaction to a comment
+
+A reaction can be added using any reaction string that you wish.
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+    - **commentid** : (required) The unique ID of the comment, URL ENCODED.*
+    - **userid : (required) The ID of the user reacting to the comment. Anonymous reactions are not supported.
+    - **reaction** : (required) A string indicating the reaction you wish to capture, for example "like", or "emoji:{id}" where you can use the standard character code for your emoji.
+    - **reacted** : (required) true or false, to toggle the reaction on or off for this user.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.ReactToComment**
+
+.. code-block:: swift
+
+        public class ReactToComment: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let commentid: String    // REQUIRED
+            public let userid: String   // REQUIRED
+            public let reaction: String // REQUIRED
+            public let reacted: Bool    // REQUIRED
+            /// ...
+        }
+        
+**Response Model: Comment**
+
+.. code-block:: swift
+
+        open class Comment: Codable {
+            public var kind: String?    // "comment.comment"
+            public var id: String?
+            public var appid: String?
+            public var conversationid: String?
+            public var commenttype: String? // "comment"
+            public var added: Date?
+            public var modified: Date?
+            public var tsunix: Int64?
+            public var userid: String?
+            public var user: User?
+            public var body: String?
+            public var originalbody: String?
+            public var hashtags: [String]?
+            public var shadowban: Bool?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var edited: Bool?
+            public var censored: Bool?
+            public var deleted: Bool?
+            public var parentid: String?
+            public var hierarchy: [String]?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var replycount: Int64?
+            public var votecount: Int64?
+            public var votescore: Int64?
+            public var votes: [Vote]?
+            public var moderation: String?  // "approved", "pending", "rejected"
+            public var active: Bool?
+            public var reports: [Report]?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.ReactToComment(
+            conversationid: "demo-conversation-id1",
+            commentid: "root-comment-id1",
+            userid: "yBommvwYYNBrxPwY",
+            reaction: "like",
+            reacted: true
+        )
+
+        // Perform operation
+        commentClient.reactToComment(request) { (code: Int?, message: String?, kind: String?, response: Comment?) in
+            // ... Resolve `response` from here
+        }
+
+Vote on Comment
+============================
+.. code-block:: swift
+    
+    func voteOnComment(_ request: CommentRequest.VoteOnComment, completionHandler: @escaping Completion<Comment>)
+
+UPVOTE, DOWNVOTE, or REMOVE VOTE
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+    - **commentid** : (required) The unique ID of the comment, URL ENCODED.*
+    - **vote** : (required) Must be one of `"up"`, `"down"`, or `"none"` (empty value). If up, the comment receives an upvote. If down, the comment receives a down vote. If empty, the vote is removed.
+    - **userid** : (required) The application specific user id performing the action.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.VoteOnComment**
+
+.. code-block:: swift
+
+        public class VoteOnComment: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let commentid: String    // REQUIRED
+            public let vote: VoteType   // REQUIRED
+            public let userid: String   // REQUIRED
+            /// ...
+        }
+        
+**Response Model: Comment**
+
+.. code-block:: swift
+
+        open class Comment: Codable {
+            public var kind: String?    // "comment.comment"
+            public var id: String?
+            public var appid: String?
+            public var conversationid: String?
+            public var commenttype: String? // "comment"
+            public var added: Date?
+            public var modified: Date?
+            public var tsunix: Int64?
+            public var userid: String?
+            public var user: User?
+            public var body: String?
+            public var originalbody: String?
+            public var hashtags: [String]?
+            public var shadowban: Bool?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var edited: Bool?
+            public var censored: Bool?
+            public var deleted: Bool?
+            public var parentid: String?
+            public var hierarchy: [String]?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var replycount: Int64?
+            public var votecount: Int64?
+            public var votescore: Int64?
+            public var votes: [Vote]?
+            public var moderation: String?  // "approved", "pending", "rejected"
+            public var active: Bool?
+            public var reports: [Report]?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.VoteOnComment(
+            conversationid: "demo-conversation-id1",
+            commentid: "root-comment-id1",
+            vote: VoteType.up,
+            userid: "yBommvwYYNBrxPwY"
+        )
+
+        // Perform operation
+        commentClient.voteOnComment(request) { (code: Int?, message: String?, kind: String?, response: Comment?) in
+            // ... Resolve `response` from here
+        }
+
+Report Comment
+============================
+.. code-block:: swift
+    
+    func reportComment(_ request: CommentRequest.ReportComment, completionHandler: @escaping Completion<Comment>)
+
+REPORTS a comment to the moderation team.
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+    - **commentid** : (required) The unique ID of the comment, URL ENCODED.
+    - **userid** : (required) This is the application specific user ID of the user reporting the comment.
+    - **reporttype** : (required) A string indicating the reason you wish to report(i.e. "abuse", "spam").
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.ReportComment**
+
+.. code-block:: swift
+
+        public class ReportComment: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let commentid: String    // REQUIRED
+            public let userid: String   // REQUIRED
+            public let reporttype: ReportType   // REQUIRED
+            /// ...
+        }
+        
+**Response Model: Comment**
+
+.. code-block:: swift
+
+        open class Comment: Codable {
+            public var kind: String?    // "comment.comment"
+            public var id: String?
+            public var appid: String?
+            public var conversationid: String?
+            public var commenttype: String? // "comment"
+            public var added: Date?
+            public var modified: Date?
+            public var tsunix: Int64?
+            public var userid: String?
+            public var user: User?
+            public var body: String?
+            public var originalbody: String?
+            public var hashtags: [String]?
+            public var shadowban: Bool?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var edited: Bool?
+            public var censored: Bool?
+            public var deleted: Bool?
+            public var parentid: String?
+            public var hierarchy: [String]?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var replycount: Int64?
+            public var votecount: Int64?
+            public var votescore: Int64?
+            public var votes: [Vote]?
+            public var moderation: String?  // "approved", "pending", "rejected"
+            public var active: Bool?
+            public var reports: [Report]?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.ReportComment(
+            conversationid: "demo-conversation-id1",
+            commentid: "root-comment-id1",
+            userid: "yBommvwYYNBrxPwY",
+            reporttype: ReportType.abuse
+        )
+
+        // Perform operation
+        commentClient.reportComment(request) { (code: Int?, message: String?, kind: String?, response: Comment?) in
+            // ... Resolve `response` from here
+        }
+
+Update Comment
+============================
+.. code-block:: swift
+    
+    func updateComment(_ request: CommentRequest.UpdateComment, completionHandler: @escaping Completion<Comment>)
+
+UPDATES the contents of an existing comment
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+    - **commentid** : (required) The unique ID of the comment, URL ENCODED.
+    - **userid** : (required) The application specific user ID of the comment to be updated. This must be the owner of the comment or moderator / admin.
+    - **body** : (required) The new body contents of the comment.
+
+The comment will be flagged to indicate that it has been modified.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.UpdateComment**
+
+.. code-block:: swift
+
+        public class UpdateComment: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let commentid: String    // REQUIRED
+            public let userid: String   // REQUIRED
+            public let body: String    // REQUIRED
+            /// ...
+        }
+        
+**Response Model: Comment**
+
+.. code-block:: swift
+
+        open class Comment: Codable {
+            public var kind: String?    // "comment.comment"
+            public var id: String?
+            public var appid: String?
+            public var conversationid: String?
+            public var commenttype: String? // "comment"
+            public var added: Date?
+            public var modified: Date?
+            public var tsunix: Int64?
+            public var userid: String?
+            public var user: User?
+            public var body: String?
+            public var originalbody: String?
+            public var hashtags: [String]?
+            public var shadowban: Bool?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var edited: Bool?
+            public var censored: Bool?
+            public var deleted: Bool?
+            public var parentid: String?
+            public var hierarchy: [String]?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var replycount: Int64?
+            public var votecount: Int64?
+            public var votescore: Int64?
+            public var votes: [Vote]?
+            public var moderation: String?  // "approved", "pending", "rejected"
+            public var active: Bool?
+            public var reports: [Report]?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.UpdateComment(
+            conversationid: "demo-conversation-id1",
+            commentid: "root-comment-id1",
+            userid: "yBommvwYYNBrxPwY",
+            body: "Updated Comment!?!"
+        )
+
+        // Perform operation
+        commentClient.updateComment(request) { (code: Int?, message: String?, kind: String?, response: Comment?) in
+            // ... Resolve `response` from here
+        }
+
+Flag Comment As Deleted
+============================
+.. code-block:: swift
+    
+    func flagCommentLogicallyDeleted(_ request: CommentRequest.FlagCommentLogicallyDeleted, completionHandler: @escaping Completion<DeleteCommentResponse>)
+
+Set Deleted (LOGICAL DELETE)
+
+    - The comment is not actually deleted. The comment is flagged as deleted, and can no longer be read, but replies are not deleted.
+    - If flag "permanentifnoreplies" is true, then it will be a permanent delete instead of logical delete for this comment if it has no children.
+    - If you use "permanentifnoreplies" = true, and this comment has a parent that has been logically deleted, and this is the only child, then the parent will also be permanently deleted.
+
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+    - **commentid** : (required) The unique ID of the comment, URL ENCODED.
+    - **userid** : (required) This is the application specific user ID of the user deleting the comment. Must be the owner of the comment or authorized moderator.
+    - **deleted** : (required) Set to true or false to flag the comment as deleted. If a comment is deleted, then it will have the deleted field set to true, in which case the contents of the comment should not be shown and the body of the comment will not be returned by the API by default. If a previously deleted comment is undeleted, the flag for deleted is set to false and the original comment body is returned.
+    - **permanentifnoreplies** : (optional) If this optional parameter is set to "true", then if this comment has no replies it will be permanently deleted instead of logically deleted. If a permanent delete is performed, the result will include the field "permanentdelete=true". If you want to mark a comment as deleted, and replies are still visible, use "true" for the logical delete value. If you want to permanently delete the comment and all of its replies, pass false.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.FlagCommentLogicallyDeleted**
+
+.. code-block:: swift
+
+        public class FlagCommentLogicallyDeleted: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let commentid: String    // REQUIRED
+            public let userid: String   // REQUIRED
+            public let deleted: Bool    // REQUIRED
+            public var permanentifnoreplies: Bool?
+            /// ...
+        }
+        
+**Response Model: DeleteCommentResponse**
+
+.. code-block:: swift
+
+        open class DeleteCommentResponse: Codable {
+            public var kind: String?
+            public var permanentdelete: Bool?
+            public var comment: Comment?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.FlagCommentLogicallyDeleted(
+            conversationid: "demo-conversation-id1",
+            commentid: "root-comment-id1",
+            userid: "yBommvwYYNBrxPwY",
+            deleted: true,
+            permanentifnoreplies: false
+        )
+
+        // Perform operation
+        commentClient.flagCommentLogicallyDeleted(request) { (code: Int?, message: String?, kind: String?, response: DeleteCommentResponse?) in
+            // ... Resolve `response` from here
+        }
+
+Delete Comment (permanent)
+============================
+.. code-block:: swift
+    
+    func permanentlyDeleteComment(_ request: CommentRequest.PermanentlyDeleteComment, completionHandler: @escaping Completion<DeleteCommentResponse>)
+
+DELETES a comment and all replies to that comment
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+    - **commentid** : (required) The unique ID of the comment, URL ENCODED.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.PermanentlyDeleteComment**
+
+.. code-block:: swift
+
+        public class PermanentlyDeleteComment: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            public let commentid: String    // REQUIRED
+            /// ...
+        }
+        
+**Response Model: DeleteCommentResponse**
+
+.. code-block:: swift
+
+        open class DeleteCommentResponse: Codable {
+            public var kind: String?
+            public var permanentdelete: Bool?
+            public var comment: Comment?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.PermanentlyDeleteComment(
+            conversationid: "demo-conversation-id1",
+            commentid: "root-comment-id1"
+        )
+
+        // Perform operation
+        commentClient.permanentlyDeleteComment(request) { (code: Int?, message: String?, kind: String?, response: DeleteCommentResponse?) in
+            // ... Resolve `response` from here
+        }
+
+Delete Conversation
+============================
+.. code-block:: swift
+    
+    func deleteConversation(_ request: CommentRequest.DeleteConversation, completionHandler: @escaping Completion<DeleteConversationResponse>)
+
+DELETES a Conversation, all Comments and Replies
+
+    - CANNOT BE UNDONE. This deletes all history of a conversation including all comments and replies within it.
+
+**Parameters**
+
+    - **conversationid** : (required) The ID of the comment conversation.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.DeleteConversation**
+
+.. code-block:: swift
+
+        public class DeleteConversation: ParametersBase</*...*/> {
+            /// ...
+            public let conversationid: String   // REQUIRED
+            /// ...
+        }
+        
+**Response Model: DeleteConversationResponse**
+
+.. code-block:: swift
+
+        open class DeleteConversationResponse: Codable {
+            public var kind: String?
+            public var permanentdelete: Bool?
+            public var comment: Comment?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentRequest.DeleteConversation(
+            conversationid: "demo-conversation-id1"
+        )
+
+        // Perform operation
+        commentClient.deleteConversation(request) { (code: Int?, message: String?, kind: String?, response: DeleteConversationResponse?) in
+            // ... Resolve `response` from here
+        }
+
+List Comments in Moderation Queue
+============================
+.. code-block:: swift
+    
+    func listCommentsInModerationQueue(_ request: CommentModerationRequest.ListCommentsInModerationQueue, completionHandler: @escaping Completion<ListCommentsResponse>)
+
+List all the comments in the moderation queue
+
+**Parameters**
+
+    - **limit**: (optional) Defaults to 200. This limits how many messages to return from the queue
+    - **cursor**: (optional) Provide cursor value to get the next page of results.
+    - **conversationid**: (optional) Provide the ConversationID for a room to filter for only the queued events for a specific room
+    - **filterHandle**: (optional) Filters using exact match for a handle of a user
+    - **filterKeyword**: (optional) Filters using substring search for your string
+    - **filterModerationState**: (optional) Filters for comments in the specified moderation state.
+        - `approved`: Moderator approved the comment
+        - `rejected`: Moderator rejected the comment
+        - `pending`: A new comment was posted to a premoderation room, and is pending review, but was never reported as abuse
+        - `flagged`: Enough users reported the comment that it is in the flagged state and sent to moderation queue
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.ListCommentsInModerationQueue**
+
+.. code-block:: swift
+
+        public class ListCommentsInModerationQueue: ParametersBase</*...*/> {
+            /// ...
+            public var limit: Int?
+            public var cursor: String?
+            public var conversationid: String?
+            public var filterHandle: String?
+            public var filterKeyword: String?
+            public var filterModerationState: CommentModerationState?
+            /// ...
+        }
+        
+**Response Model: ListCommentsResponse**
+
+.. code-block:: swift
+
+        open class ListCommentsResponse: Codable {
+            public var kind: String?
+            public var permanentdelete: Bool?
+            public var comment: Comment?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentModerationRequest.ListCommentsInModerationQueue()
+        // You may provide optional parameters as shown below:
+        // request.limit = 25
+        // request.cursor = "63bd442ccfce070c7825639a"
+        // request.conversationid = "demo-conversation-id1"
+        // request.filterHandle = nil
+        // request.filterKeyword = "foul"
+        // request.filterModerationState = CommentModerationState.pending
+
+        // Perform operation
+        commentClient.listCommentsInModerationQueue(request) { (code: Int?, message: String?, kind: String?, response: ListCommentsResponse?) in
+            // ... Resolve `response` from here
+        }
+
+Approve/Reject Message in Queue
+============================
+.. code-block:: swift
+    
+    func approveMessageInQueue(_ request: CommentModerationRequest.ApproveRejectComment, completionHandler: @escaping Completion<Comment>)
+
+APPROVES/REJECTS a message in the moderation queue.
+
+If PRE-MODERATION is enabled for a conversation, then all messages go to the queue before they can appear in the conversation. For each incomming message, a webhook will be fired, if one is configured.
+
+If the conversation is set to use POST-MODERATION, messages will only be sent to the moderation queue if they are reported.
+
+**Parameters**
+
+    - **commentid** : (required) The unique ID of the comment, URL ENCODED.
+    - **approve** : (required) Pass true to approve the comment or false to reject the comment.
+
+**Warning** This method requires authentication
+    
+**Request Model: CommentRequest.ApproveRejectComment**
+
+.. code-block:: swift
+
+        public class ApproveRejectComment: ParametersBase</*...*/> {
+            /// ...
+            public let commentid: String    // REQUIRED
+            public let approve: Bool        // REQUIRED
+            /// ...
+        }
+        
+**Response Model: Comment**
+
+.. code-block:: swift
+
+        open class Comment: Codable {
+            public var kind: String?    // "comment.comment"
+            public var id: String?
+            public var appid: String?
+            public var conversationid: String?
+            public var commenttype: String? // "comment"
+            public var added: Date?
+            public var modified: Date?
+            public var tsunix: Int64?
+            public var userid: String?
+            public var user: User?
+            public var body: String?
+            public var originalbody: String?
+            public var hashtags: [String]?
+            public var shadowban: Bool?
+            public var customtype: String?
+            public var customid: String?
+            public var custompayload: String?
+            public var customtags: [String]?
+            public var customfield1: String?
+            public var customfield2: String?
+            public var edited: Bool?
+            public var censored: Bool?
+            public var deleted: Bool?
+            public var parentid: String?
+            public var hierarchy: [String]?
+            public var reactions: [Reaction]?
+            public var likecount: Int64?
+            public var replycount: Int64?
+            public var votecount: Int64?
+            public var votescore: Int64?
+            public var votes: [Vote]?
+            public var moderation: String?  // "approved", "pending", "rejected"
+            public var active: Bool?
+            public var reports: [Report]?
+
+            /// ...
+        }
+
+**Example**
+
+.. code-block:: swift
+
+        let commentClient = CommentClient(config: config)
+        let request = CommentModerationRequest.ApproveRejectComment(
+            commentid: "root-comment-id1",
+            approve: true
+        )
+
+        // Perform operation
+        commentClient.approveMessageInQueue(request) { (code: Int?, message: String?, kind: String?, response: Comment?) in
+            // ... Resolve `response` from here
+        }
+
+
 Copyright & License
 -------------------
-Copyright (c) 2019 Sportstalk247
+Copyright (c) 2022 Sportstalk 24/7

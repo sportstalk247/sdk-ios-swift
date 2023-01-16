@@ -1019,7 +1019,7 @@ extension CommentClientTests {
             body: "Sample Comment 1"
         )
         let comment1 = dummyComments[0]
-        reportComment(
+        createTestReportComment(
             conversationid: createdConversation.conversationid!,
             commentid: comment1.id!,
             userid: createdUser.userid!,
@@ -1076,7 +1076,7 @@ extension CommentClientTests {
             body: "Sample Comment 1"
         )
         let comment1 = dummyComments[0]
-        reportComment(
+        createTestReportComment(
             conversationid: createdConversation.conversationid!,
             commentid: comment1.id!,
             userid: createdUser.userid!,
@@ -1197,14 +1197,18 @@ extension CommentClientTests {
 
     private func deleteTestConversations() {
         guard !dummyConversations.isEmpty else { return }
-
-        for convo in dummyConversations {
+        
+        var deleteConversations: [Conversation] = []
+        deleteConversations.append(contentsOf: dummyConversations)
+        for convo in deleteConversations {
             guard let conversationid = convo.conversationid else { continue }
             let request = CommentRequest.DeleteConversation(conversationid: conversationid)
             commentClient.deleteConversation(request) { (code, message, kind, data) in
                 print("Conversation deleted: id = \(convo.conversationid)")
             }
         }
+        
+        dummyConversations = []
     }
     
     private func createTestComment(
@@ -1265,7 +1269,7 @@ extension CommentClientTests {
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
     }
     
-    private func reportComment(
+    private func createTestReportComment(
         conversationid: String,
         commentid: String,
         userid: String,

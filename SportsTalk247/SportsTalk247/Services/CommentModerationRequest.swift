@@ -13,18 +13,17 @@ public class CommentModerationRequest {
     ///
     /// List all the comments in the moderation queue
     ///
-    /// This method requires authentication.
-    ///
+    /// PARAMETERS
     ///    limit: (optional) Defaults to 200. This limits how many messages to return from the queue
-    ///    conversationid: (optional) Provide the ConversationID for a room to filter for only the queued events for a specific room
     ///    cursor: (optional) Provide cursor value to get the next page of results.
+    ///    conversationid: (optional) Provide the ConversationID for a room to filter for only the queued events for a specific room
     ///    filterHandle: (optional) Filters using exact match for a handle of a user
     ///    filterKeyword: (optional) Filters using substring search for your string
     ///    filterModerationState: (optional) Filters for comments in the specified moderation state.
-    ///    approved: Moderator approved the comment
-    ///    rejected: Moderator rejected the comment
-    ///    pending: A new comment was posted to a premoderation room, and is pending review, but was never reported as abuse
-    ///    flagged: Enough users reported the comment that it is in the flagged state and sent to moderation queue
+    ///         approved: Moderator approved the comment
+    ///         rejected: Moderator rejected the comment
+    ///         pending: A new comment was posted to a premoderation room, and is pending review, but was never reported as abuse
+    ///         flagged: Enough users reported the comment that it is in the flagged state and sent to moderation queue
     ///
     public class ListCommentsInModerationQueue: ParametersBase<ListCommentsInModerationQueue.Fields, ListCommentsInModerationQueue> {
         public enum Fields {
@@ -86,7 +85,8 @@ public class CommentModerationRequest {
     ///
     /// If the conversation is set to use POST-MODERATION, messages will only be sent to the moderation queue if they are reported.
     ///
-    /// BODY PROPERTIES
+    /// PARAMETERS
+    ///    commentid : (required) The unique ID of the comment, URL ENCODED.
     ///    approve : (required) Pass true to approve the comment or false to reject the comment.
     ///
     public class ApproveRejectComment: ParametersBase<ApproveRejectComment.Fields, ApproveRejectComment> {
@@ -98,8 +98,8 @@ public class CommentModerationRequest {
             case approve
         }
         
-        public let commentid: String
-        public let approve: Bool
+        public let commentid: String    // REQUIRED
+        public let approve: Bool        // REQUIRED
         
         public init(commentid: String, approve: Bool) {
             self.commentid = commentid

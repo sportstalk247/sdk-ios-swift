@@ -5,3 +5,6 @@
 SportsTalk247/.DS_Store
 .DS_Store
 SportsTalk247/SportsTalk247.xcodeproj/xcuserdata/*
+docs/_build/*
+docs/_build/html/*
+docs/_build/doctrees/*
