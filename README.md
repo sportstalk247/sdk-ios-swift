@@ -1,17 +1,10 @@
-# Sportstalk 247 iOS SDK
+# Sportstalk 24/7 iOS SDK
 
-  
 ## Usage
 
 The Sportstalk SDK is a helpful wrapper around the [Sportstalk API](https://apiref.sportstalk247.com/?version=latest)
 
-  
-
 The set of SDKs and source (iOS, Android, and JS) is here: [https://gitlab.com/sportstalk247/](https://gitlab.com/sportstalk247/)
-
-  
-
-  
 
 ```bash
 pod 'SportsTalk_iOS_SDK', :git=> 'https://gitlab.com/sportstalk247/sdk-ios-swift.git'
@@ -19,10 +12,6 @@ pod 'SportsTalk_iOS_SDK', :git=> 'https://gitlab.com/sportstalk247/sdk-ios-swift
 ```
 
 You will need to register with SportsTalk and get an API Key in order to use sportstalk functions.
-
-  
-
-  
 
 ## GETTING STARTED: Setting up the SDK
 
@@ -48,6 +37,7 @@ Each and every api function has its callback, when the api is called you will ge
 Invoke this API method if you want to create a user or update an existing user.
 
 When users send messages to a room the user ID is passed as a parameter. When you retrieve the events from a room, the user who generated the event is returned with the event data, so it is easy for your application to process and render chat events with minimal code.
+
 ```swift
 import SportsTalk_iOS_SDK
 
@@ -90,6 +80,7 @@ func JoinRoom(_ room: ChatRoom, as user: User) {
     }
 }
 ```
+
 ### Joining a Room using Custom ID
 ```swift
 let client = ChatClient(config: config)
@@ -107,9 +98,10 @@ func JoinRoom(_ room: ChatRoom, as user: User) {
     }
 }
 ```
-### Get room updates
 
+### Get room updates
 To manually get room updates, use `ChatClient().getUpdates(request:completionHandler)`
+
 ```swift
 let client = ChatClient(config: config)
 
@@ -124,6 +116,7 @@ func getUpdates(_ room: ChatRoom) {
     }
 }
 ```
+
 ### Start/Stop Getting Event Updates
 Get periodic updates from room by using ```client.startListeningToChatUpdates(roomId:completionHandler)```
 
@@ -194,47 +187,38 @@ func send(message: String, to room: ChatRoom, as user: User) {
 }
 ```
 
-
-
-
-
 For use of these events in action, see the demo page: [https://www.sportstalk247.com/demo.html](https://www.sportstalk247.com/demo.html)
 
+## Conversations and Comments
+```swift
+let client = CommentClient(config: config)
+
+func getConversations() {
+    let request = CommentRequest.ListConversations()
+
+    client.listConversations(request) { (code, message, _, response) in
+        // where response is model called ListConversationsResponse
+        // Get an array of conversations from response.conversations
+    }
+}
+```
+
 ## The Bare Minimum
-
 The only critical events that you need to handle are `ExecuteChatCommand` which will be called for each new chat event, `ExecuteAdminCommand` which will handle messages from administrators, `PurgeUserMessages` which will be called when purge commands are issued to clear messages that violate content policy.
-
-  
 
 You will probably also want to use `ExecuteChatCommand` to show/hide any loading messages.
 
-  
-
 The easiest way to see how these event works is to see the demo page: https://www.sportstalk247.com/demo.html
 
-  
-
 # Chat Application Best Practices
-
 * Do not 'fire and forget' chat messages.  Most chat applications require some level of moderation.  Your UI should make sure to keep track of message metadata such as:
-
 * Message ID
-
 * User Handle for each message.
-
 * User ID for each message.  In the event of moderation or purge events,  your app will need to be able to find and remove purged messages.
-
 * Timestamp
-
 * Use the promises from sendCommand, sendReply, etc, to show/hide some sort of indication that the message is being sent.
-
 * Make sure you handle errors for sending messages in case of network disruption. For instance, `client.sendCommand('message').catch(handleErrorInUiFn)`
-
 * Enable/Disable debug mode with SportsTalkSDK.shared.debugMode = true/false
 
-
 # Copyright & License
-
-  
-
-Copyright (c) 2019 Sportstalk247
+Copyright (c) 2022 Sportstalk 24/7
