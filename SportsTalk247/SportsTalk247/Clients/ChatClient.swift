@@ -503,8 +503,8 @@ extension ChatClient {
         return reports.contains(where: { $0.userid == userid })
     }
     
-    public func keepAlive(_ request: ChatRequest.KeepAlive, completionHandler: @escaping Completion<KeepAliveResponse>) {
-        makeRequest(URLPath.Room.KeepAlive(roomid: request.roomid, userid: request.userid), withData: request.toDictionary(), requestType: .POST, expectation: KeepAliveResponse.self) { (response) in
+    public func keepAlive(_ request: ChatRequest.KeepAlive, completionHandler: @escaping Completion<ChatSubscription>) {
+        makeRequest(URLPath.Room.KeepAlive(roomid: request.roomid, userid: request.userid), withData: request.toDictionary(), requestType: .POST, expectation: ChatSubscription.self) { (response) in
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
