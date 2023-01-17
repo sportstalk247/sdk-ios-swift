@@ -1,12 +1,6 @@
 # Sportstalk 247 iOS SDK
 
   
-
-## Status: BETA
-
-This SDK is under active development and improvement. We are also very open to feedback if you experience pain points while using the SDK.
-  
-
 ## Usage
 
 The Sportstalk SDK is a helpful wrapper around the [Sportstalk API](https://apiref.sportstalk247.com/?version=latest)
