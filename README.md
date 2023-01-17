@@ -221,4 +221,4 @@ The easiest way to see how these event works is to see the demo page: https://ww
 * Enable/Disable debug mode with SportsTalkSDK.shared.debugMode = true/false
 
 # Copyright & License
-Copyright (c) 2022 Sportstalk 24/7
+Copyright (c) 2023 Sportstalk 24/7

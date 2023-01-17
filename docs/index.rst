@@ -5233,4 +5233,4 @@ If the conversation is set to use POST-MODERATION, messages will only be sent to
 
 Copyright & License
 -------------------
-Copyright (c) 2022 Sportstalk 24/7
+Copyright (c) 2023 Sportstalk 24/7
