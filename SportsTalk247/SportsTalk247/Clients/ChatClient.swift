@@ -38,7 +38,7 @@ public protocol ChatClientProtocol {
     func updateChatEvent(_ request: ChatRequest.UpdateChatEvent, completionHandler: @escaping Completion<Event>)
     
     func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates, completionHandler: @escaping Completion<[Event]>)
-    func stopListeningToChatUpdates()
+    func stopListeningToChatUpdates(_ roomid: String)
     
     func approveEvent(_ request: ModerationRequest.ApproveEvent, completionHandler: @escaping Completion<Event>)
     func rejectEvent(_ request: ModerationRequest.RejectEvent, completionHandler: @escaping Completion<Event>)
@@ -49,7 +49,6 @@ public protocol ChatClientProtocol {
 }
 
 public class ChatClient: NetworkService, ChatClientProtocol {
-    var timer: Timer?
     var lastcommand: String?
     var lastcommandsent: Date?
     
@@ -67,10 +66,6 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     
     public override init(config: ClientConfig) {
         super.init(config: config)
-    }
-    
-    deinit {
-        stopListeningToChatUpdates()
     }
 }
 
@@ -327,12 +322,15 @@ extension ChatClient {
     public func exitRoom(_ request: ChatRequest.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>) {
         makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { [weak self] (response) in
             guard let this = self else { return }
-            this.stopListeningToChatUpdates()
+            this.stopListeningToChatUpdates(request.roomid)
             
             // Remove ChatRoom Client Metadata
             var clientMetadata = this.getClientMetadata(request.roomid)
             clientMetadata.prerenderedevents.removeAll()
             clientMetadata.sentEvents.removeAll()
+            if let timer = clientMetadata.timer {
+                timer.invalidate()
+            }
             this.clientMetadata.removeValue(forKey: request.roomid)
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
@@ -587,11 +585,12 @@ extension ChatClient {
         var timestamp: Int = 0
         let timeInterval: Double = 0.100
         
-        timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { [weak self] _ in
+        var clientMetadata: ChatRoomClientMetadata = self.getClientMetadata(config.roomid)
+        
+        clientMetadata.timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true, block: { [weak self] _ in
             guard let this = self else { return }
             
             timestamp = timestamp + Int(timeInterval * 1000)
-            var clientMetadata: ChatRoomClientMetadata = this.getClientMetadata(config.roomid)
             
             if timestamp % 60000 == 0 {
                 // Remove items from sentEvents every minute
@@ -633,7 +632,7 @@ extension ChatClient {
                             // Invalid timer should disregard further update results
                             guard
                                 let this = self,
-                                let timer = this.timer,
+                                let timer = clientMetadata.timer,
                                 timer.isValid
                             else {
                                 return
@@ -665,8 +664,9 @@ extension ChatClient {
         })
         
         // Move timing to common thread so main can be free
-        guard let timer = timer else { return }
-        RunLoop.current.add(timer, forMode: .common)
+        if let timer = clientMetadata.timer {
+            RunLoop.current.add(timer, forMode: .common)
+        }
     }
     
     func emitEventFromBucket(_ roomid: String) -> [Event] {
@@ -695,8 +695,11 @@ extension ChatClient {
         }
     }
     
-    public func stopListeningToChatUpdates() {
-        timer?.invalidate()
+    public func stopListeningToChatUpdates(_ roomid: String) {
+        var metadata = self.getClientMetadata(roomid)
+        if let timer = metadata.timer {
+            timer.invalidate()
+        }
     }
 }
 
@@ -715,13 +718,16 @@ fileprivate class ChatRoomClientMetadata {
     /// This allows the SDK to prioritize sending events from the logged-in user ahead of everyone else.
     var sentEvents = [String]()
     
-    init(currentuserid: String = "", previousCursor: String = "", nextCursor: String = "", prerenderedevents: [Event] = [Event](), shouldFetchNewEvents: Bool = true, sentEvents: [String] = [String]()) {
+    var timer: Timer?
+    
+    init(currentuserid: String = "", previousCursor: String = "", nextCursor: String = "", prerenderedevents: [Event] = [Event](), shouldFetchNewEvents: Bool = true, sentEvents: [String] = [String](), timer: Timer? = nil) {
         self.currentuserid = previousCursor
         self.previousCursor = previousCursor
         self.nextCursor = nextCursor
         self.prerenderedevents = prerenderedevents
         self.shouldFetchNewEvents = shouldFetchNewEvents
         self.sentEvents = sentEvents
+        self.timer = timer
     }
 }
 

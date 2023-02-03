@@ -1284,7 +1284,7 @@ extension ChatClientTests {
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
-            self.client.stopListeningToChatUpdates()
+            self.client.stopListeningToChatUpdates((selectedRoom?.id)!)
             SportsTalkSDK.shared.debugMode = true
             expectation.fulfill()
         }
