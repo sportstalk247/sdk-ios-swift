@@ -1275,8 +1275,8 @@ extension ChatClientTests {
         executeEvents()
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
-        
-        client.startListeningToChatUpdates() { (code, message, _, event) in
+        var startListenRequest = ChatRequest.StartListeningToChatUpdates(roomid: selectedRoom!.id!)
+        client.startListeningToChatUpdates(config: startListenRequest) { (code, message, _, event) in
             print("------------")
             print(code == 200 ? "pulse success" : "pulse failed")
             print((event?.count ?? 0) > 0 ? "received \(String(describing: event?.count)) event" : "No new events")

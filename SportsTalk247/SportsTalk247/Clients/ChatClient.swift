@@ -37,7 +37,7 @@ public protocol ChatClientProtocol {
     func searchEventHistory(_ request: ChatRequest.SearchEvent, completionHandler: @escaping Completion<ListEventsResponse>)
     func updateChatEvent(_ request: ChatRequest.UpdateChatEvent, completionHandler: @escaping Completion<Event>)
     
-    func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates?, completionHandler: @escaping Completion<[Event]>)
+    func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates, completionHandler: @escaping Completion<[Event]>)
     func stopListeningToChatUpdates()
     
     func approveEvent(_ request: ModerationRequest.ApproveEvent, completionHandler: @escaping Completion<Event>)
@@ -57,21 +57,17 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     var lastcommandsent: Date?
     var currentuserid: String?
     
-    /// Collects events from startListeningToChatUpdates and deliver at eventSpacingMS interval
-    var prerenderedevents = [Event]()
-    
     /// Max items to be stored in prerendered events.
     var maxeventbuffersize = 30
     
     /// Anti-flood timeout value
     static let timeout = 20000
     
-    /// Stops GetUpdates when startListeningToChatUpdates until it gets a response
-    var shouldFetchNewEvents = true
-    
-    /// Keeps track of sent event by eventid so we can move this event at the top of the prerenderedevent list.
-    /// This allows the SDK to prioritize sending events from the logged-in user ahead of everyone else.
-    var sentEvents = [String]()
+    ///
+    /// Manage Chat Event Cache independently from each ChatRoom
+    /// - This is to allow listen real-time chat events from multiple chat rooms at the same time
+    ///
+    fileprivate var cache: [String: ChatEventCache] = [:]
     
     public override init(config: ClientConfig) {
         super.init(config: config)
@@ -255,6 +251,9 @@ extension ChatClient {
             newdata.eventscursor = newupdates
             newdata.previouseventscursor = response?.data?.previouseventscursor
             
+            // Init Event Cache for this Chatroom
+            self?.cache[request.roomid] = ChatEventCache()
+            
             completionHandler(response?.code, response?.message, response?.kind, newdata)
         }
     }
@@ -284,6 +283,11 @@ extension ChatClient {
             newdata.eventscursor = newupdates
             newdata.previouseventscursor = response?.data?.previouseventscursor
             
+            // Init Event Cache for this Chatroom
+            if let roomId = response?.data?.room?.id {
+                self?.cache[roomId] = ChatEventCache()
+            }
+            
             completionHandler(response?.code, response?.message, response?.kind, newdata)
         }
     }
@@ -291,12 +295,18 @@ extension ChatClient {
     public func exitRoom(_ request: ChatRequest.ExitRoom, completionHandler: @escaping Completion<ExitChatRoomResponse>) {
         makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { [weak self] (response) in
             self?.stopListeningToChatUpdates()
-            self?.prerenderedevents.removeAll()
+            
+            // Remove Event Cache for this Chatroom
+            if var eventCache = self?.cache[request.roomid] {
+                eventCache.prerenderedevents.removeAll()
+                eventCache.sentEvents.removeAll()
+            }
+            self?.cache.removeValue(forKey: request.roomid)
+            
             self?.lastroomid = nil
             self?.lastcursor = ""
             self?.firstcursor = ""
             self?.currentuserid = nil
-            self?.sentEvents.removeAll()
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
     }
@@ -332,16 +342,18 @@ extension ChatClient {
             
             let code: Int = response?.code ?? 500
             
-            if let speech = response?.data?.speech {
-                self?.prerenderedevents.insert(speech, at: 0)
+            if let speech = response?.data?.speech,
+               var eventCache = self?.cache[request.roomid] {
+                eventCache.prerenderedevents.insert(speech, at: 0)
                 if let id = speech.id {
-                    self?.sentEvents.append(id)
+                    eventCache.sentEvents.append(id)
                 }
             } else {
-                if let action = response?.data?.action {
-                    self?.prerenderedevents.insert(action, at: 0)
+                if let action = response?.data?.action,
+                   var eventCache = self?.cache[request.roomid] {
+                    eventCache.prerenderedevents.insert(action, at: 0)
                     if let id = action.id {
-                        self?.sentEvents.append(id)
+                        eventCache.sentEvents.append(id)
                     }
                 }
             }
@@ -364,10 +376,11 @@ extension ChatClient {
             
             let code: Int = response?.code ?? 500
             
-            if let event = response?.data {
-                self?.prerenderedevents.insert(event, at: 0)
+            if let event = response?.data,
+               var eventCache = self?.cache[request.roomid] {
+                eventCache.prerenderedevents.insert(event, at: 0)
                 if let id = event.id {
-                    self?.sentEvents.append(id)
+                    eventCache.sentEvents.append(id)
                 }
             }
             
@@ -389,10 +402,11 @@ extension ChatClient {
             
             let code: Int = response?.code ?? 500
             
-            if let event = response?.data {
-                self?.prerenderedevents.insert(event, at: 0)
+            if let event = response?.data,
+               var eventCache = self?.cache[request.roomid] {
+                eventCache.prerenderedevents.insert(event, at: 0)
                 if let id = event.id {
-                    self?.sentEvents.append(id)
+                    eventCache.sentEvents.append(id)
                 }
             }
             
@@ -534,7 +548,7 @@ extension ChatClient {
 
 // MARK: - Event Subscription
 extension ChatClient {
-    public func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates? = nil, completionHandler: @escaping Completion<[Event]>) {
+    public func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates, completionHandler: @escaping Completion<[Event]>) {
         var timestamp: Int = 0
         let timeInterval: Double = 0.100
         
@@ -542,11 +556,14 @@ extension ChatClient {
             guard let this = self else { return }
             
             timestamp = timestamp + Int(timeInterval * 1000)
+            var eventCache = this.cache[config.roomid] ?? ChatEventCache()
             
             if timestamp % 60000 == 0 {
                 // Remove items from sentEvents every minute
-                if !this.sentEvents.isEmpty {
-                    this.sentEvents.removeFirst()
+                if !eventCache.sentEvents.isEmpty {
+                    eventCache.sentEvents.removeFirst()
+                    // Update Event Cache
+                    this.cache[config.roomid] = eventCache
                 }
                 
                 if let lastroomid = this.lastroomid,
@@ -561,26 +578,30 @@ extension ChatClient {
                 }
             }
             
-            if this.prerenderedevents.count > 0 {
+            if eventCache.prerenderedevents.count > 0 {
                 // Call get updates every config.eventSpacing. Default 200ms
-                if timestamp % (config?.eventSpacingMs ?? 200) == 0 {
-                    completionHandler(200, "", "list.chatevents", this.emmitEventFromBucket())
+                if timestamp % (config.eventSpacingMs) == 0 {
+                    completionHandler(200, "", "list.chatevents", this.emmitEventFromBucket(config.roomid))
                 }
             } else {
                 // Call get updates every 1000ms
                 if timestamp % 1000 == 0 {
-                    if this.shouldFetchNewEvents {
-                        this.shouldFetchNewEvents = false
+                    if eventCache.shouldFetchNewEvents {
+                        eventCache.shouldFetchNewEvents = false
+                        // Update Event Cache
+                        this.cache[config.roomid] = eventCache
                         guard let roomid = this.lastroomid else { return }
                         
                         let request = ChatRequest.GetMoreUpdates(
                             roomid: roomid,
-                            limit: config?.limit,
+                            limit: config.limit,
                             cursor: this.lastcursor
                         )
                         
                         this.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
-                            this.shouldFetchNewEvents = true
+                            eventCache.shouldFetchNewEvents = true
+                            // Update Event Cache
+                            this.cache[config.roomid] = eventCache
                             
                             // Invalid timer should disregard further update results
                             guard
@@ -602,13 +623,15 @@ extension ChatClient {
                                 var emittable = [Event]()
                                 
                                 for event in response.events {
-                                    if !this.sentEvents.contains(event.id ?? "") {
+                                    if !eventCache.sentEvents.contains(event.id ?? "") {
                                         emittable.append(event)
                                     }
                                 }
                                 
-                                this.prerenderedevents = emittable
-                                completionHandler(code, message, kind, this.emmitEventFromBucket())
+                                eventCache.prerenderedevents = emittable
+                                // Update Event Cache
+                                this.cache[config.roomid] = eventCache
+                                completionHandler(code, message, kind, this.emmitEventFromBucket(config.roomid))
                             }
                         }
                     }
@@ -621,16 +644,22 @@ extension ChatClient {
         RunLoop.current.add(timer, forMode: .common)
     }
     
-    func emmitEventFromBucket() -> [Event] {
-        guard !prerenderedevents.isEmpty else { return [] }
+    func emmitEventFromBucket(_ roomid: String) -> [Event] {
+        var eventCache = self.cache[roomid] ?? ChatEventCache()
+        guard !eventCache.prerenderedevents.isEmpty else { return [] }
         
-        if prerenderedevents.count >= maxeventbuffersize {
-            let dumpbucket = prerenderedevents
-            prerenderedevents.removeAll()
+        if eventCache.prerenderedevents.count >= maxeventbuffersize {
+            let dumpbucket = eventCache.prerenderedevents
+            eventCache.prerenderedevents.removeAll()
+            
+            // Update Cache Details
+            self.cache[roomid] = eventCache
             return dumpbucket
         } else {
-            if let first = prerenderedevents.first {
-                prerenderedevents.removeFirst()
+            if let first = eventCache.prerenderedevents.first {
+                eventCache.prerenderedevents.removeFirst()
+                // Update Cache Details
+                self.cache[roomid] = eventCache
                 return [first]
             } else {
                 return []
@@ -641,4 +670,14 @@ extension ChatClient {
     public func stopListeningToChatUpdates() {
         timer?.invalidate()
     }
+}
+
+fileprivate struct ChatEventCache {
+    /// Collects events from startListeningToChatUpdates and deliver at eventSpacingMS interval
+    var prerenderedevents = [Event]()
+    /// Stops GetUpdates when startListeningToChatUpdates until it gets a response
+    var shouldFetchNewEvents = true
+    /// Keeps track of sent event by eventid so we can move this event at the top of the prerenderedevent list.
+    /// This allows the SDK to prioritize sending events from the logged-in user ahead of everyone else.
+    var sentEvents = [String]()
 }
