@@ -50,9 +50,6 @@ public protocol ChatClientProtocol {
 
 public class ChatClient: NetworkService, ChatClientProtocol {
     var timer: Timer?
-    var firstcursor: String = ""
-    var lastcursor: String = ""
-    var lastroomid: String?
     var lastcommand: String?
     var lastcommandsent: Date?
     var currentuserid: String?
@@ -64,10 +61,10 @@ public class ChatClient: NetworkService, ChatClientProtocol {
     static let timeout = 20000
     
     ///
-    /// Manage Chat Event Cache independently from each ChatRoom
+    /// Manage Client Metadata independently from each ChatRoom
     /// - This is to allow listen real-time chat events from multiple chat rooms at the same time
     ///
-    fileprivate var cache: [String: ChatEventCache] = [:]
+    fileprivate var clientMetadata: [String: ChatRoomClientMetadata] = [:]
     
     public override init(config: ClientConfig) {
         super.init(config: config)
@@ -189,7 +186,9 @@ extension ChatClient {
     }
     
     public func listPreviousEvents(_ request: ChatRequest.ListPreviousEvents,completionHandler: @escaping Completion<ListEventsResponse>) {
-        request.cursor = request.cursor ?? self.firstcursor
+        
+        var clientMetadata = self.clientMetadata[request.roomid]
+        request.cursor = request.cursor ?? clientMetadata?.previousCursor
         makeRequest(URLPath.Room.PreviousEvent(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
@@ -197,11 +196,18 @@ extension ChatClient {
             data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
-            self?.firstcursor = response?.data?.cursor ?? ""
+            
+            // Update ChatRoom Metadata
+            clientMetadata?.previousCursor = response?.data?.cursor ?? ""
+            self?.clientMetadata[request.roomid] = clientMetadata
         }
     }
     
     public func listEventByType(_ request: ChatRequest.ListEventByType,completionHandler: @escaping Completion<ListEventsResponse>) {
+        
+        var clientMetadata = self.clientMetadata[request.roomid]
+        request.cursor = request.cursor ?? clientMetadata?.previousCursor
+        
         makeRequest(URLPath.Room.EventByType(roomid: request.roomid), withData: request.toDictionary(), requestType: .GET, expectation: ListEventsResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
@@ -209,11 +215,15 @@ extension ChatClient {
             data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
-            self?.firstcursor = response?.data?.cursor ?? ""
+            
+            // Update ChatRoom Metadata
+            clientMetadata?.previousCursor = response?.data?.cursor ?? ""
+            self?.clientMetadata[request.roomid] = clientMetadata
         }
     }
     
     public func listEventByTimestamp(_ request: ChatRequest.ListEventByTimestamp,completionHandler: @escaping Completion<ListEventByTimestampResponse>) {
+        
         makeRequest(URLPath.Room.EventByTime(roomid: request.roomid, time: request.timestamp), withData: request.toDictionary(), requestType: .GET, expectation: ListEventByTimestampResponse.self, append: true) { [weak self] (response) in
             
             // Filter shadowbanned events that are not from user
@@ -221,16 +231,23 @@ extension ChatClient {
             data?.events.removeAll(where: ({ $0.shadowban == true && $0.userid != self?.currentuserid }))
             
             completionHandler(response?.code, response?.message, response?.kind, data)
-            self?.firstcursor = response?.data?.cursornewer ?? ""
+            
+            // Update ChatRoom Metadata
+            var roomMetadata = self?.clientMetadata[request.roomid]
+            roomMetadata?.previousCursor = response?.data?.cursornewer ?? ""
+            self?.clientMetadata[request.roomid] = roomMetadata
         }
     }
     
     public func joinRoom(_ request: ChatRequest.JoinRoom, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
         makeRequest(URLPath.Room.Join(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { [weak self] (response) in
             
-            self?.lastroomid = request.roomid
-            self?.lastcursor = response?.data?.eventscursor?.cursor ?? ""
-            self?.firstcursor = response?.data?.previouseventscursor ?? ""
+            // Init Client Metadata for this Chatroom
+            self?.clientMetadata[request.roomid] = ChatRoomClientMetadata(
+                previousCursor: response?.data?.previouseventscursor ?? "",
+                nextCursor: response?.data?.eventscursor?.cursor ?? ""
+            )
+            
             self?.currentuserid = request.userid
             
             let newupdates = GetUpdatesResponse()
@@ -250,9 +267,6 @@ extension ChatClient {
             newdata.room = response?.data?.room
             newdata.eventscursor = newupdates
             newdata.previouseventscursor = response?.data?.previouseventscursor
-            
-            // Init Event Cache for this Chatroom
-            self?.cache[request.roomid] = ChatEventCache()
             
             completionHandler(response?.code, response?.message, response?.kind, newdata)
         }
@@ -260,9 +274,12 @@ extension ChatClient {
     
     public func joinRoomByCustomId(_ request: ChatRequest.JoinRoomByCustomId, completionHandler: @escaping Completion<JoinChatRoomResponse>) {
         makeRequest(URLPath.Room.Join(customid: request.customid), withData: request.toDictionary(), requestType: .POST, expectation: JoinChatRoomResponse.self) { [weak self] (response) in
-            self?.lastcursor = response?.data?.eventscursor?.cursor ?? ""
-            self?.firstcursor = response?.data?.previouseventscursor ?? ""
-            self?.lastroomid = response?.data?.room?.id ?? ""
+            // Init Client Metadata for this Chatroom
+            self?.clientMetadata[(response?.data!.room!.id)!] = ChatRoomClientMetadata(
+                previousCursor: response?.data?.previouseventscursor ?? "",
+                nextCursor: response?.data?.eventscursor?.cursor ?? ""
+            )
+            
             self?.currentuserid = request.userid
             
             let newupdates = GetUpdatesResponse()
@@ -282,11 +299,6 @@ extension ChatClient {
             newdata.room = response?.data?.room
             newdata.eventscursor = newupdates
             newdata.previouseventscursor = response?.data?.previouseventscursor
-            
-            // Init Event Cache for this Chatroom
-            if let roomId = response?.data?.room?.id {
-                self?.cache[roomId] = ChatEventCache()
-            }
             
             completionHandler(response?.code, response?.message, response?.kind, newdata)
         }
@@ -296,16 +308,12 @@ extension ChatClient {
         makeRequest(URLPath.Room.Exit(roomid: request.roomid), withData: request.toDictionary(), requestType: .POST, expectation: ExitChatRoomResponse.self) { [weak self] (response) in
             self?.stopListeningToChatUpdates()
             
-            // Remove Event Cache for this Chatroom
-            if var eventCache = self?.cache[request.roomid] {
-                eventCache.prerenderedevents.removeAll()
-                eventCache.sentEvents.removeAll()
+            // Remove ChatRoom Client Metadata
+            if var clientMetadata = self?.clientMetadata[request.roomid] {
+                clientMetadata.prerenderedevents.removeAll()
+                clientMetadata.sentEvents.removeAll()
             }
-            self?.cache.removeValue(forKey: request.roomid)
-            
-            self?.lastroomid = nil
-            self?.lastcursor = ""
-            self?.firstcursor = ""
+            self?.clientMetadata.removeValue(forKey: request.roomid)
             self?.currentuserid = nil
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
@@ -343,17 +351,17 @@ extension ChatClient {
             let code: Int = response?.code ?? 500
             
             if let speech = response?.data?.speech,
-               var eventCache = self?.cache[request.roomid] {
-                eventCache.prerenderedevents.insert(speech, at: 0)
+               var clientMetadata = self?.clientMetadata[request.roomid] {
+                clientMetadata.prerenderedevents.insert(speech, at: 0)
                 if let id = speech.id {
-                    eventCache.sentEvents.append(id)
+                    clientMetadata.sentEvents.append(id)
                 }
             } else {
                 if let action = response?.data?.action,
-                   var eventCache = self?.cache[request.roomid] {
-                    eventCache.prerenderedevents.insert(action, at: 0)
+                   var clientMetadata = self?.clientMetadata[request.roomid] {
+                    clientMetadata.prerenderedevents.insert(action, at: 0)
                     if let id = action.id {
-                        eventCache.sentEvents.append(id)
+                        clientMetadata.sentEvents.append(id)
                     }
                 }
             }
@@ -377,10 +385,10 @@ extension ChatClient {
             let code: Int = response?.code ?? 500
             
             if let event = response?.data,
-               var eventCache = self?.cache[request.roomid] {
-                eventCache.prerenderedevents.insert(event, at: 0)
+               var clientMetada = self?.clientMetadata[request.roomid] {
+                clientMetada.prerenderedevents.insert(event, at: 0)
                 if let id = event.id {
-                    eventCache.sentEvents.append(id)
+                    clientMetada.sentEvents.append(id)
                 }
             }
             
@@ -403,10 +411,10 @@ extension ChatClient {
             let code: Int = response?.code ?? 500
             
             if let event = response?.data,
-               var eventCache = self?.cache[request.roomid] {
-                eventCache.prerenderedevents.insert(event, at: 0)
+               var clientMetadata = self?.clientMetadata[request.roomid] {
+                clientMetadata.prerenderedevents.insert(event, at: 0)
                 if let id = event.id {
-                    eventCache.sentEvents.append(id)
+                    clientMetadata.sentEvents.append(id)
                 }
             }
             
@@ -556,21 +564,19 @@ extension ChatClient {
             guard let this = self else { return }
             
             timestamp = timestamp + Int(timeInterval * 1000)
-            var eventCache = this.cache[config.roomid] ?? ChatEventCache()
+            var clientMetadata = this.clientMetadata[config.roomid] ?? ChatRoomClientMetadata()
             
             if timestamp % 60000 == 0 {
                 // Remove items from sentEvents every minute
-                if !eventCache.sentEvents.isEmpty {
-                    eventCache.sentEvents.removeFirst()
-                    // Update Event Cache
-                    this.cache[config.roomid] = eventCache
+                if !clientMetadata.sentEvents.isEmpty {
+                    // Update Client Metadata
+                    this.clientMetadata[config.roomid]?.sentEvents.removeFirst()
                 }
                 
-                if let lastroomid = this.lastroomid,
-                   let currentuserid = this.currentuserid {
+                if let currentuserid = this.currentuserid {
                     // Call KeepAlive every minute
                     let request = ChatRequest.KeepAlive(
-                        roomid: lastroomid,
+                        roomid: config.roomid,
                         userid: currentuserid
                     )
                     
@@ -578,7 +584,7 @@ extension ChatClient {
                 }
             }
             
-            if eventCache.prerenderedevents.count > 0 {
+            if clientMetadata.prerenderedevents.count > 0 {
                 // Call get updates every config.eventSpacing. Default 200ms
                 if timestamp % (config.eventSpacingMs) == 0 {
                     completionHandler(200, "", "list.chatevents", this.emmitEventFromBucket(config.roomid))
@@ -586,22 +592,21 @@ extension ChatClient {
             } else {
                 // Call get updates every 1000ms
                 if timestamp % 1000 == 0 {
-                    if eventCache.shouldFetchNewEvents {
-                        eventCache.shouldFetchNewEvents = false
-                        // Update Event Cache
-                        this.cache[config.roomid] = eventCache
-                        guard let roomid = this.lastroomid else { return }
+                    if clientMetadata.shouldFetchNewEvents {
+                        clientMetadata.shouldFetchNewEvents = false
+                        // Update Client Metadata
+                        this.clientMetadata[config.roomid] = clientMetadata
                         
                         let request = ChatRequest.GetMoreUpdates(
-                            roomid: roomid,
+                            roomid: config.roomid,
                             limit: config.limit,
-                            cursor: this.lastcursor
+                            cursor: clientMetadata.nextCursor
                         )
                         
                         this.getMoreUpdates(request) { [weak self] (code, message, kind, response) in
-                            eventCache.shouldFetchNewEvents = true
-                            // Update Event Cache
-                            this.cache[config.roomid] = eventCache
+                            clientMetadata.shouldFetchNewEvents = true
+                            // Update Client Metadata
+                            this.clientMetadata[config.roomid] = clientMetadata
                             
                             // Invalid timer should disregard further update results
                             guard
@@ -615,7 +620,7 @@ extension ChatClient {
                             if let response = response {
                                 if let cursor = response.cursor {
                                     if !cursor.isEmpty {
-                                        this.lastcursor = cursor
+                                        clientMetadata.nextCursor = cursor
                                     }
                                 }
                                 
@@ -623,14 +628,14 @@ extension ChatClient {
                                 var emittable = [Event]()
                                 
                                 for event in response.events {
-                                    if !eventCache.sentEvents.contains(event.id ?? "") {
+                                    if !clientMetadata.sentEvents.contains(event.id ?? "") {
                                         emittable.append(event)
                                     }
                                 }
                                 
-                                eventCache.prerenderedevents = emittable
-                                // Update Event Cache
-                                this.cache[config.roomid] = eventCache
+                                clientMetadata.prerenderedevents = emittable
+                                // Update Client Metadata
+                                this.clientMetadata[config.roomid] = clientMetadata
                                 completionHandler(code, message, kind, this.emmitEventFromBucket(config.roomid))
                             }
                         }
@@ -645,21 +650,21 @@ extension ChatClient {
     }
     
     func emmitEventFromBucket(_ roomid: String) -> [Event] {
-        var eventCache = self.cache[roomid] ?? ChatEventCache()
-        guard !eventCache.prerenderedevents.isEmpty else { return [] }
+        var clientMetadata = self.clientMetadata[roomid] ?? ChatRoomClientMetadata()
+        guard !clientMetadata.prerenderedevents.isEmpty else { return [] }
         
-        if eventCache.prerenderedevents.count >= maxeventbuffersize {
-            let dumpbucket = eventCache.prerenderedevents
-            eventCache.prerenderedevents.removeAll()
+        if clientMetadata.prerenderedevents.count >= maxeventbuffersize {
+            let dumpbucket = clientMetadata.prerenderedevents
+            clientMetadata.prerenderedevents.removeAll()
             
-            // Update Cache Details
-            self.cache[roomid] = eventCache
+            // Update Client Metadata
+            self.clientMetadata[roomid] = clientMetadata
             return dumpbucket
         } else {
-            if let first = eventCache.prerenderedevents.first {
-                eventCache.prerenderedevents.removeFirst()
-                // Update Cache Details
-                self.cache[roomid] = eventCache
+            if let first = clientMetadata.prerenderedevents.first {
+                clientMetadata.prerenderedevents.removeFirst()
+                // Update Client Metadata
+                self.clientMetadata[roomid] = clientMetadata
                 return [first]
             } else {
                 return []
@@ -672,7 +677,12 @@ extension ChatClient {
     }
 }
 
-fileprivate struct ChatEventCache {
+fileprivate struct ChatRoomClientMetadata {
+    /// Current ChatEvent Cursor for succeeding fetch previous records
+    var previousCursor: String = ""
+    /// Current ChatEvent Cursor for succeeding fetch next records
+    var nextCursor: String = ""
+    
     /// Collects events from startListeningToChatUpdates and deliver at eventSpacingMS interval
     var prerenderedevents = [Event]()
     /// Stops GetUpdates when startListeningToChatUpdates until it gets a response
