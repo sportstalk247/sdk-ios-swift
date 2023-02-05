@@ -118,11 +118,11 @@ func getUpdates(_ room: ChatRoom) {
 ```
 
 ### Start/Stop Getting Event Updates
-Get periodic updates from room by using ```client.startListeningToChatUpdates(roomId:completionHandler)```
+Get periodic updates from room by using ```client.startListeningToChatUpdates(config:completionHandler)```
 
 Only new events will be emitted, so it is up to you to collect the new events.
 
-To stop getting updates, simply call `client.stopListeningToChatUpdates()` anytime.
+To stop getting updates, simply call `client.stopListeningToChatUpdates(roomid)` anytime.
 
 Note: 
 Updates are received every 500 milliseconds.
@@ -134,7 +134,8 @@ let client = ChatClient(config: config)
 var events = [Event]()
 
 func receiveUpdates(from room: ChatRoom) {
-    client.startListeningToChatUpdates(from: roomid) { (code, message, _, event) in
+    let eventUpdatesConfig = ChatRequest.StartListeningToChatUpdates(roomid: room.id!)
+    client.startListeningToChatUpdates(config: eventUpdatesConfig) { (code, message, _, event) in
         if let event = event {
             events.append(event)
         }
@@ -147,9 +148,10 @@ func receiveUpdates(from room: ChatRoom) {
     }
 }
 
-func stopUpdates() {
+func stopUpdates(from room: ChatRoom) {
     // Ideally call this on viewDidDisappear() and deinit()
-    client.stopListeningToChatUpdates()
+    let roomid = room.id!
+    client.stopListeningToChatUpdates(roomid)
 }
 ```
 
