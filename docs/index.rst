@@ -162,7 +162,7 @@ To manually get room updates, use ``ChatClient().getUpdates(request:completionHa
 
 Start/Stop Getting Event Updates
 ------------------
-Get periodic updates from room by using ``func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates?, completionHandler: @escaping Completion<[Event]>)``
+Get periodic updates from room by using ``func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates, completionHandler: @escaping Completion<[Event]>)``
 Only new events will be emitted, so it is up to you to collect the new events.
 To stop getting updates, simply call ``client.stopListeningToChatUpdates()`` anytime.
 
@@ -177,7 +177,8 @@ Losing reference to client will stop the eventUpdates
      var events = [Event]()
 
      func receiveUpdates(from room: ChatRoom) {
-        client.startListeningToChatUpdates() { (code, message, _, event) in
+        let eventUpdatesConfig = ChatRequest.StartListeningToChatUpdates(roomid: room.id!)
+        client.startListeningToChatUpdates(config: eventUpdatesConfig) { (code, message, _, event) in
             if let event = event {
                 events.append(event)
             }
@@ -191,9 +192,10 @@ Losing reference to client will stop the eventUpdates
         }
     }
 
-     func stopUpdates() {
+     func stopUpdates(from room: ChatRoom) {
         // Ideally call this on viewDidDisappear() and deinit()
-        client.stopListeningToChatUpdates()
+        let roomid = room.id!
+        client.stopListeningToChatUpdates(roomid)
     }
 
 
@@ -3297,7 +3299,7 @@ Start Listening to Chat Updates
 ============================
 .. code-block:: swift
 
-    func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates?, completionHandler: @escaping Completion<[Event]>)
+    func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates, completionHandler: @escaping Completion<[Event]>)
 
 Periodically calls func getUpdates(request:completionHandler:) to receive latest chat events.
 
@@ -3312,6 +3314,7 @@ Periodically calls func getUpdates(request:completionHandler:) to receive latest
 .. code-block:: swift
 
         public class StartListeningToChatUpdates {
+            public var roomid: String   // REQUIRED
             public var limit: Int?
             public var eventSpacingMs: Int
         }
@@ -3357,9 +3360,9 @@ Stop Listening to Chat Updates
 ============================
 .. code-block:: swift
 
-    func stopListeningToChatUpdates()
+    func stopListeningToChatUpdates(_ roomid: String)
 
-Cancels listening to Chat Updates
+Cancels listening to Chat Updates from a specific ChatRoom
 
 **Request Model: None**
                 
