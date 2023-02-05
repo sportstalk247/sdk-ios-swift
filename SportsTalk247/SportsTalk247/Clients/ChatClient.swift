@@ -328,9 +328,7 @@ extension ChatClient {
             var clientMetadata = this.getClientMetadata(request.roomid)
             clientMetadata.prerenderedevents.removeAll()
             clientMetadata.sentEvents.removeAll()
-            if let timer = clientMetadata.timer {
-                timer.invalidate()
-            }
+            clientMetadata.timer = nil
             this.clientMetadata.removeValue(forKey: request.roomid)
             completionHandler(response?.code, response?.message, response?.kind, response?.data)
         }
