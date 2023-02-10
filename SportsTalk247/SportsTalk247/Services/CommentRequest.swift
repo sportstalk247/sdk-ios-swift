@@ -9,7 +9,7 @@ public class CommentRequest {
     /// Custom fields can be set, and can be overwritten. However, once a custom field is used it can not be set to no value (empty string).
     ///
     /// PARAMETERS
-    ///     conversationid : (required) The conversation ID. This must be a URL friendly string (cannot contain / ? or other URL delimiters). Maximum length is 250 characters.
+    ///     conversationid : (optional) The conversation ID. This must be a URL friendly string (cannot contain / ? or other URL delimiters). Maximum length is 250 characters.
     ///     property : (required) The property this conversation is associated with. It is any string value you want. Typically this is the domain of your website for which you want to use commenting, if you have more than one. Examples:
     ///         "dev", "uat", "stage", "prod"
     ///         "website", "mobile"
@@ -51,7 +51,7 @@ public class CommentRequest {
             case customfield2
         }
         
-        public let conversationid: String   // REQUIRED
+        public let conversationid: String?
         public let property: String         // REQUIRED
         public let moderation: String       // REQUIRED
         public var maxreports: Int?
@@ -68,7 +68,7 @@ public class CommentRequest {
         public var customfield1: String?
         public var customfield2: String?
         
-        public init(conversationid: String, property: String, moderation: String, maxreports: Int? = nil, enableprofanityfilter: Bool? = nil, title: String? = nil, maxcommentlen: Int64? = nil, open: Bool? = nil, added: String? = nil, whenmodified: String? = nil, customtype: String? = nil, customid: String? = nil, customtags: [String]? = nil, custompayload: String? = nil, customfield1: String? = nil, customfield2: String? = nil) {
+        public init(conversationid: String? = nil, property: String, moderation: String, maxreports: Int? = nil, enableprofanityfilter: Bool? = nil, title: String? = nil, maxcommentlen: Int64? = nil, open: Bool? = nil, added: String? = nil, whenmodified: String? = nil, customtype: String? = nil, customid: String? = nil, customtags: [String]? = nil, custompayload: String? = nil, customfield1: String? = nil, customfield2: String? = nil) {
             self.conversationid = conversationid
             self.property = property
             self.moderation = moderation
@@ -90,7 +90,7 @@ public class CommentRequest {
         override func from(dictionary: [AnyHashable : Any]) -> CommentRequest.CreateUpdateConversation {
             set(dictionary: dictionary)
             let ret = CreateUpdateConversation(
-                conversationid: value(forKey: .conversationid) ?? "",
+                conversationid: value(forKey: .conversationid),
                 property: value(forKey: .property) ?? "",
                 moderation: value(forKey: .moderation) ?? ""
             )
@@ -114,7 +114,7 @@ public class CommentRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .conversationid, value:  conversationid)
+            add(key: .conversationid, value:  conversationid)
             addRequired(key: .property, value:  property)
             addRequired(key: .moderation, value:  moderation)
             add(key: .maxreports, value:  maxreports)

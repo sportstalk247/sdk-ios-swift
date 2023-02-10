@@ -247,26 +247,27 @@ public class UserRequest {
     /// **Parameters**
     ///
     /// - userid: (required) The application provided userid of the user to ban
+    /// - byuserid: (required) The ID of the User who is about to perform the purge action(requires admin privileges)
     ///
     public class GloballyPurgeUserContent: ParametersBase<GloballyPurgeUserContent.Fields, GloballyPurgeUserContent> {
         public enum Fields {
             case userid
-            case banned
+            case byuserid
         }
 
         public let userid: String  // REQUIRED
-        public let banned: Bool // REQUIRED
+        public let byuserid: String // REQUIRED
         
-        public init(userid: String, banned: Bool) {
+        public init(userid: String, byuserid: String) {
             self.userid = userid
-            self.banned = banned
+            self.byuserid = byuserid
         }
         
         override public func from(dictionary: [AnyHashable: Any]) -> GloballyPurgeUserContent {
             set(dictionary: dictionary)
             let ret = GloballyPurgeUserContent(
                 userid: value(forKey: .userid) ?? "",
-                banned: value(forKey: .banned) ?? false
+                byuserid: value(forKey: .byuserid) ?? ""
             )
             
             return ret
@@ -275,7 +276,7 @@ public class UserRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .banned, value: banned)
+            addRequired(key: .byuserid, value: byuserid)
             
             return toDictionary
         }
@@ -533,7 +534,7 @@ public class UserRequest {
     public class ListUserNotifications: ParametersBase<ListUserNotifications.Fields, ListUserNotifications> {
         public enum Fields {
             case userid
-            case filternotificationtypes
+            case filterNotificationTypes
             case includeread
             case filterchatroomid
             case filterchatroomcustomid
@@ -542,14 +543,14 @@ public class UserRequest {
         }
         
         public let userid: String   // REQUIRED
-        public var filternotificationtypes: String?
+        public var filternotificationtypes: [FilterNotificationType]?
         public var includeread: Bool? = false
         public var filterchatroomid: String?
         public var filterchatroomcustomid: String?
         public var limit: Int?// = 50
         public var cursor: String?// = ""
         
-        public init(userid: String, filternotificationtypes: String? = nil, includeread: Bool? = nil, filterchatroomid: String? = nil, filterchatroomcustomid: String? = nil, limit: Int? = nil, cursor: String? = nil) {
+        public init(userid: String, filternotificationtypes: [FilterNotificationType]? = nil, includeread: Bool? = nil, filterchatroomid: String? = nil, filterchatroomcustomid: String? = nil, limit: Int? = nil, cursor: String? = nil) {
             self.userid = userid
             self.filternotificationtypes = filternotificationtypes
             self.includeread = includeread
@@ -561,9 +562,12 @@ public class UserRequest {
         
         override public func from(dictionary: [AnyHashable: Any]) -> ListUserNotifications {
             set(dictionary: dictionary)
+            
+            let arrFilternotificationtypes: [String]? = value(forKey: .filterNotificationTypes) ?? nil
+            
             let ret = ListUserNotifications(
                 userid: value(forKey: .userid) ?? "",
-                filternotificationtypes: value(forKey: .filternotificationtypes),
+                filternotificationtypes: arrFilternotificationtypes?.filter { !$0.isEmpty }.map { FilterNotificationType(rawValue: $0)! } ?? nil,
                 includeread: value(forKey: .includeread),
                 filterchatroomid: value(forKey: .filterchatroomid),
                 filterchatroomcustomid: value(forKey: .filterchatroomcustomid),
@@ -577,7 +581,7 @@ public class UserRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            add(key: .filternotificationtypes, value: filternotificationtypes)
+            add(key: .filterNotificationTypes, value: filternotificationtypes?.map { $0.rawValue })
             add(key: .includeread, value: includeread)
             add(key: .filterchatroomid, value: filterchatroomid)
             add(key: .filterchatroomcustomid, value: filterchatroomcustomid)
@@ -585,6 +589,11 @@ public class UserRequest {
             add(key: .cursor, value: cursor)
             
             return toDictionary
+        }
+        
+        public enum FilterNotificationType: String {
+            case chatreply = "chatreply"
+            case chatquote = "chatquote"
         }
     }
     

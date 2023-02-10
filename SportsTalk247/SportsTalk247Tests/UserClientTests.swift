@@ -29,6 +29,7 @@ struct Constants {
 
 class UserClientTests: XCTestCase {
     let client = UserClient(config: ClientConfig(appId: Config.appId, authToken: Config.authToken, endpoint: Config.url))
+    let chatClient = ChatClient(config: ClientConfig(appId: Config.appId, authToken: Config.authToken, endpoint: Config.url))
     
     lazy var dummyUser: User? = {
         let user = User()
@@ -52,6 +53,10 @@ class UserClientTests: XCTestCase {
         return user
     }()
     
+    var dummyRoom: ChatRoom? = nil
+    var dummyChatEvent: Event? = nil
+    var dummyThreadedReply: Event? = nil
+    
     var dummyNotification: UserNotification? { didSet { print("UserNotification saved: \(dummyNotification?.id)") } }
         
     override func setUpWithError() throws {
@@ -59,12 +64,18 @@ class UserClientTests: XCTestCase {
         createUpdateUser()
         createUpdateOtherUser()
     }
+    
+    override func tearDownWithError() throws {
+        deleteUser(userid: dummyUser?.userid)
+        deleteChatRoom(roomid: self.dummyRoom?.id)
+        deleteNotification(userid: dummyUser?.userid, notificationid: dummyNotification?.id)
+    }
 }
 
 extension UserClientTests {
     func test_UserServices_UpdateUser() {
         let request = UserRequest.CreateUpdateUser(
-            userid: "9940A8C9-2332-4824-B628-48390F367D29",
+            userid: "9940A8C9-2332-48390F367D29",
             handle: "GeorgeWASHING",
             displayname: "George Washing",
             pictureurl: URL(string: "http://www.thepresidentshalloffame.com/media/reviews/photos/original/a9/c7/a6/44-1-george-washington-18-1549729902.jpg"),
@@ -185,7 +196,7 @@ extension UserClientTests {
         
         let request = UserRequest.GloballyPurgeUserContent(
             userid: dummyUser?.userid ?? "",
-            banned: true
+            byuserid: dummyUser?.userid ?? ""
         )
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -279,12 +290,12 @@ extension UserClientTests {
     }
     
     func test_UserServices_ReportUser() {
-        if self.otherUser == nil {
-            createUpdateOtherUser()
+        if self.dummyUser == nil {
+            createUpdateUser()
         }
         
         let request = UserRequest.ReportUser(
-            userid: otherUser?.userid ?? "",
+            userid: dummyUser?.userid ?? "",
             reporttype: .abuse
         )
         
@@ -334,7 +345,7 @@ extension UserClientTests {
         }
         
         let request = UserRequest.ListUserNotifications(
-            userid: dummyUser!.userid ?? ""
+            userid: self.dummyUser!.userid!
         )
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -382,13 +393,40 @@ extension UserClientTests {
             test_UserServices_UpdateUser()
         }
         
+        if self.dummyRoom == nil {
+            createTestChatRoom(name: "Notification As Read Room - (\(Int64(Date().timeIntervalSince1970)))", enableactions: true, moderation: "post", enableenterandexit: true, roomisopen: true)
+        }
+        
+        if self.dummyChatEvent == nil,
+           let userid = dummyUser?.userid,
+           let roomid = dummyRoom?.id {
+            testExecuteCommand(roomid: roomid, userid: userid, command: "Test Comment!")
+        }
+        
+        if self.dummyThreadedReply == nil,
+           let userid = dummyUser?.userid,
+           let roomid = dummyRoom?.id,
+           let replyto = dummyChatEvent?.id {
+            testSendThreadedReply(roomid: roomid, userid: userid, replyto: replyto, command: "Test Threaded Reply!")
+        }
+        
         if self.dummyNotification == nil {
-            test_UserServices_ListUserNotification()
+            listNotifications(
+                userid: (dummyUser?.userid!)!,
+                filternotificationtypes: [.chatreply],
+                includeread: false,
+                limit: 10
+            )
+        }
+        
+        guard let dummyNotification = self.dummyNotification else {
+            XCTAssert(false)
+            return
         }
         
         let request = UserRequest.SetUserNotificationAsRead(
             userid: dummyUser!.userid ?? "",
-            notificationid: dummyNotification?.id ?? "",
+            notificationid: dummyNotification.id ?? "",
             read: true
         )
         
@@ -412,8 +450,30 @@ extension UserClientTests {
             test_UserServices_UpdateUser()
         }
         
+        if self.dummyRoom == nil {
+            createTestChatRoom(name: "Notification As Read Room - (\(Int64(Date().timeIntervalSince1970)))", enableactions: true, moderation: "post", enableenterandexit: true, roomisopen: true)
+        }
+        
+        if self.dummyChatEvent == nil,
+           let userid = dummyUser?.userid,
+           let roomid = dummyRoom?.id {
+            testExecuteCommand(roomid: roomid, userid: userid, command: "Test Comment!")
+        }
+        
+        if self.dummyThreadedReply == nil,
+           let userid = dummyUser?.userid,
+           let roomid = dummyRoom?.id,
+           let replyto = dummyChatEvent?.id {
+            testSendThreadedReply(roomid: roomid, userid: userid, replyto: replyto, command: "Test Threaded Reply!")
+        }
+        
         if self.dummyNotification == nil {
-            test_UserServices_ListUserNotification()
+            listNotifications(
+                userid: (dummyUser?.userid!)!,
+                filternotificationtypes: [.chatreply],
+                includeread: false,
+                limit: 10
+            )
         }
         
         let request = UserRequest.SetUserNotificationAsReadByChatEventId(
@@ -442,8 +502,30 @@ extension UserClientTests {
             test_UserServices_UpdateUser()
         }
         
+        if self.dummyRoom == nil {
+            createTestChatRoom(name: "Notification As Read Room - (\(Int64(Date().timeIntervalSince1970)))", enableactions: true, moderation: "post", enableenterandexit: true, roomisopen: true)
+        }
+        
+        if self.dummyChatEvent == nil,
+           let userid = dummyUser?.userid,
+           let roomid = dummyRoom?.id {
+            testExecuteCommand(roomid: roomid, userid: userid, command: "Test Comment!")
+        }
+        
+        if self.dummyThreadedReply == nil,
+           let userid = dummyUser?.userid,
+           let roomid = dummyRoom?.id,
+           let replyto = dummyChatEvent?.id {
+            testSendThreadedReply(roomid: roomid, userid: userid, replyto: replyto, command: "Test Threaded Reply!")
+        }
+        
         if self.dummyNotification == nil {
-            test_UserServices_ListUserNotification()
+            listNotifications(
+                userid: (dummyUser?.userid!)!,
+                filternotificationtypes: [.chatreply],
+                includeread: false,
+                limit: 10
+            )
         }
         
         let request = UserRequest.DeleteUserNotification(
@@ -471,8 +553,30 @@ extension UserClientTests {
             test_UserServices_UpdateUser()
         }
         
+        if self.dummyRoom == nil {
+            createTestChatRoom(name: "Notification As Read Room - (\(Int64(Date().timeIntervalSince1970)))", enableactions: true, moderation: "post", enableenterandexit: true, roomisopen: true)
+        }
+        
+        if self.dummyChatEvent == nil,
+           let userid = dummyUser?.userid,
+           let roomid = dummyRoom?.id {
+            testExecuteCommand(roomid: roomid, userid: userid, command: "Test Comment!")
+        }
+        
+        if self.dummyThreadedReply == nil,
+           let userid = dummyUser?.userid,
+           let roomid = dummyRoom?.id,
+           let replyto = dummyChatEvent?.id {
+            testSendThreadedReply(roomid: roomid, userid: userid, replyto: replyto, command: "Test Threaded Reply!")
+        }
+        
         if self.dummyNotification == nil {
-            test_UserServices_ListUserNotification()
+            listNotifications(
+                userid: (dummyUser?.userid!)!,
+                filternotificationtypes: [.chatreply],
+                includeread: false,
+                limit: 10
+            )
         }
         
         let request = UserRequest.DeleteUserNotificationByChatEventId(
@@ -500,7 +604,7 @@ extension UserClientTests {
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         
         let request = UserRequest.CreateUpdateUser(
-            userid: "9940A8C9-2332-4824-B628-48390F367D29",
+            userid: "9940A8C9-2332-48390F367D29",
             handle: "GeorgeWASHING",
             displayname: "George Washing",
             pictureurl: URL(string: "http://www.thepresidentshalloffame.com/media/reviews/photos/original/a9/c7/a6/44-1-george-washington-18-1549729902.jpg"),
@@ -518,7 +622,7 @@ extension UserClientTests {
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         
         let request = UserRequest.CreateUpdateUser(
-            userid: "9940A8C9-2332-4824-B628-48390F367D30",
+            userid: "9940A8C9-2332-48390F367D30",
             handle: "JohnWICK",
             displayname: "John Wick",
             pictureurl: nil,
@@ -531,4 +635,170 @@ extension UserClientTests {
         }
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
     }
+    
+    private func createTestChatRoom(
+        name: String,
+        customid: String? = nil,
+        description: String? = nil,
+        enableactions: Bool,
+        moderation: String, // "post"/"pre"
+        enableenterandexit: Bool,
+        roomisopen: Bool
+    ) {
+        let request = ChatRequest.CreateRoom(
+            name: name,
+            customid: customid,
+            description: description,
+            moderation: moderation,
+            enableactions: enableactions,
+            enableenterandexit: enableenterandexit,
+            roomisopen: roomisopen
+        )
+
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        chatClient.createRoom(request) { (code, message, kind, data) in
+            if let data {
+                self.dummyRoom = data
+            }
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+    
+    private func joinChatRoom(
+        roomid: String,
+        userid: String
+    ) {
+        let request = ChatRequest.JoinRoom(roomid: roomid, userid: userid)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        chatClient.joinRoom(request) { (code, message, kind, data) in
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+    
+    private func testExecuteCommand(
+        roomid: String,
+        userid: String,
+        command: String
+    ) {
+        let request = ChatRequest.ExecuteChatCommand(roomid: roomid, command: command, userid: userid)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        do {
+            try chatClient.executeChatCommand(request) { (code, message, kind, data) in
+                if let event = data?.speech {
+                    self.dummyChatEvent = event
+                }
+                expectation.fulfill()
+            }
+        } catch {
+            print("UserClientTests::testExecuteCommand() -> error = \(error.localizedDescription)")
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+    
+    private func testSendThreadedReply(
+        roomid: String,
+        userid: String,
+        replyto: String,    // Event ID to reply to
+        command: String
+    ) {
+        let request = ChatRequest.SendThreadedReply(roomid: roomid, eventid: replyto, userid: userid, body: command)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        do {
+            try chatClient.sendThreadedReply(request) { (code, message, kind, data) in
+                if let event = data {
+                    self.dummyThreadedReply = event
+                }
+                expectation.fulfill()
+            }
+        } catch {
+            print("UserClientTests::testSendThreadedReply() -> error = \(error.localizedDescription)")
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+    
+    private func listNotifications(
+        userid: String,
+        filternotificationtypes: [UserRequest.ListUserNotifications.FilterNotificationType]? = nil,
+        includeread: Bool? = nil,
+        filterchatroomid: String? = nil,
+        filterchatroomcustomid: String? = nil,
+        limit: Int? = nil
+    ) {
+        
+        let request = UserRequest.ListUserNotifications(
+            userid: userid,
+            filternotificationtypes: filternotificationtypes,
+            includeread: includeread,
+            filterchatroomid: filterchatroomid,
+            filterchatroomcustomid: filterchatroomcustomid,
+            limit: limit
+        )
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        
+        client.listUserNotifications(request) { (code, message, _, response) in
+            self.dummyNotification = response?.notifications?.first
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+}
+
+// MARK: - Convenience
+extension UserClientTests {
+    
+    private func deleteUser(userid: String?) {
+        guard let userid = userid else { return }
+        
+        let request = UserRequest.DeleteUser(userid: userid)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        client.deleteUser(request) { (code, message, kind, data) in
+            self.dummyUser = nil
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+    
+    private func deleteChatRoom(roomid: String?) {
+        guard let roomid = roomid else { return }
+        
+        let request = ChatRequest.DeleteRoom(roomid: roomid)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        chatClient.deleteRoom(request) { (code, message, kind, data) in
+            self.dummyRoom = nil
+            self.dummyChatEvent = nil
+            self.dummyThreadedReply = nil
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+    
+    private func deleteNotification(userid: String?, notificationid: String?) {
+        guard let userid = userid, let notificationid = notificationid else { return }
+        
+        let request = UserRequest.DeleteUserNotification(userid: userid, notificationid: notificationid)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        client.deleteUserNotification(request) { (code, message, kind, data) in
+            self.dummyNotification = nil
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+    
 }

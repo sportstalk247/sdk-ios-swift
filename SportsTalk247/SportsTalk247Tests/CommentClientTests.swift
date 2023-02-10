@@ -37,15 +37,17 @@ class CommentClientTests: XCTestCase {
 extension CommentClientTests {
     /// TODO:: Write Unit Test Cases
     func test_CreateConversation() {
+        let randomNum = Int64(Date().timeIntervalSince1970)
         let request = CommentRequest.CreateUpdateConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum))",
             property: "sportstalk247.com/unittest1",
             moderation: "post"
         )
+        
         request.enableprofanityfilter = false
-        request.title = "Sample Conversation 1"
+        request.title = "Sample Conversation \(randomNum)"
         request.open = true
-        request.customid = "test-custom-convo-id1"
+        request.customid = "test-custom-convo-id\(randomNum)"
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
@@ -67,16 +69,18 @@ extension CommentClientTests {
     }
     
     func test_GetConversation() {
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
         
         let createdConversation = dummyConversations.first
+        
         let request = CommentRequest.GetConversationById(conversationid: createdConversation!.conversationid!)
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -96,9 +100,10 @@ extension CommentClientTests {
     }
     
     func test_GetConversationByCustomID() {
-        let customid = "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+        let randomNum = Int64(Date().timeIntervalSince1970)
+        let customid = "test-custom-convo-id\(randomNum)"
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -126,21 +131,22 @@ extension CommentClientTests {
     }
     
     func test_ListConversations() {
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum + 10)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum + 10)"
         )
         
         let createdConversation1 = dummyConversations.first!
@@ -167,21 +173,22 @@ extension CommentClientTests {
     }
     
     func test_BatchGetConversationDetails() {
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum + 10)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum + 10)"
         )
         
         let createdConversation1 = dummyConversations.first!
@@ -214,14 +221,14 @@ extension CommentClientTests {
     func test_ReactToConversationTopic() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
         let createdConversation = dummyConversations.first!
         
@@ -253,9 +260,9 @@ extension CommentClientTests {
     func test_CreateComment() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -293,9 +300,9 @@ extension CommentClientTests {
     func test_ReplyToComment() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -343,9 +350,9 @@ extension CommentClientTests {
     func test_ListCommentReplies() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -403,9 +410,9 @@ extension CommentClientTests {
     func test_GetComment() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -446,9 +453,9 @@ extension CommentClientTests {
     func test_ListComments() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -497,9 +504,9 @@ extension CommentClientTests {
     func test_GetBatchCommentReplies() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -565,9 +572,9 @@ extension CommentClientTests {
     func test_ReactToComment() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -617,9 +624,9 @@ extension CommentClientTests {
     func test_VoteOnComment() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -669,9 +676,9 @@ extension CommentClientTests {
     func test_ReportComment() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -718,9 +725,9 @@ extension CommentClientTests {
     func test_UpdateComment() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
@@ -768,13 +775,14 @@ extension CommentClientTests {
         createTestUser()
         let createdUser = self.dummyUser!
         
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
         let createdConversation = dummyConversations.first!
         
@@ -819,15 +827,16 @@ extension CommentClientTests {
     func test_FlagCommentLogicallyDeleted_permanentifnoreplies() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
+        wait(for: [], timeout: 3)
         let createdConversation = dummyConversations.first!
         
         createTestComment(
@@ -870,14 +879,14 @@ extension CommentClientTests {
     func test_DeleteComment() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
         let createdConversation = dummyConversations.first!
         
@@ -915,14 +924,14 @@ extension CommentClientTests {
     func test_DeleteConversation() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
         let createdConversation = dummyConversations.first!
         
@@ -953,14 +962,14 @@ extension CommentClientTests {
     func test_ListCommentInModerationQueue() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "pre",
             title: "Sample Moderated Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
         let createdConversation = dummyConversations.first!
         
@@ -1002,15 +1011,16 @@ extension CommentClientTests {
     func test_ApproveCommentInModerationQueue_approved() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Moderated Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
+        wait(for: [], timeout: 3)
         let createdConversation = dummyConversations.first!
         
         createTestComment(
@@ -1059,15 +1069,16 @@ extension CommentClientTests {
     func test_ApproveCommentInModerationQueue_rejected() {
         createTestUser()
         let createdUser = self.dummyUser!
-        
+        let randomNum = Int64(Date().timeIntervalSince1970)
         createTestConversation(
-            conversationid: "unit-test\(Int64(Date().timeIntervalSince1970))",
+            conversationid: "unit_test\(randomNum)",
             property: "sportstalk247.com/unittest1",
             moderation: "post",
             title: "Sample Moderated Conversation 1",
             open: true,
-            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+            customid: "test-custom-convo-id\(randomNum)"
         )
+        wait(for: [], timeout: 3)
         let createdConversation = dummyConversations.first!
         
         createTestComment(
@@ -1135,7 +1146,8 @@ extension CommentClientTests {
             expectation.fulfill()
         }
         
-        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+//        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        wait(for: [expectation], timeout: Config.TIMEOUT)
     }
 
     private func deleteTestUser() {
@@ -1148,7 +1160,7 @@ extension CommentClientTests {
     }
 
     private func createTestConversation(
-        conversationid: String,
+        conversationid: String? = nil,
         property: String,
         moderation: String,
         maxreports: Int? = nil,
@@ -1189,10 +1201,16 @@ extension CommentClientTests {
             if let data {
                 self.dummyConversations.append(data)
             }
+            
             expectation.fulfill()
         }
         
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        
+        if dummyConversations.isEmpty {
+            wait(for: [], timeout: 5)
+            createTestConversation(conversationid: "unit_test\(Int64(Date().timeIntervalSince1970))", property: property, moderation: moderation)
+        }
     }
 
     private func deleteTestConversations() {
@@ -1208,7 +1226,8 @@ extension CommentClientTests {
             }
         }
         
-        dummyConversations = []
+//        dummyConversations = []
+        wait(for: [], timeout: 3)
     }
     
     private func createTestComment(
@@ -1227,16 +1246,24 @@ extension CommentClientTests {
             userid: userid,
             body: body
         )
-
+        
         let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var createdComment: Comment? = nil
         commentClient.createComment(request) { (code, message, kind, data) in
             if let data {
                 self.dummyComments.append(data)
+                createdComment = data
             }
+            
             expectation.fulfill()
         }
         
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        
+        if createdComment == nil {
+            wait(for: [], timeout: 5)
+            createTestComment(conversationid: conversationid, userid: userid, body: body)
+        }
     }
     
     private func createTestReplyComment(
@@ -1259,14 +1286,22 @@ extension CommentClientTests {
         )
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var createdComment: Comment? = nil
         commentClient.replyToComment(request) { (code, message, kind, data) in
             if let data {
                 self.dummyComments.append(data)
+                createdComment = data
             }
+            
             expectation.fulfill()
         }
         
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        
+        if createdComment == nil {
+            wait(for: [], timeout: 5)
+            createTestReplyComment(conversationid: conversationid, replytocommentid: replytocommentid, userid: userid, body: body)
+        }
     }
     
     private func createTestReportComment(
@@ -1283,14 +1318,22 @@ extension CommentClientTests {
         )
 
         let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var createdComment: Comment? = nil
         commentClient.reportComment(request) { (code, message, kind, data) in
             if let data {
                 self.dummyComments.append(data)
+                createdComment = data
             }
+            
             expectation.fulfill()
         }
         
         waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        
+        if createdComment == nil {
+            wait(for: [], timeout: 5)
+            createTestReportComment(conversationid: conversationid, commentid: commentid, userid: userid, reporttype: reporttype)
+        }
     }
     
 }

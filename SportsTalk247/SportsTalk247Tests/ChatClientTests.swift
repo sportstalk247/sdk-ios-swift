@@ -46,6 +46,11 @@ class ChatClientTests: XCTestCase {
         self.jwtProvider.refreshToken()
         createUpdateUser()
     }
+    
+    override func tearDownWithError() throws {
+        deleteUser(userid: dummyUser?.userid)
+        deleteChatRoom(roomid: dummyRoom?.id)
+    }
 }
 
 extension ChatClientTests {
@@ -197,7 +202,7 @@ extension ChatClientTests {
         
         let request = ChatRequest.GetRoomExtendedDetails(
             roomid: [(dummyRoom?.id ?? "")],
-            entity: [.room, .lastmessagetime, .numberofparticipants, .room, .room, .room]
+            entity: [.room, .lastmessagetime, .numberofparticipants]
         )
         // request.entity shouldn't have duplicates.
 
@@ -1253,43 +1258,53 @@ extension ChatClientTests {
 // MARK: - EventSubscription
 extension ChatClientTests {
     func test_EventSubscription() {
-        var selectedRoom: ChatRoom?
-        listRooms { rooms in
-            selectedRoom = rooms?.first
+        if dummyUser == nil {
+            self.createUpdateUser()
         }
         
-        if selectedRoom == nil {
-            createRoom()
+        if dummyRoom == nil {
+            test_ChatRoomsServices_CreateRoomPostmoderated()
         }
         
         SportsTalkSDK.shared.debugMode = false
         
+        let targetEventCount = 10
+        
         func executeEvents() {
-            let max = Int.random(in: 0...31)
-            print("emmitting \(max) events")
-            for _ in 0...max {
-                test_ChatRoomsServices_ExecuteChatCommand()
+            print("emmitting \(targetEventCount) events")
+            for i in 0...targetEventCount {
+                testExecuteCommand(
+                    roomid: dummyRoom!.id!, userid: dummyUser!.userid!, command: "Test Execute Event #\(i)"
+                )
             }
+        }
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var collectedEvents: [Event] = []
+        
+        let startListenRequest = ChatRequest.StartListeningToChatUpdates(roomid: dummyRoom!.id!)
+        client.startListeningToChatUpdates(config: startListenRequest) { (code, message, _, event) in
+            print("------------")
+            print(code == 200 ? "pulse success" : "pulse failed")
+            print((event?.count ?? 0) > 0 ? "received events:\n \(event!.map { "\"\($0.body)\"\n" })" : "No new events")
+            if let event {
+                collectedEvents.append(contentsOf: event)
+            }
+            
+            let eventCount = collectedEvents.count
+            print("--collectedEvents: \(eventCount)--")
+            if eventCount == targetEventCount {
+                SportsTalkSDK.shared.debugMode = true
+                self.client.stopListeningToChatUpdates(self.dummyRoom!.id!)
+                expectation.fulfill()
+            }
+            print("------------")
         }
         
         executeEvents()
         
-        let expectation = self.expectation(description: Constants.expectation_description(#function))
-        var startListenRequest = ChatRequest.StartListeningToChatUpdates(roomid: selectedRoom!.id!)
-        client.startListeningToChatUpdates(config: startListenRequest) { (code, message, _, event) in
-            print("------------")
-            print(code == 200 ? "pulse success" : "pulse failed")
-            print((event?.count ?? 0) > 0 ? "received \(String(describing: event?.count)) event" : "No new events")
-            print("------------")
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
-            self.client.stopListeningToChatUpdates((selectedRoom?.id)!)
-            SportsTalkSDK.shared.debugMode = true
-            expectation.fulfill()
-        }
-        
-        waitForExpectations(timeout: Config.TIMEOUT + 50, handler: nil)
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssert(!collectedEvents.isEmpty)
     }
     
     func test_KeepAlive() {
@@ -1432,6 +1447,26 @@ extension ChatClientTests {
         }
     }
     
+    private func testExecuteCommand(
+        roomid: String,
+        userid: String,
+        command: String
+    ) {
+        let request = ChatRequest.ExecuteChatCommand(roomid: roomid, command: command, userid: userid)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        do {
+            try client.executeChatCommand(request) { (code, message, kind, data) in
+                expectation.fulfill()
+            }
+        } catch {
+            print("ChatClientTests::testExecuteCommand() -> error = \(error.localizedDescription)")
+            expectation.fulfill()
+        }
+        
+        wait(for: [], timeout: 5)
+    }
+    
     private func getDateTimeString() -> String{
         let dateFormatter : DateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
@@ -1530,4 +1565,38 @@ extension ChatClientTests {
         
         return phrases[Int.random(in: 0..<phrases.count)]
     }
+}
+
+extension ChatClientTests {
+    private func deleteUser(userid: String?) {
+        guard let userid = userid else { return }
+        let userClient = UserClient(config: self.client.config)
+        
+        let request = UserRequest.DeleteUser(userid: userid)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        userClient.deleteUser(request) { (code, message, kind, data) in
+            self.dummyUser = nil
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+    
+    private func deleteChatRoom(roomid: String?) {
+        guard let roomid = roomid else { return }
+        
+        let request = ChatRequest.DeleteRoom(roomid: roomid)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        client.deleteRoom(request) { (code, message, kind, data) in
+            self.dummyRoom = nil
+            self.dummyEvent = nil
+            self.dummyEventList = nil
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+    }
+    
 }
