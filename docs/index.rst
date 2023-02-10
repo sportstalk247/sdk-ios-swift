@@ -529,7 +529,8 @@ Will purge all chat content published by the specified user
     
 **Parameters**
 
-- userid: (required) The application provided userid of the user to ban
+- userid: (required) ID of the User who's content is about to be purged
+- byuserid: (required) ID of the User who is about to perform the purge action(requires admin privileges)
 
 **Request Model: UserRequest.GloballyPurgeUserContent**
 
@@ -537,7 +538,7 @@ Will purge all chat content published by the specified user
 
         public class GloballyPurgeUserContent {
             public var userid: String?
-            public var banned: Bool?
+            public var byuserid: String?
         }
         
 **Response Model: GlobalPurgeReponse**
@@ -3538,7 +3539,7 @@ Creates a conversation (a context for comments)
 
 **Parameters**
 
-- **conversationid** : (required) The conversation ID. This must be a URL friendly string (cannot contain / ? or other URL delimiters). Maximum length is 250 characters.
+- **conversationid** : (optional) The conversation ID. This must be a URL friendly string (cannot contain / ? or other URL delimiters). Maximum length is 250 characters.
 - **property** : (required) The property this conversation is associated with. It is any string value you want. Typically this is the domain of your website for which you want to use commenting, if you have more than one. Examples: ("dev", "uat", "stage", "prod", "site1.com", "site2.com")
 - **moderation** : (required) Specify if pre or post moderation is to be used
     - `pre` - marks the room as Premoderated
@@ -3565,7 +3566,7 @@ Creates a conversation (a context for comments)
 
         public class CreateUpdateConversation: ParametersBase</*...*/> {
             /// ...
-            public let conversationid: String   // REQUIRED
+            public let conversationid: String?
             public let property: String         // REQUIRED
             public let moderation: String       // REQUIRED
             public var maxreports: Int?
