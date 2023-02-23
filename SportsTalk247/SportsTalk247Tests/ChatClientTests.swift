@@ -377,7 +377,7 @@ extension ChatClientTests {
         if dummyRoom == nil {
             test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         }
-        
+
         let request = ChatRequest.ListUserSubscribedRooms(
             userid: dummyUser?.userid ?? ""
         )
@@ -388,9 +388,9 @@ extension ChatClientTests {
         client.listUserSubscribedRooms(request) { (code, message, kind, response) in
             print(message ?? "")
             print("found \(String(describing: response?.subscriptions.count)) subscribed rooms")
-            
+
             print(response?.subscriptions ?? "")
-            
+
             receivedCode = code
             expectation.fulfill()
         }

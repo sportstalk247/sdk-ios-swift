@@ -11,6 +11,11 @@ struct Config {
 //    static let url = URL(string: "https://prod-api.sportstalk247.com/api/v3")!
 //    static let appId = "5ffd115386c29223e4de754c"
 //    static let authToken = "Cjh2_2VLhk2iyQUSEsfphAZkrrs6J-Vk2ELL7YzzwWJw"
+    
+//    static let url = URL(string: "http://ec2-35-178-80-243.eu-west-2.compute.amazonaws.com/api/v3")!
+//    static let appId = "602e6fc50c916c171cb9a4e8"
+//    static let authToken = "P1slSgD5l0yYBTWixyZ3_gGt69p5SOu0KEuGYLBXY8sw"
+    
     static let TIMEOUT: Double = 30
 }
 
