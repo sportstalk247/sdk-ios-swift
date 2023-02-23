@@ -30,8 +30,8 @@
 		9B8B17192973E9A600E1CEF5 /* CommentClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8B17182973E9A600E1CEF5 /* CommentClient.swift */; };
 		9B8B171D2973F09500E1CEF5 /* CommentClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8B171B2973F09500E1CEF5 /* CommentClientTests.swift */; };
 		9BB7ECD02949F96F002347E4 /* ListUserSubscribedRoomsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB7ECCF2949F96F002347E4 /* ListUserSubscribedRoomsResponse.swift */; };
-		9BB7ECD12949F96F002347E4 /* ListUserSubscribedRoomsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB7ECCF2949F96F002347E4 /* ListUserSubscribedRoomsResponse.swift */; };
 		9BB7ECD3294A1BFD002347E4 /* JWTProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB7ECD2294A1BFD002347E4 /* JWTProvider.swift */; };
+		9BFF1D2C29A7836800E5F3A4 /* ChatSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFF1D2B29A7836800E5F3A4 /* ChatSubscription.swift */; };
 		A84A214E25CB09560042068F /* Foundation+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84A214D25CB09560042068F /* Foundation+Extension.swift */; };
 		A855D79024714D4000206560 /* ListChatRoomParticipantsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D76E24714D4000206560 /* ListChatRoomParticipantsResponse.swift */; };
 		A855D79224714D4000206560 /* GetUpdatesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A855D77024714D4000206560 /* GetUpdatesResponse.swift */; };
@@ -108,6 +108,7 @@
 		9B8B171B2973F09500E1CEF5 /* CommentClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentClientTests.swift; sourceTree = "<group>"; };
 		9BB7ECCF2949F96F002347E4 /* ListUserSubscribedRoomsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListUserSubscribedRoomsResponse.swift; sourceTree = "<group>"; };
 		9BB7ECD2294A1BFD002347E4 /* JWTProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWTProvider.swift; sourceTree = "<group>"; };
+		9BFF1D2B29A7836800E5F3A4 /* ChatSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSubscription.swift; sourceTree = "<group>"; };
 		A84A214D25CB09560042068F /* Foundation+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Foundation+Extension.swift"; sourceTree = "<group>"; };
 		A855D76E24714D4000206560 /* ListChatRoomParticipantsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListChatRoomParticipantsResponse.swift; sourceTree = "<group>"; };
 		A855D77024714D4000206560 /* GetUpdatesResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetUpdatesResponse.swift; sourceTree = "<group>"; };
@@ -311,6 +312,7 @@
 				A87A51D025DAC05F00655A14 /* ReportedUser.swift */,
 				9BB7ECCF2949F96F002347E4 /* ListUserSubscribedRoomsResponse.swift */,
 				A867B5DB266FB6DE00CB7CE1 /* GetRoomExtendedDetailsResponse.swift */,
+				9BFF1D2B29A7836800E5F3A4 /* ChatSubscription.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -473,7 +475,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9BB7ECD12949F96F002347E4 /* ListUserSubscribedRoomsResponse.swift in Sources */,
 				A8C1868624738B8D00C744DC /* ChatClientTests.swift in Sources */,
 				9B8B171D2973F09500E1CEF5 /* CommentClientTests.swift in Sources */,
 				A85E7D042473343A00A26D54 /* UserClientTests.swift in Sources */,
@@ -539,6 +540,7 @@
 				9B6CD9FD2972F10D0071671B /* Comment.swift in Sources */,
 				A855D79924714D4000206560 /* ExitChatRoomResponse.swift in Sources */,
 				A855D79624714D4000206560 /* JoinChatRoomResponse.swift in Sources */,
+				9BFF1D2C29A7836800E5F3A4 /* ChatSubscription.swift in Sources */,
 				A855D7AD24714DD000206560 /* ClientConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -730,6 +732,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -756,6 +759,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Krishnais.iOSSDK.SportsTalk-iOS-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

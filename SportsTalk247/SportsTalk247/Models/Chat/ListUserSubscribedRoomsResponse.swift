@@ -13,7 +13,7 @@ public struct ListUserSubscribedRoomsResponse: Codable {
     public var cursor: String?
     public var more: Bool?
     public var itemcount: Int64?
-    public var subscriptions: [ChatSubscription] = []
+    public var subscriptions: [SubscriptionAndRoomStatus] = []
     
     private enum CodingKeys: String, CodingKey {
         case kind
@@ -30,55 +30,60 @@ public struct ListUserSubscribedRoomsResponse: Codable {
         self.more = try container.decodeIfPresent(Bool.self, forKey: .more)
         self.itemcount = try container.decodeIfPresent(Int64.self, forKey: .itemcount)
         if container.contains(.subscriptions) {
-            self.subscriptions = try container.decode(Array<ChatSubscription>.self, forKey: .subscriptions)
+            self.subscriptions = try container.decode(Array<SubscriptionAndRoomStatus>.self, forKey: .subscriptions)
         } else {
             self.subscriptions = []
         }
     }
+    
 }
 
-public struct ChatSubscription: Codable {
-    public var kind: String?    // "chat.subscription"
-    public var id: String?
-    public var roomid: String?
-    public var roomcustomid: String?
-    public var userid: String?
-    public var updated: String? // ISODateTime Format
-    public var added: String?   // ISODateTime Format
-    public var roomname: String?
-    public var roomcustomtags: [String] = []
-    public var persist: Bool?
+public struct SubscriptionAndRoomStatus: Codable {
+    public var kind: String?     // "chat.subscriptionandstatus"
+    public var subscription: ChatSubscription?
+    public var roomstatus: RoomStatus?
     
     private enum CodingKeys: String, CodingKey {
         case kind
-        case id
-        case roomid
-        case roomcustomid
-        case userid
-        case updated
-        case added
-        case roomname
-        case roomcustomtags
-        case persist
+        case subscription
+        case roomstatus
     }
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.kind = try container.decodeIfPresent(String.self, forKey: .kind)
-        self.id = try container.decodeIfPresent(String.self, forKey: .id)
-        self.roomid = try container.decodeIfPresent(String.self, forKey: .roomid)
-        self.roomcustomid = try container.decodeIfPresent(String.self, forKey: .roomcustomid)
-        self.userid = try container.decodeIfPresent(String.self, forKey: .userid)
-        self.updated = try container.decodeIfPresent(String.self, forKey: .updated)
-        self.added = try container.decodeIfPresent(String.self, forKey: .added)
-        self.roomname = try container.decodeIfPresent(String.self, forKey: .roomname)
-        if container.contains(.roomcustomtags) {
-            self.roomcustomtags = try container.decode(Array<String>.self, forKey: .roomcustomtags)
-        } else {
-            self.roomcustomtags = []
-        }
-        
-        self.persist = try container.decodeIfPresent(Bool.self, forKey: .persist)
+        self.subscription = try container.decodeIfPresent(ChatSubscription.self, forKey: .subscription)
+        self.roomstatus = try container.decodeIfPresent(RoomStatus.self, forKey: .roomstatus)
+    }
+}
+
+public struct RoomStatus: Codable {
+    public var kind: String?     // "chat.roomstatus"
+    public var messagecount: Int64?
+    public var participantcount: Int64?
+    public var newestmessage : Event?
+    
+    private enum CodingKeys: String, CodingKey {
+        case kind
+        case messagecount
+        case participantcount
+        case newestmessage
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: RoomStatus.CodingKeys.self)
+        self.kind = try container.decodeIfPresent(String.self, forKey: .kind)
+        self.messagecount = try container.decodeIfPresent(Int64.self, forKey: .messagecount)
+        self.participantcount = try container.decodeIfPresent(Int64.self, forKey: .participantcount)
+        self.newestmessage = try container.decodeIfPresent(Event.self, forKey: .newestmessage)
     }
     
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(kind, forKey: .kind)
+        try container.encodeIfPresent(messagecount, forKey: .messagecount)
+        try container.encodeIfPresent(participantcount, forKey: .participantcount)
+        try container.encodeIfPresent(newestmessage, forKey: .newestmessage)
+    }
 }
+
