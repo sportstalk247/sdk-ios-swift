@@ -2052,16 +2052,16 @@ public class ChatRequest {
         
         public let roomid: String   // REQUIRED
         public let userid: String   // REQUIRED
-        public var password: String?
+        public var password: String
         
         private let command: String // "*deleteallevents $password"
         
-        public init(roomid: String, userid: String, password: String? = nil) {
+        public init(roomid: String, userid: String, password: String) {
             self.roomid = roomid
             self.userid = userid
             self.password = password
             
-            self.command = "*deleteallevents \(password ?? "")"
+            self.command = "*deleteallevents \(password)"
         }
         
         override public func from(dictionary: [AnyHashable: Any]) -> DeleteAllEvents {
@@ -2069,7 +2069,7 @@ public class ChatRequest {
             let ret = DeleteAllEvents(
                 roomid: value(forKey: .roomid) ?? "",
                 userid: value(forKey: .userid) ?? "",
-                password: value(forKey: .password)
+                password: value(forKey: .password) ?? ""
             )
             
             return ret
@@ -2080,7 +2080,6 @@ public class ChatRequest {
             
             addRequired(key: .command, value: "*deleteallevents \(password ?? "")")
             addRequired(key: .userid, value: userid)
-            add(key: .userid, value: userid)
             
             return toDictionary
         }
@@ -2116,14 +2115,14 @@ public class ChatRequest {
         public var handle: String?
         public var password: String?
         
-        private let command: String // "*purge $password $handle"
+        private let command: String // "*purge $handle"
         
         public init(roomid: String, userid: String, handle: String? = nil, password: String? = nil) {
             self.roomid = roomid
             self.userid = userid
             self.handle = handle
             self.password = password
-            self.command = String("*purge \(password!) \(handle!)")
+            self.command = String("*purge \(handle!)")
         }
         
         override public func from(dictionary: [AnyHashable: Any]) -> PurgeUserMessages {
@@ -2141,8 +2140,8 @@ public class ChatRequest {
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
             
-            addRequired(key: .command, value: String("*purge \(password!) \(handle!)"))
-            add(key: .handle, value: handle)
+            addRequired(key: .command, value: String("*purge \(handle!)"))
+            add(key: .userid, value: userid)
             
             return toDictionary
         }

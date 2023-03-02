@@ -101,7 +101,11 @@ open class NetworkService {
         var url:URL?
         
         if useDefaultUrl {
-            let urlString = "\(self.config.endpoint.absoluteString)/\(config.appId)/\(serviceName ?? "")"
+            let configUrl = self.config.endpoint.absoluteString
+            // Remove trailing "/" character(if exist) from provided URL endpoint
+            let finalizedUrl = configUrl.replacingOccurrences(of: #"[/]+$"#, with: "", options: .regularExpression, range: nil)
+            
+            let urlString = "\(finalizedUrl)/\(config.appId)/\(serviceName ?? "")"
             if let encodedURL = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                 url = URL(string: encodedURL)
             } else {

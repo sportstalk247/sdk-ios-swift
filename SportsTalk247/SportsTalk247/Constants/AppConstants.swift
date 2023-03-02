@@ -82,7 +82,7 @@ struct URLPath {
     }
     
     struct Event {
-        static func Purge(roomid: String, userid: String) -> String { return r + (roomid) + "/commands/purge/" + (userid)}
+        static func Purge(roomid: String) -> String { return r + (roomid) + "/command"}
         static func FlagLogicallyDeleted(roomid: String, eventid: String) -> String { return "\(r)\(roomid)/events/\(eventid)/setdeleted" }
         static func Delete(roomid: String, eventid: String) -> String   { return "\(r)\(roomid)/events/\(eventid)" }
         static func DeleteAll(roomid: String) -> String { return r + (roomid) + "/command"}
@@ -177,6 +177,9 @@ public enum EventType: String {
     case ad
     case announcement
     case custom
+    case modflagged
+    case modapproved
+    case modrejected
 }
 
 public enum Role: String, Codable {
@@ -195,3 +198,15 @@ public enum RoomEntityType: String, Codable {
     case numberofparticipants = "numparticipants"
     case lastmessagetime
 }
+
+public struct ModerationType {
+    // Input moderation
+    public static let Pre = "pre"
+    public static let Post = "post"
+    // Resulting moderation from an action
+    public static let Pending = "pending"
+    public static let Approved = "approved"
+    public static let Rejected = "rejected"
+    public static let Na = "na"
+}
+
