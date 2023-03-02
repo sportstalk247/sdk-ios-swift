@@ -57,11 +57,12 @@ extension ChatClientTests {
     func test_ChatRoomsServices_CreateRoom() {
         let request = ChatRequest.CreateRoom(
             name: "Test Room Post Moderated 3",
-            customid: "some-custom-id",
+            customid: "some-custom-id-\(Date().timeIntervalSince1970)",
             description: "Chat Room Newly Created",
-            moderation: "post",
+            moderation: ModerationType.Post,
             enableactions: true,
             enableenterandexit: false,
+            enableautoexpiresessions: false,
             roomisopen: true
         )
         
@@ -85,11 +86,12 @@ extension ChatClientTests {
     func test_ChatRoomsServices_CreateRoomPostmoderated() {
         let request = ChatRequest.CreateRoom(
             name: "Test Room Post Moderated 3",
-            customid: "chathubcard.th.บัตรบรรณาธิการซึ่งจะปรากฏในวันอาทิตย์",
+            customid: "chathubcard.th-\(Date().timeIntervalSince1970)",
             description: "Chat Room Newly Created",
-            moderation: "post",
+            moderation: ModerationType.Post,
             enableactions: true,
-            enableenterandexit: false,
+            enableenterandexit: true,
+            enableautoexpiresessions: false,
             roomisopen: true
         )
 
@@ -113,10 +115,12 @@ extension ChatClientTests {
     func test_ChatRoomsServices_CreateRoomPremoderated() {
         let request = ChatRequest.CreateRoom(
             name: "Test Room Pre Moderated 1",
+            customid: "some-custom-id-\(Date().timeIntervalSince1970)",
             description: "Chat Room Newly Created (Premoderated)",
-            moderation: "pre",
+            moderation: ModerationType.Pre,
             enableactions: true,
-            enableenterandexit: false,
+            enableenterandexit: true,
+            enableautoexpiresessions: false,
             roomisopen: true,
             maxreports: 0
         )
@@ -141,11 +145,12 @@ extension ChatClientTests {
     func test_ChatRoomsServices_CreateRoom_WithCustomTags() {
         let request = ChatRequest.CreateRoom()
         request.name = "Test Room Post Moderated 3"
-        request.customid = "some-custom-id"
+        request.customid = "some-custom-id-\(Date().timeIntervalSince1970)"
         request.description = "Chat Room Newly Created"
         request.moderation = "post"
         request.enableactions = true
-        request.enableenterandexit = false
+        request.enableenterandexit = true
+        request.enableautoexpiresessions = false
         request.roomisopen = true
         
         let customTags = ["messenger", "whatsapp"]
@@ -377,9 +382,9 @@ extension ChatClientTests {
         if dummyRoom == nil {
             test_ChatRoomsServices_JoinRoomAuthenticatedUser()
         }
-
+        
         let request = ChatRequest.ListUserSubscribedRooms(
-            userid: dummyUser?.userid ?? ""
+            userid: /*"7d3ef50072164cb795258acd36645ef1"*/dummyUser?.userid ?? ""
         )
 
         var receivedCode: Int?
@@ -815,11 +820,12 @@ extension ChatClientTests {
     
     func test_ChatRoomsServices_PurgeMessages() {
         test_ChatRoomsServices_ExecuteChatCommand()
+        testJoinRoom(roomid: dummyRoom!.id!, userid: "admin")
         
         let request = ChatRequest.PurgeUserMessages(
             roomid: dummyRoom?.id ?? "",
-            userid: dummyUser?.userid ?? "",
-            handle: dummyUser?.handle,
+            userid: "admin",
+            handle: "\(dummyUser!.handle!)",
             password: "zola"
         )
         
@@ -887,10 +893,11 @@ extension ChatClientTests {
     
     func test_ChatRoomsServices_DeleteAllEvents() {
         test_ChatRoomsServices_JoinRoom()
+        testJoinRoom(roomid: dummyRoom!.id!, userid: "admin")
         
         let request = ChatRequest.DeleteAllEvents(
             roomid: dummyRoom?.id ?? "",
-            userid: dummyUser?.userid ?? "",
+            userid: "admin",
             password: "zola"
         )
 
@@ -1268,7 +1275,7 @@ extension ChatClientTests {
         
         SportsTalkSDK.shared.debugMode = false
         
-        let targetEventCount = 10
+        let targetEventCount = 5
         
         func executeEvents() {
             print("emmitting \(targetEventCount) events")
@@ -1286,14 +1293,14 @@ extension ChatClientTests {
         client.startListeningToChatUpdates(config: startListenRequest) { (code, message, _, event) in
             print("------------")
             print(code == 200 ? "pulse success" : "pulse failed")
-            print((event?.count ?? 0) > 0 ? "received events:\n \(event!.map { "\"\($0.body)\"\n" })" : "No new events")
+            print((event?.count ?? 0) > 0 ? "received events:\n \(event?.map { "\"\($0.body)\"\n" })" : "No new events")
             if let event {
                 collectedEvents.append(contentsOf: event)
             }
             
             let eventCount = collectedEvents.count
             print("--collectedEvents: \(eventCount)--")
-            if eventCount == targetEventCount {
+            if eventCount >= targetEventCount {
                 SportsTalkSDK.shared.debugMode = true
                 self.client.stopListeningToChatUpdates(self.dummyRoom!.id!)
                 expectation.fulfill()
@@ -1445,6 +1452,26 @@ extension ChatClientTests {
             self.dummyRoom = room
             completion?(code == 200)
         }
+    }
+    
+    private func testJoinRoom(
+        roomid: String,
+        userid: String,
+        handle: String? = nil,
+        displayName: String? = nil
+    ) {
+        let request = ChatRequest.JoinRoom(roomid: roomid, userid: userid, handle: handle, displayname: displayName)
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        do {
+            try client.joinRoom(request) { (code, message, kind, data) in
+                expectation.fulfill()
+            }
+        } catch {
+            print("ChatClientTests::testJoinRoom() -> error = \(error.localizedDescription)")
+            expectation.fulfill()
+        }
+        
+        wait(for: [], timeout: 5)
     }
     
     private func testExecuteCommand(

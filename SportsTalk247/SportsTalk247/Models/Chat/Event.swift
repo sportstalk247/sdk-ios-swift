@@ -37,6 +37,7 @@ open class Event: Codable, Equatable {
     public var likecount: Int64?
     public var replycount: Int64?
     public var reactions: [Reaction]
+    // [ModerationType]
     public var moderation: String?
     public var reports: [Report]
     
