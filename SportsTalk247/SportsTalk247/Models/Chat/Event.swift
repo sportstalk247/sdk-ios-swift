@@ -76,7 +76,7 @@ open class Event: Codable, Equatable {
         case reports
     }
     
-    init() {
+    public init() {
         self.kind = nil
         self.id = nil
         self.roomid = nil
