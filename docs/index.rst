@@ -2,11 +2,11 @@ The Sportstalk SDK is a helpful wrapper around the `Sportstalk API <http://https
 
 Installation
 ------------------
-The set of SDKs and source (iOS, Android, and JS) is here: `https://gitlab.com/sportstalk247/ <https://gitlab.com/sportstalk247/>`_
+The set of SDKs and source (iOS, Android, and JS) is here: `https://github.com/sportstalk247/ <https://github.com/sportstalk247/>`_
 
 .. code-block:: ruby
 
-    pod 'SportsTalk_iOS_SDK', :git=> 'https://gitlab.com/sportstalk247/sdk-ios-swift.git'
+    pod 'SportsTalk_iOS_SDK', :git=> 'https://github.com/sportstalk247/sdk-ios-swift.git'
 
 You will need to register with SportsTalk and get an API Key in order to use SDK functions.
 

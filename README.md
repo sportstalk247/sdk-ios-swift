@@ -4,10 +4,10 @@
 
 The Sportstalk SDK is a helpful wrapper around the [Sportstalk API](https://apiref.sportstalk247.com/?version=latest)
 
-The set of SDKs and source (iOS, Android, and JS) is here: [https://gitlab.com/sportstalk247/](https://gitlab.com/sportstalk247/)
+The set of SDKs and source (iOS, Android, and JS) is here: [https://github.com/sportstalk247/](https://github.com/sportstalk247/)
 
 ```bash
-pod 'SportsTalk_iOS_SDK', :git=> 'https://gitlab.com/sportstalk247/sdk-ios-swift.git'
+pod 'SportsTalk_iOS_SDK', :git=> 'https://github.com/sportstalk247/sdk-ios-swift.git'
 
 ```
 
@@ -221,6 +221,21 @@ The easiest way to see how these event works is to see the demo page: https://ww
 * Use the promises from sendCommand, sendReply, etc, to show/hide some sort of indication that the message is being sent.
 * Make sure you handle errors for sending messages in case of network disruption. For instance, `client.sendCommand('message').catch(handleErrorInUiFn)`
 * Enable/Disable debug mode with SportsTalkSDK.shared.debugMode = true/false
+
+# Migration Guide
+
+Changed repository from [Gitlab](https://gitlab.com/sportstalk247/sdk-ios-swift) to [Github](https://github.com/sportstalk247/sdk-ios-swift), hence, dependency module identifier changed:
+From:
+```ruby
+#pod 'SportsTalk_iOS_SDK', :git=> 'https://gitlab.com/sportstalk247/sdk-ios-swift.git', :tag => '1.7.6'
+```
+To:
+```kotlin
+pod 'SportsTalk_iOS_SDK', :git=> 'https://github.com/sportstalk247/sdk-ios-swift.git', :tag => '1.8.0'
+```
+
+SDK Version bumped from version `1.7.6`(previously hosted on Gitlab) to version `1.8.0`(now hosted on Github).
+* No feature changes made. Only documentation and readme updates were made on version `1.8.0`.
 
 # Copyright & License
 Copyright (c) 2023 Sportstalk 24/7
