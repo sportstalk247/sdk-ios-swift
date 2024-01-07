@@ -347,6 +347,57 @@ extension CommentClientTests {
         XCTAssertTrue(replyToComment?.hierarchy?.contains { $0 == rootComment.id } == true)
     }
     
+    func test_ReplyToComment_GetReplyCount() {
+        createTestUser()
+        let createdUser = self.dummyUser!
+        let randomNum = Int64(Date().timeIntervalSince1970)
+        createTestConversation(
+            conversationid: "unit_test\(randomNum)",
+            property: "sportstalk247.com/unittest1",
+            moderation: "post",
+            title: "Sample Conversation 1",
+            open: true,
+            customid: "test-custom-convo-id\(Int64(Date().timeIntervalSince1970))"
+        )
+        let createdConversation = dummyConversations.first!
+        
+        createTestComment(
+            conversationid: createdConversation.conversationid!,
+            userid: createdUser.userid!,
+            body: "Sample Comment 1"
+        )
+        let rootComment = dummyComments.first!
+        
+        // Attempt Reply to a Comment
+        let replyCommentBody = "Sample REPLY Comment \(Int(Date().timeIntervalSince1970))"
+        createTestReplyComment(
+            conversationid: createdConversation.conversationid!,
+            replytocommentid: rootComment.id!,
+            userid: createdUser.userid!,
+            body: replyCommentBody
+        )
+        
+        // Wait atleast 3 seconds to get updated Conversation
+        wait(for: [], timeout: 3)
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        var getConversation: Conversation?
+        let request = CommentRequest.GetConversationById(conversationid: createdConversation.conversationid!)
+        
+        commentClient.getConversation(request) { (code, message, _, data) in
+            print(message ?? "")
+            receivedCode = code
+            getConversation = data
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+        XCTAssertTrue(receivedCode == 200)
+        XCTAssertTrue(getConversation!.conversationid == createdConversation.conversationid!)
+        XCTAssertTrue(getConversation!.replycount == 1) //
+    }
+    
     func test_ListCommentReplies() {
         createTestUser()
         let createdUser = self.dummyUser!
