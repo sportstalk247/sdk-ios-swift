@@ -254,6 +254,7 @@ extension CommentClientTests {
         XCTAssertTrue(receivedCode == 200)
         XCTAssertTrue(reactedConversation != nil)
         XCTAssertTrue(reactedConversation?.reactions != nil)
+        XCTAssertTrue(reactedConversation?.reactioncount! == 1)
         XCTAssertTrue(reactedConversation?.reactions?.contains { $0.type == "like" && $0.users.contains { user in user.userid == createdUser.userid } } == true)
     }
     
