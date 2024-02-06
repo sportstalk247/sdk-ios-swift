@@ -22,6 +22,7 @@ open class Conversation: Codable, Equatable {
     public var maxcommentlen: Int64?
     public var commentcount: Int64?
     public var replycount: Int64?
+    public var reactioncount: Int64?
     public var reactions: [Reaction]?
     public var likecount: Int64?
     public var open: Bool?  // OPTIONAL, defaults to true
@@ -48,6 +49,7 @@ open class Conversation: Codable, Equatable {
         case maxcommentlen
         case commentcount
         case replycount
+        case reactioncount
         case reactions
         case likecount
         case open
@@ -77,6 +79,7 @@ open class Conversation: Codable, Equatable {
         self.maxcommentlen = try container.decodeIfPresent(Int64.self, forKey: .maxcommentlen)
         self.commentcount = try container.decodeIfPresent(Int64.self, forKey: .commentcount)
         self.replycount = try container.decodeIfPresent(Int64.self, forKey: .replycount)
+        self.reactioncount = try container.decodeIfPresent(Int64.self, forKey: .reactioncount)
         self.reactions = try container.decodeIfPresent([Reaction].self, forKey: .reactions)
         self.likecount = try container.decodeIfPresent(Int64.self, forKey: .likecount)
         self.open = try container.decodeIfPresent(Bool.self, forKey: .open)
