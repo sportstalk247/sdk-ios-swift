@@ -18,6 +18,7 @@ Pod::Spec.new do |spec|
   spec.source       = { :git => "https://github.com/sportstalk247/sdk-ios-swift.git" }
 
   spec.source_files  = "SportsTalk247/SportsTalk247/**/*.{swift}"
+  spec.resource_bundles  = {'SportsTalk247' => ['SportsTalk247/SportsTalk247/PrivacyInfo.xcprivacy']}
   #spec.exclude_files = "Classes/Exclude"
 
 end
