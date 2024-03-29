@@ -26,6 +26,7 @@
 		9B6CDA002972F8E70071671B /* ListConversationsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B6CD9FF2972F8E70071671B /* ListConversationsResponse.swift */; };
 		9B6CDA032972FA7F0071671B /* BatchGetConversationDetailsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B6CDA022972FA7F0071671B /* BatchGetConversationDetailsResponse.swift */; };
 		9B6CDA062972FB050071671B /* ListCommentsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B6CDA052972FB050071671B /* ListCommentsResponse.swift */; };
+		9B770AE82BB6B530007178C3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 9B770AE72BB6B52F007178C3 /* PrivacyInfo.xcprivacy */; };
 		9B8B17162973E69400E1CEF5 /* CommentModerationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8B17152973E69400E1CEF5 /* CommentModerationRequest.swift */; };
 		9B8B17192973E9A600E1CEF5 /* CommentClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8B17182973E9A600E1CEF5 /* CommentClient.swift */; };
 		9B8B171D2973F09500E1CEF5 /* CommentClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8B171B2973F09500E1CEF5 /* CommentClientTests.swift */; };
@@ -103,6 +104,7 @@
 		9B6CD9FF2972F8E70071671B /* ListConversationsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListConversationsResponse.swift; sourceTree = "<group>"; };
 		9B6CDA022972FA7F0071671B /* BatchGetConversationDetailsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchGetConversationDetailsResponse.swift; sourceTree = "<group>"; };
 		9B6CDA052972FB050071671B /* ListCommentsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCommentsResponse.swift; sourceTree = "<group>"; };
+		9B770AE72BB6B52F007178C3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		9B8B17152973E69400E1CEF5 /* CommentModerationRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentModerationRequest.swift; sourceTree = "<group>"; };
 		9B8B17182973E9A600E1CEF5 /* CommentClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentClient.swift; sourceTree = "<group>"; };
 		9B8B171B2973F09500E1CEF5 /* CommentClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentClientTests.swift; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 		80D415D023B607C600055739 /* SportsTalk247 */ = {
 			isa = PBXGroup;
 			children = (
+				9B770AE72BB6B52F007178C3 /* PrivacyInfo.xcprivacy */,
 				80D415D123B607C600055739 /* SportsTalk247.h */,
 				80D415D223B607C600055739 /* Info.plist */,
 				A84A214B25CB093E0042068F /* Helpers */,
@@ -465,6 +468,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B770AE82BB6B530007178C3 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
