@@ -11,7 +11,7 @@ The set of SDKs and source (iOS, Android, and JS) is here: `https://github.com/s
 You will need to register with SportsTalk and get an API Key in order to use SDK functions.
 
 GETTING STARTED: Setting up the SDK
-------------------
+-------------------------------------
 This Sportstalk SDK is meant to power custom chat applications.  Sportstalk does not enforce any restricitons on your UI design, but instead empowers your developers to focus on the user experience without worrying about the underlying chat behavior.
 
 Sportstalk is an EVENT DRIVEN API. When new talk events occur, the SDK will trigger appropriate callbacks, if set.
@@ -28,7 +28,7 @@ Sportstalk is an EVENT DRIVEN API. When new talk events occur, the SDK will trig
     let config = ClientConfig(appId: "YourAppId", authToken: "YourApiKey")
 
 Implement Custom JWT
-------------------
+----------------------
 You can instantiate a JWTProvider instance and provide a token refresh action function that returns a new token.
 
 .. code-block:: swift
@@ -70,11 +70,11 @@ There is also a function provided to explicitly refresh token by calling `JWTPro
 Once the User Token has been added to the SDK, the SDK will automatically append it to all requests.
 
 Callback Function Overview
-------------------
+----------------------------
 Each and every api function has its callback, when the api is called you will get the response in the callback. You can use this to remove loading screens, hide advertisements, and so on.
 
 Creating/Updating a user
-------------------------
+----------------------------
 Invoke this API method if you want to create a user or update an existing user.
 
 When users send messages to a room the user ID is passed as a parameter. When you retrieve the events from a room, the user who generated the event is returned with the event data, so it is easy for your application to process and render chat events with minimal code.
@@ -122,7 +122,7 @@ Joining a Room
 
 
 Joining a Room using Custom ID
-------------------
+------------------------------------
 .. code-block:: swift
 
      let client = ChatClient(config: config)
@@ -141,7 +141,7 @@ Joining a Room using Custom ID
 
 
 Getting room updates
-------------------
+-------------------------
 To manually get room updates, use ``ChatClient().getUpdates(request:completionHandler)``
 
 .. code-block:: swift
@@ -161,7 +161,7 @@ To manually get room updates, use ``ChatClient().getUpdates(request:completionHa
 
 
 Start/Stop Getting Event Updates
-------------------
+------------------------------------
 Get periodic updates from room by using ``func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates, completionHandler: @escaping Completion<[Event]>)``
 Only new events will be emitted, so it is up to you to collect the new events.
 To stop getting updates, simply call ``client.stopListeningToChatUpdates()`` anytime.
@@ -200,7 +200,7 @@ Losing reference to client will stop the eventUpdates
 
 
 Sending A Message
-------------------
+---------------------
 Use ``SAY`` command to send a message to the room.
 
 example: ``SAY Hello World! or simply Hello World!``
@@ -240,7 +240,7 @@ This requires that the action command dance is on the approved list of commands 
 For use of these events in action, see the demo page: `https://www.sportstalk247.com/demo.html <https://www.sportstalk247.com/demo.html>`_
 
 Conversations and Comments
-------------------
+-----------------------------
 
 .. code-block:: swift
 
@@ -257,7 +257,7 @@ Conversations and Comments
 
 
 The Bare Minimum
-------------------
+--------------------
 The only critical events that you need to handle are ``ExecuteChatCommand`` which will be called for each new chat event and ``PurgeMessage`` which will be called when purge commands are issued to clear messages that violate content policy.
 
 You will probably also want to use ``ExecuteChatCommand`` to show/hide any loading messages.
@@ -266,7 +266,7 @@ The easiest way to see how these event works is to see the demo page: `https://w
 
 
 Chat Application Best Practices
-------------------
+------------------------------------
 Do not 'fire and forget' chat messages.  Most chat applications require some level of moderation.  Your UI should make sure to keep track of message metadata such as:
 
     - Message ID
@@ -279,7 +279,7 @@ Make sure you handle errors for sending messages in case of network disruption.
 Enable/Disable debug mode with SportsTalkSDK.shared.debugMode = true/false
 
 User Client
-------------------
+----------------------------
 Create/Update User
 ============================
 .. code-block:: swift
@@ -816,7 +816,7 @@ Returns a list of user notifications
         }
 
 Mark All Notification As Read
-============================
+================================
 .. code-block:: swift
 
     func markAllNotificationAsRead(_ request: UserRequest.MarkAllNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
@@ -860,7 +860,7 @@ This marks all of the user's notifications as read with one API call only. Due t
         }
         
 Set User Notification As Read
-============================
+================================
 .. code-block:: swift
 
     func setUserNotificationAsRead(_ request: UserRequest.SetUserNotificationAsRead, completionHandler: @escaping Completion<UserNotification>)
@@ -913,7 +913,7 @@ Calling this over and over again for an event, or calling it on events where the
         }
         
 Set User Notification As Read (By ChatEventId)
-============================
+==================================================
 .. code-block:: swift
 
     func setUserNotificationAsReadByEventId(_ request: UserRequest.SetUserNotificationAsReadByChatEventId, completionHandler: @escaping Completion<UserNotification>)
@@ -968,7 +968,7 @@ Unless your workflow must support use of read notifications, use ```func deleteU
         }
 
 Delete User Notification
-============================
+==============================
 .. code-block:: swift
 
     func deleteUserNotification(_ request: UserRequest.DeleteUserNotification, completionHandler: @escaping Completion<UserNotification>)
@@ -1014,7 +1014,7 @@ Immediately deletes a user notification. Unless your workflow specifically imple
         }
         
 Delete User Notification By ChatEventId
-============================
+===========================================
 .. code-block:: swift
 
     func deleteUserNotificationByEventId(_ request: UserRequest.DeleteUserNotificationByChatEventId, completionHandler: @escaping Completion<UserNotification>)
@@ -1201,7 +1201,7 @@ This will return all the settings for the room and the participant count but not
         }
         
 Get Room Extended Details
-============================
+==============================
 .. code-block:: javascript
 
     func getRoomExtendedDetails(_ request: ChatRequest.GetRoomExtendedDetails, completionHandler: @escaping Completion<ChatRoom>)
@@ -1274,7 +1274,7 @@ The response will be a list of RoomExtendedDetails objects. They contain propert
         }
         
 Get Room Details By Custom ID
-============================
+=======================================
 .. code-block:: swift
 
     func getRoomDetailsByCustomId(_ request: ChatRequest.GetRoomDetailsByCustomId, completionHandler: @escaping Completion<ChatRoom>)
@@ -1608,7 +1608,7 @@ To cursor through the results if there are many participants, invoke this functi
         }
         
 List User Subscribed Rooms
-============================
+==============================
 .. code-block:: swift
 
     func listUserSubscribedRooms(_ request: ChatRequest.ListUserSubscribedRooms, completionHandler: @escaping Completion<ListUserSubscribedRoomResponse>) 
@@ -1759,7 +1759,7 @@ List Event By Type
     
 - cursor: (optional) If not provided, the most recent events will be returned. To get older events, call this method again using the cursor string returned from the previous call.
 
-- eventtype: (required) Specify the chat event type you are filtering for. If you want to filter for a custom event type, specify 'custom' and then provide a value for the *customtype parameter
+- eventtype: (required) Specify the chat event type you are filtering for. If you want to filter for a custom event type, specify 'custom' and then provide a value for the *customtype* parameter
 
 - customtype: (optional) If you want to filter by custom type you must first specify 'custom' for the eventtype field. This will enable you to filter to find events of a custom type
     
@@ -2527,55 +2527,9 @@ The purpose of this method is to get a list of messages or comments by a user, w
             public var events: [Event]
         }
         
-Purge Message
-============================
-.. code-block:: swift
-
-    func purgeMessage(_ request: ChatRequest.PurgeUserMessages, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
-
-Executes a command in a chat room to purge all messages for a user
-
-This does not DELETE the message. It flags the message as moderator removed.
-
-**Parameters**
-
-- roomid: (required)
-
-- userid: (required) the id of the owner of the messages
-
-- handle: (required) the handle of the owner of the messages
-
-- password: (required) a valid admin password
-
-**Warning** This method requires authentication
-
-**Request Model: ChatRequest.PurgeUserMessages**
-
-.. code-block:: swift
-
-        public class PurgeUserMessages {
-            public var roomid: String?
-            public var userid: String?
-            public var handle: String?
-            public var password: String?
-            private var command: String!
-        }
-                
-**Response Model: ExecuteChatCommandResponse**
-
-.. code-block:: swift
-
-        public struct ExecuteChatCommandResponse: Codable {
-            public var kind: String?
-            public var op: String?
-            public var room: ChatRoom?
-            public var speech: Event?
-            public var action: Event?
-        }
-
         
 Flag Event As Locally Deleted
-============================
+================================
 .. code-block:: swift
 
     func flagEventLogicallyDeleted(_ request: ChatRequest.FlagEventLogicallyDeleted, completionHandler: @escaping Completion<DeleteEventResponse>)
@@ -2630,7 +2584,7 @@ If you want to mark a comment as deleted, and replies are still visible, use "tr
 
 
 Permanently Delete Event
-============================
+=============================
 .. code-block:: swift
     
     func permanentlyDeleteEvent(_ request: ChatRequest.PermanentlyDeleteEvent, completionHandler: @escaping Completion<DeleteEventResponse>)
@@ -2968,6 +2922,7 @@ Reports a user in the room
             public var bouncedusers: [String] = []
             public var reportedusers: [ReportedUser] = []
         }
+
 Bounce User
 ============================
 .. code-block:: swift
@@ -3297,7 +3252,7 @@ This API may be used to update the body of an existing Chat Event. It is used to
         }
 
 Start Listening to Chat Updates
-============================
+==================================
 .. code-block:: swift
 
     func startListeningToChatUpdates(config: ChatRequest.StartListeningToChatUpdates, completionHandler: @escaping Completion<[Event]>)
@@ -3358,7 +3313,7 @@ Periodically calls func getUpdates(request:completionHandler:) to receive latest
         }
 
 Stop Listening to Chat Updates
-============================
+=================================
 .. code-block:: swift
 
     func stopListeningToChatUpdates(_ roomid: String)
@@ -3370,7 +3325,7 @@ Cancels listening to Chat Updates from a specific ChatRoom
 **Response Model: None**
 
 Approve Event
-============================
+==============================
 .. code-block:: swift
     
     func approveEvent(_ request: ModerationRequest.ApproveEvent, completionHandler: @escaping Completion<Event>)
@@ -3490,7 +3445,7 @@ If the room is set to use POST-MODERATION, messages will only be sent to the mod
         }
         
 List All Messages In Moderation Queue
-============================
+===========================================
 .. code-block:: swift
 
     func listMessagesInModerationQueue(_ request: ModerationRequest.listMessagesInModerationQueue, completionHandler: @escaping Completion<ListMessagesNeedingModerationResponse>)
@@ -3527,10 +3482,10 @@ List all the messages in the moderation queue
         }
 
 Comment Client
-------------------
+------------------------
 
 Create or Update Conversation
-============================
+==================================
 .. code-block:: swift
     
     func createOrUpdateConversation(_ request: CommentRequest.CreateUpdateConversation, completionHandler: @escaping Completion<Conversation>)
@@ -3709,7 +3664,7 @@ Retrieves metadata about a conversation.
 
 
 Find Conversation by CustomID
-============================
+=================================
 .. code-block:: swift
     
     func getConversationByCustomId(_ request: CommentRequest.FindConversationByIdCustomId, completionHandler: @escaping Completion<Conversation>)
@@ -3847,7 +3802,7 @@ Retrieves metadata about all conversations for a property. Whenever you create a
         }
 
 Batch Get Conversation Details
-============================
+==================================
 .. code-block:: swift
     
     func batchGetConversationDetails(_ request: CommentRequest.GetBatchConversationDetails, completionHandler: @escaping Completion<BatchGetConversationDetailsResponse>)
@@ -3912,7 +3867,7 @@ You can choose to either retrieve articles using the sportstalk ID or by using y
         }
 
 React to Conversation Topic
-============================
+==============================
 .. code-block:: swift
     
     func reactToConversationTopic(_ request: CommentRequest.ReactToConversationTopic, completionHandler: @escaping Completion<Conversation>)
@@ -3991,7 +3946,7 @@ A conversation context is mapped to your topic by using either the conversationi
         }
 
 Create and Publish Comment
-============================
+==============================
 .. code-block:: swift
     
     func createComment(_ request: CommentRequest.CreateComment, completionHandler: @escaping Completion<Comment>)
@@ -4098,7 +4053,7 @@ You can optionally make this comment into a reply by passing in the optional rep
         }
 
 Reply to Comment
-============================
+==============================
 .. code-block:: swift
     
     func replyToComment(_ request: CommentRequest.ReplyToComment, completionHandler: @escaping Completion<Comment>)
@@ -4296,7 +4251,7 @@ This method works the same way as the List Comments method, so view the document
         }
 
 Get Comment by ID
-============================
+==============================
 .. code-block:: swift
     
     func getComment(_ request: CommentRequest.GetCommentDetails, completionHandler: @escaping Completion<Comment>)
@@ -4539,7 +4494,7 @@ The purpose of this method is to support a use case where you open an app or web
         }
 
 React to Comment("Like")
-============================
+==============================
 .. code-block:: swift
     
     func reactToComment(_ request: CommentRequest.ReactToComment, completionHandler: @escaping Completion<Comment>)
@@ -4551,7 +4506,7 @@ A reaction can be added using any reaction string that you wish.
 **Parameters**
 
     - **conversationid** : (required) The ID of the comment conversation.
-    - **commentid** : (required) The unique ID of the comment, URL ENCODED.*
+    - **commentid** : (required) The unique ID of the comment, *URL ENCODED*.
     - **userid : (required) The ID of the user reacting to the comment. Anonymous reactions are not supported.
     - **reaction** : (required) A string indicating the reaction you wish to capture, for example "like", or "emoji:{id}" where you can use the standard character code for your emoji.
     - **reacted** : (required) true or false, to toggle the reaction on or off for this user.
@@ -4724,7 +4679,7 @@ UPVOTE, DOWNVOTE, or REMOVE VOTE
         }
 
 Report Comment
-============================
+==============================
 .. code-block:: swift
     
     func reportComment(_ request: CommentRequest.ReportComment, completionHandler: @escaping Completion<Comment>)
@@ -4906,7 +4861,7 @@ The comment will be flagged to indicate that it has been modified.
         }
 
 Flag Comment As Deleted
-============================
+==============================
 .. code-block:: swift
     
     func flagCommentLogicallyDeleted(_ request: CommentRequest.FlagCommentLogicallyDeleted, completionHandler: @escaping Completion<DeleteCommentResponse>)
@@ -4973,7 +4928,7 @@ Set Deleted (LOGICAL DELETE)
         }
 
 Delete Comment (permanent)
-============================
+==============================
 .. code-block:: swift
     
     func permanentlyDeleteComment(_ request: CommentRequest.PermanentlyDeleteComment, completionHandler: @escaping Completion<DeleteCommentResponse>)
@@ -5026,7 +4981,7 @@ DELETES a comment and all replies to that comment
         }
 
 Delete Conversation
-============================
+==============================
 .. code-block:: swift
     
     func deleteConversation(_ request: CommentRequest.DeleteConversation, completionHandler: @escaping Completion<DeleteConversationResponse>)
@@ -5078,7 +5033,7 @@ DELETES a Conversation, all Comments and Replies
         }
 
 List Comments in Moderation Queue
-============================
+=====================================
 .. code-block:: swift
     
     func listCommentsInModerationQueue(_ request: CommentModerationRequest.ListCommentsInModerationQueue, completionHandler: @escaping Completion<ListCommentsResponse>)
@@ -5147,7 +5102,7 @@ List all the comments in the moderation queue
         }
 
 Approve/Reject Message in Queue
-============================
+==================================
 .. code-block:: swift
     
     func approveMessageInQueue(_ request: CommentModerationRequest.ApproveRejectComment, completionHandler: @escaping Completion<Comment>)
@@ -5233,6 +5188,50 @@ If the conversation is set to use POST-MODERATION, messages will only be sent to
         commentClient.approveMessageInQueue(request) { (code: Int?, message: String?, kind: String?, response: Comment?) in
             // ... Resolve `response` from here
         }
+
+
+Purge User Message
+==============================
+.. code-block:: swift
+
+    func purgeUserMessage(_ request: ChatRequest.PurgeUserMessages, completionHandler: @escaping Completion<ExecuteChatCommandResponse>)
+
+Executes a command in a chat room to purge all messages for a user
+
+This does not DELETE the message. It flags the message as moderator removed.
+
+**Parameters**
+
+- roomid: (required)
+
+- userid: (required) the id of the owner of the messages
+
+- byuserid: (required) the handle of the owner of the messages
+
+**Warning** This method requires authentication
+
+**Request Model: ChatRequest.PurgeUserMessages**
+
+.. code-block:: swift
+
+        public class PurgeUserMessages {
+            public var roomid: String?
+            public var userid: String?
+            public var byuserid: String?
+        }
+                
+**Response Model: ExecuteChatCommandResponse**
+
+.. code-block:: swift
+
+        public struct ExecuteChatCommandResponse: Codable {
+            public var kind: String?
+            public var op: String?
+            public var room: ChatRoom?
+            public var speech: Event?
+            public var action: Event?
+        }
+
 
 
 Copyright & License
