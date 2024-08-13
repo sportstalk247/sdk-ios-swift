@@ -819,14 +819,18 @@ extension ChatClientTests {
     }
     
     func test_ChatRoomsServices_PurgeMessages() {
-        test_ChatRoomsServices_ExecuteChatCommand()
-        testJoinRoom(roomid: dummyRoom!.id!, userid: "admin")
+        if dummyUser == nil {
+            createUpdateUser()
+        }
+        
+        if dummyRoom == nil || dummyEvent == nil {
+            test_ChatRoomsServices_ExecuteChatCommand()
+        }
         
         let request = ChatRequest.PurgeUserMessages(
             roomid: dummyRoom?.id ?? "",
-            userid: "admin",
-            handle: "\(dummyUser!.handle!)",
-            password: "zola"
+            userid: dummyUser!.userid!,
+            byuserid: "moderator"
         )
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
@@ -840,6 +844,62 @@ extension ChatClientTests {
 
         waitForExpectations(timeout: 10, handler: nil)
         XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_PurgeMessages_No_Local_Purge_Permissions() {
+        if dummyUser == nil {
+            createUpdateUser()
+        }
+        
+        if dummyRoom == nil || dummyEvent == nil {
+            test_ChatRoomsServices_ExecuteChatCommand()
+        }
+        
+        let request = ChatRequest.PurgeUserMessages(
+            roomid: dummyRoom?.id ?? "",
+            userid: dummyUser!.userid!,
+            byuserid: dummyUser!.userid!   // Same User purging his/her own message MUST NOT HAVE purge permission
+        )
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.purgeMessage(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 10, handler: nil)
+        XCTAssertTrue(receivedCode == 403)
+    }
+    
+    func test_ChatRoomsServices_PurgeMessages_Purging_User_Not_Found() {
+        if dummyUser == nil {
+            createUpdateUser()
+        }
+        
+        if dummyRoom == nil || dummyEvent == nil {
+            test_ChatRoomsServices_ExecuteChatCommand()
+        }
+        
+        let request = ChatRequest.PurgeUserMessages(
+            roomid: dummyRoom?.id ?? "",
+            userid: dummyUser!.userid!,
+            byuserid: "invalid_user_id"
+        )
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.purgeMessage(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 10, handler: nil)
+        XCTAssertTrue(receivedCode == 404)
     }
     
     func test_ChatRoomsServices_FlagEventLogicallyDeleted() {
