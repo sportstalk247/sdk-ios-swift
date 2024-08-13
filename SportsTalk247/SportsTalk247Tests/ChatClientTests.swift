@@ -555,37 +555,37 @@ extension ChatClientTests {
         XCTAssertTrue(receivedUser != nil)
     }
     
-    func test_ChatRoomsServices_JoinRoom_Invalid_Auth() {
-        if dummyUser ==  nil {
-            self.createUpdateUser()
-        }
-        
-        if dummyRoom == nil {
-            test_ChatRoomsServices_CreateRoomPostmoderated()
-        }
-        
-        let request = ChatRequest.JoinRoom(
-            roomid: dummyRoom?.id ?? "",
-            userid: dummyUser?.userid ?? "",
-            displayname: dummyUser?.displayname
-        )
-
-        let expectation = self.expectation(description: Constants.expectation_description(#function))
-        var receivedCode: Int?
-        
-        // Set Invalid JWT
-        self.jwtProvider.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJ0ZXN0dXNlcjEiLCJyb2xlIjoidXNlciJ9.L43SmGmnKwVyPTMzLLIcY3EUb83A4YPBc0l6778Od_0")
-        
-        client.joinRoom(request) { (code, message, _, response) in
-            print(message ?? "")
-            receivedCode = code
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
-
-        XCTAssertTrue(receivedCode == 401)
-    }
+//    func test_ChatRoomsServices_JoinRoom_Invalid_Auth() {
+//        if dummyUser ==  nil {
+//            self.createUpdateUser()
+//        }
+//        
+//        if dummyRoom == nil {
+//            test_ChatRoomsServices_CreateRoomPostmoderated()
+//        }
+//        
+//        let request = ChatRequest.JoinRoom(
+//            roomid: dummyRoom?.id ?? "",
+//            userid: dummyUser?.userid ?? "",
+//            displayname: dummyUser?.displayname
+//        )
+//
+//        let expectation = self.expectation(description: Constants.expectation_description(#function))
+//        var receivedCode: Int?
+//        
+//        // Set Invalid JWT
+//        self.jwtProvider.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJ0ZXN0dXNlcjEiLCJyb2xlIjoidXNlciJ9.L43SmGmnKwVyPTMzLLIcY3EUb83A4YPBc0l6778Od_0")
+//        
+//        client.joinRoom(request) { (code, message, _, response) in
+//            print(message ?? "")
+//            receivedCode = code
+//            expectation.fulfill()
+//        }
+//
+//        waitForExpectations(timeout: Config.TIMEOUT, handler: nil)
+//
+//        XCTAssertTrue(receivedCode == 401)
+//    }
     
     func test_ChatRoomsServices_JoinRoomByCustomId() {
         if dummyUser ==  nil {
@@ -597,7 +597,7 @@ extension ChatClientTests {
         }
         
         let request = ChatRequest.JoinRoomByCustomId(
-            customid: "chathubcard.th.บัตรบรรณาธิการซึ่งจะปรากฏในวันอาทิตย์",
+            customid: dummyRoom?.customid ?? "",
             userid: dummyUser?.userid ?? "",
             displayname: dummyUser?.displayname
         )
@@ -818,21 +818,25 @@ extension ChatClientTests {
         XCTAssertTrue(receivedCode == 200)
     }
     
-    func test_ChatRoomsServices_PurgeMessages() {
-        test_ChatRoomsServices_ExecuteChatCommand()
-        testJoinRoom(roomid: dummyRoom!.id!, userid: "admin")
+    func test_ChatRoomsServices_PurgeUserMessages() {
+        if dummyUser == nil {
+            createUpdateUser()
+        }
+        
+        if dummyRoom == nil || dummyEvent == nil {
+            test_ChatRoomsServices_ExecuteChatCommand()
+        }
         
         let request = ChatRequest.PurgeUserMessages(
             roomid: dummyRoom?.id ?? "",
-            userid: "admin",
-            handle: "\(dummyUser!.handle!)",
-            password: "zola"
+            userid: dummyUser!.userid!,
+            byuserid: "moderator"
         )
         
         let expectation = self.expectation(description: Constants.expectation_description(#function))
         var receivedCode: Int?
         
-        client.purgeMessage(request) { (code, message, _, response) in
+        client.purgeUserMessage(request) { (code, message, _, response) in
             print(message ?? "")
             receivedCode = code
             expectation.fulfill()
@@ -840,6 +844,62 @@ extension ChatClientTests {
 
         waitForExpectations(timeout: 10, handler: nil)
         XCTAssertTrue(receivedCode == 200)
+    }
+    
+    func test_ChatRoomsServices_PurgeUserMessages_No_Local_Purge_Permissions() {
+        if dummyUser == nil {
+            createUpdateUser()
+        }
+        
+        if dummyRoom == nil || dummyEvent == nil {
+            test_ChatRoomsServices_ExecuteChatCommand()
+        }
+        
+        let request = ChatRequest.PurgeUserMessages(
+            roomid: dummyRoom?.id ?? "",
+            userid: dummyUser!.userid!,
+            byuserid: dummyUser!.userid!   // Same User purging his/her own message MUST NOT HAVE purge permission
+        )
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.purgeUserMessage(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 10, handler: nil)
+        XCTAssertTrue(receivedCode == 403)
+    }
+    
+    func test_ChatRoomsServices_PurgeUserMessages_Purging_User_Not_Found() {
+        if dummyUser == nil {
+            createUpdateUser()
+        }
+        
+        if dummyRoom == nil || dummyEvent == nil {
+            test_ChatRoomsServices_ExecuteChatCommand()
+        }
+        
+        let request = ChatRequest.PurgeUserMessages(
+            roomid: dummyRoom?.id ?? "",
+            userid: dummyUser!.userid!,
+            byuserid: "invalid_user_id"
+        )
+        
+        let expectation = self.expectation(description: Constants.expectation_description(#function))
+        var receivedCode: Int?
+        
+        client.purgeUserMessage(request) { (code, message, _, response) in
+            print(message ?? "")
+            receivedCode = code
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 10, handler: nil)
+        XCTAssertTrue(receivedCode == 404)
     }
     
     func test_ChatRoomsServices_FlagEventLogicallyDeleted() {

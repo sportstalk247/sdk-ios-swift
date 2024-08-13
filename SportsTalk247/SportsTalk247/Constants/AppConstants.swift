@@ -82,7 +82,7 @@ struct URLPath {
     }
     
     struct Event {
-        static func Purge(roomid: String) -> String { return r + (roomid) + "/command"}
+        static func PurgeUserMessages(roomid: String) -> String { return "\(r)\(roomid)/commands/purge" }
         static func FlagLogicallyDeleted(roomid: String, eventid: String) -> String { return "\(r)\(roomid)/events/\(eventid)/setdeleted" }
         static func Delete(roomid: String, eventid: String) -> String   { return "\(r)\(roomid)/events/\(eventid)" }
         static func DeleteAll(roomid: String) -> String { return r + (roomid) + "/command"}

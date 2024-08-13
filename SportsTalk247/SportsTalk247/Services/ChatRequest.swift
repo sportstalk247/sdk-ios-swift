@@ -2105,24 +2105,17 @@ public class ChatRequest {
         public enum Fields {
             case roomid
             case userid
-            case command
-            case password
-            case handle
+            case byuserid
         }
         
         public let roomid: String   // REQUIRED
         public let userid: String   // REQUIRED
-        public var handle: String?
-        public var password: String?
+        public var byuserid: String // REQUIRED
         
-        private let command: String // "*purge $handle"
-        
-        public init(roomid: String, userid: String, handle: String? = nil, password: String? = nil) {
+        public init(roomid: String, userid: String, byuserid: String) {
             self.roomid = roomid
             self.userid = userid
-            self.handle = handle
-            self.password = password
-            self.command = String("*purge \(handle!)")
+            self.byuserid = byuserid
         }
         
         override public func from(dictionary: [AnyHashable: Any]) -> PurgeUserMessages {
@@ -2130,8 +2123,7 @@ public class ChatRequest {
             let ret = PurgeUserMessages(
                 roomid: value(forKey: .roomid) ?? "",
                 userid: value(forKey: .userid) ?? "",
-                handle: value(forKey: .handle),
-                password: value(forKey: .password)
+                byuserid: value(forKey: .byuserid) ?? ""
             )
             
             return ret
@@ -2139,10 +2131,8 @@ public class ChatRequest {
         
         public func toDictionary() -> [AnyHashable: Any] {
             toDictionary = [AnyHashable: Any]()
-            
-            addRequired(key: .command, value: String("*purge \(handle!)"))
-            add(key: .userid, value: userid)
-            
+            addRequired(key: .userid, value: userid)
+            addRequired(key: .byuserid, value: byuserid)
             return toDictionary
         }
     }
